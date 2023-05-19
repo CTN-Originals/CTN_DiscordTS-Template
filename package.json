@@ -1,0 +1,13 @@
+{
+	"name": "heatseekerheaven-utilities",
+	"author": "CTN-Originals",
+	"version": "0.0.1",
+	"description": "Tools and Utilities for the Heatseeker Heaven Community",
+	"keywords": [],
+	"license": "BSD-3-Clause",
+
+	"main": "index.js",
+	"scripts": {
+		
+	}
+}
