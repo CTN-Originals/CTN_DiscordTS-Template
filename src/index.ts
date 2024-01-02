@@ -1,5 +1,8 @@
 import 'dotenv/config';
 import { Client } from 'discord.js';
+import { ConsoleInstance } from 'better-console-utilities';
+
+export const cons = new ConsoleInstance();
 
 const client = new Client({
 	intents: [
@@ -11,7 +14,7 @@ const client = new Client({
 });
 
 client.on('ready', (c) => {
-	console.log(`Logged in as ${c.user.tag}!`);
+	cons.log(`Logged in as ${c.user.tag}!`);
 });
 
 client.login(process.env.TOKEN);
