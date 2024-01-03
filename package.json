@@ -9,6 +9,7 @@
 	"scripts": {
 		"start:dev": "nodemon src/index.ts",
 		"build": "tsc",
+		"deploy": "npm run build && node dist/deployCommands.js",
 		"start": "node dist/index.js"
 	},
 	"dependencies": {
