@@ -4,12 +4,14 @@
 		"module": "CommonJS",
 		"moduleResolution": "Node",
 		"strict": true,
-		"noImplicitAny": true,
+		"noImplicitAny": false,
 		"declaration": false,
 		"skipLibCheck": true,
 		"strictNullChecks": true,
 		"resolveJsonModule": true,
-		"outDir": "dist"
+		
+		"typeRoots": ["src/@types", "node_modules/@types"],
+		"outDir": "dist",
 	},
 	"include": ["src"],
 	"exclude": ["node_modules"]
