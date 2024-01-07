@@ -6,9 +6,13 @@ import {
 	Events,
 } from 'discord.js';
 
-import { cons } from '..';
+// import { cons } from '..';
 import generalData from '../data/generalData';
+import { ConsoleInstance } from 'better-console-utilities';
+import { eventConsole } from '.';
+import { errorConsole } from '..';
 
+const thisConsole = new ConsoleInstance();
 
 export default {
 	name: Events.InteractionCreate,
@@ -43,11 +47,11 @@ export default {
 				content += `\n\`\`\`js\n${err}\n\`\`\``;
 			}
 
-			console.log(err)
+			errorConsole.log(err)
 			await interaction.reply({
 				ephemeral: true,
 				content: `There was an error while executing this interaction :/`
-			}).catch(console.error);
+			}).catch(errorConsole.log);
 			response = err;
 		}
 
@@ -101,10 +105,10 @@ export default {
 			}
 
 			if (response) {
-				cons.log(logMessage + `Response:`, response)
+				thisConsole.log(logMessage + `Response:`, response)
 			}
 			else {
-				cons.log(logMessage);
+				thisConsole.log(logMessage);
 			}
 		}
 	}
