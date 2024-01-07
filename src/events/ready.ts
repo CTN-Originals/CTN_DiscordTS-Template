@@ -1,11 +1,11 @@
-import { Client } from 'discord.js';
+import { Client, Events } from 'discord.js';
 import { ConsoleInstance } from 'better-console-utilities';
 // import ErrorHandler from '../handlers/errorHandler';
 
 const thisCons = new ConsoleInstance();
 
 export default {
-	name: 'ready',
+	name: Events.ClientReady,
 	once: true,
 
 	async execute(client: Client) {

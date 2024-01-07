@@ -1,16 +1,17 @@
-const { 
+import { 
 	CommandInteraction, 
 	Client,
 	InteractionType,
-	ComponentType
-} = require('discord.js');
+	ComponentType,
+	Events,
+} from 'discord.js';
 
 import { cons } from '..';
 import generalData from '../data/generalData';
 
 
 export default {
-	name: 'interactionCreate',
+	name: Events.InteractionCreate,
 	once: false,
 
     /** @param {CommandInteraction} interaction The command interaction */
