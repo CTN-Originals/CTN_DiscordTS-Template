@@ -1,15 +1,17 @@
 import 'dotenv/config';
-import { Client, Collection } from 'discord.js';
+import { BaseGuild, Client, Collection, Guild, REST, Routes, ApplicationCommand } from 'discord.js';
 
 import { ConsoleInstance, Theme, ThemeOverride } from 'better-console-utilities';
 
 import { getEventFiles } from './handlers/registerEvents';
 import { getCommandFiles } from './handlers/registerCommands';
 
+import * as deployScript from './deployCommands';
+
 export const cons = new ConsoleInstance();
 cons.theme.overrides.push(...[
 	new ThemeOverride(/HH Utilities/gi, new Theme(null, null, ['line', 'bold'])),
-	new ThemeOverride(/MT.*Oik/gi, new Theme('#000000', '#000000', 'hidden'))
+	new ThemeOverride(/MT.*Wd7s/gi, new Theme('#000000', '#000000', 'hidden'))
 ])
 
 export const client: Client = new Client({
@@ -20,11 +22,28 @@ export const client: Client = new Client({
 		'MessageContent'
 	]
 });
-cons.logDefault(client);
-client['commands'] = new Collection();
 
-getEventFiles(client, 'events');
-getCommandFiles(client, 'commands');
+async function Awake() {
+	cons.log(process.argv);
+	if (process.argv.includes('--deploy')) {
+		// const deployScript = require('./deployCommands.ts');
+		await deployScript.doDeployCommands().then(() => {
+			process.exit(0);
+		});
+	}
+	else {
+		Start();
+	}
+}
+
+async function Start() {
+	client['commands'] = new Collection();
+	
+	getEventFiles(client, 'events');
+	getCommandFiles(client, 'commands');
+	await client.login(process.env.TOKEN);
+}
+
+Awake();
 
 
-client.login(process.env.TOKEN);
