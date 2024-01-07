@@ -1,18 +1,22 @@
 import 'dotenv/config';
-import { BaseGuild, Client, Collection, Guild, REST, Routes, ApplicationCommand } from 'discord.js';
+import { BaseGuild, Client, Collection, Guild, REST, Routes, ApplicationCommand, WebhookClient } from 'discord.js';
 
-import { ConsoleInstance, Theme, ThemeOverride } from 'better-console-utilities';
+import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile } from 'better-console-utilities';
 
 import { getEventFiles } from './handlers/registerEvents';
 import { getCommandFiles } from './handlers/registerCommands';
 
 import * as deployScript from './deployCommands';
 
-export const cons = new ConsoleInstance();
-cons.theme.overrides.push(...[
+//? Set the default theme profile to my preferences
+defaultThemeProfile.overrides.push(...[
 	new ThemeOverride(/HH Utilities/gi, new Theme(null, null, ['line', 'bold'])),
 	new ThemeOverride(/MT.*Wd7s/gi, new Theme('#000000', '#000000', 'hidden'))
-])
+]);
+
+export const cons = new ConsoleInstance();
+export const errorConsole = new ConsoleInstance()
+errorConsole.theme.default = new Theme('#ff0000');
 
 export const client: Client = new Client({
 	intents: [
@@ -22,6 +26,7 @@ export const client: Client = new Client({
 		'MessageContent'
 	]
 });
+export const logWebhook = new WebhookClient({id: process.env.LOG_WEBHOOK_ID!, token: process.env.LOG_WEBHOOK_TOKEN!})
 
 async function Awake() {
 	cons.log(process.argv);
