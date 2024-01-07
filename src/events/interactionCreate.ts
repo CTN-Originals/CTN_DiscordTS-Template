@@ -77,13 +77,11 @@ export default {
 			}
 
 			var logMessage = [
-				`\n[fg=cyan]${interaction.user.username}[/>]([fg=magenta]${interaction.user.id}[/>])`,
+				`\n[fg=cyan]${interaction.user.username}[/>]([fg=cc00ff]${interaction.user.id}[/>])`,
 				`in [fg=black bg=white]#${interaction.channel.name}[/>]`,
-				`\n[fg=0080ff]${interactionType}[/>]: [fg=yellow]/[/>][fg=green]${commandName}[/>]`,
+				`\n[fg=0080ff]${interactionType}[/>]: [fg=ffaa00]/[/>][fg=00cc00]${commandName}[/>]`,
 			].join(' ');
-			if (response != '') {
-				logMessage += `\n[fg=green]Response[/>]: [fg=yellow]${response}[/>]`;
-			}
+			
 
 			const options = interaction.options;
 			if (options) {
@@ -101,7 +99,12 @@ export default {
 				logMessage = (commandOptions != '') ? logMessage + commandOptions + '\n' : logMessage;
 			}
 
-			cons.log(logMessage);
+			if (response) {
+				cons.log(logMessage + `Response:`, response)
+			}
+			else {
+				cons.log(logMessage);
+			}
 		}
 	}
 };
