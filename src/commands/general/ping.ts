@@ -1,4 +1,4 @@
-import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, CommandInteraction } from "discord.js";
 
 import { cons } from "../../index";
 
@@ -7,7 +7,7 @@ export default {
 		data: new SlashCommandBuilder()
 			.setName("ping")
 			.setDescription("Replies with Pong!"),
-		async execute(interaction: any) {
+		async execute(interaction: CommandInteraction) {
 			cons.log(`[fg=red]Running[/>] ([fg=cyan]${interaction.commandName}[/>]) [fg=red]command[/>]`);
 			interaction.reply({
 				content: "Pong!",
@@ -15,6 +15,10 @@ export default {
 					title: "Pong!",
 				})]
 			});
+
+			// //? make an error happen for testing purposes
+			// const member = await interaction.guild?.members.fetch("this is not a member id");
+			// // console.log(member?.displayName);
 
 			return true;
 		},

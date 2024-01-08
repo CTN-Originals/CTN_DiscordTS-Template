@@ -4,15 +4,25 @@ import generalData from "../data/generalData";
 import { ConsoleInstance } from "better-console-utilities";
 
 const thisCons = new ConsoleInstance();
+const rootPath = process.cwd();
 
+
+interface IErrorObjectOptions {
+	replaceRootPath?: boolean;
+}
 export class ErrorObject {
 	public error: Error;
+	public options: Partial<IErrorObjectOptions>;
 	public errorType: string;
 	public errorMessage: string;
 	public errorStack: string;
 	public formattedError: string;
 
-	constructor(error: Error) {
+	constructor(error: Error, options?: Partial<IErrorObjectOptions>) {
+		this.options = {
+			replaceRootPath: options?.replaceRootPath ?? true
+		}
+
 		this.error = error;
 		this.errorType = this.error.name ?? 'Error';
 		this.errorMessage = this.error.message;
@@ -32,6 +42,10 @@ export class ErrorObject {
 
 	formatStack(): string {
 		let formattedStack = '';
+		
+		if (this.options.replaceRootPath) {
+			this.errorStack = this.errorStack.replaceAll(rootPath, 'root');
+		}
 
 		const stackArray = this.errorStack.split('\n');
 		stackArray.shift();
@@ -42,4 +56,3 @@ export class ErrorObject {
 		return formattedStack;
 	}
 }
-

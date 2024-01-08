@@ -8,7 +8,7 @@ export default {
 	name: Events.Error,
 	once: false,
 
-	async execute(client: Client, error: Error) {
+	async execute(error: Error) {
 		eventConsole.log('Error event triggered');
 
 		const errorObject = new ErrorObject(error);
