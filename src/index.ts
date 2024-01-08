@@ -15,7 +15,7 @@ defaultThemeProfile.overrides.push(...[
 ]);
 
 export const cons = new ConsoleInstance();
-export const errorConsole = new ConsoleInstance()
+export const errorConsole = new ConsoleInstance(defaultThemeProfile.clone());
 errorConsole.theme.default = new Theme('#ff0000');
 
 export const client: Client = new Client({
