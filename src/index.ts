@@ -43,7 +43,7 @@ async function Awake() {
 }
 
 async function Start() {
-	client['commands'] = new Collection();
+	client.commands = new Collection();
 	
 	getEventFiles(client, 'events');
 	getCommandFiles(client, 'commands');
