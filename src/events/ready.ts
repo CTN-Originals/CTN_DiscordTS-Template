@@ -10,7 +10,8 @@ export default {
 
 	async execute(client: Client) {
 		thisCons.log(`Logged in as ${client.user?.tag}!`);
-		// new ErrorHandler(new Error('test'));
+		// thisCons.logDefault(client);
+		client.emit(Events.Error, new Error("I'm an error"));
 	},
 };
 

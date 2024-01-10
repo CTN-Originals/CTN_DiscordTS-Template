@@ -4,13 +4,16 @@ import {
 	InteractionType,
 	ComponentType,
 	Events,
+	TextChannel,
 } from 'discord.js';
+
 
 // import { cons } from '..';
 import generalData from '../data/generalData';
 import { ConsoleInstance } from 'better-console-utilities';
-import { eventConsole } from '.';
+import { EmitError, eventConsole } from '.';
 import { errorConsole } from '..';
+import { ErrorObject } from '../handlers/errorHandler';
 
 const thisConsole = new ConsoleInstance();
 
@@ -19,14 +22,14 @@ export default {
 	once: false,
 
     /** @param {CommandInteraction} interaction The command interaction */
-	async execute(interaction) {
+	async execute(interaction) { //Todo: type this properly
 		// if (!interaction.isChatInputCommand()) return;
         const client = interaction.client;
 
 		if (interaction.isCommand() || interaction.isButton() || interaction.isStringSelectMenu()) {
 			const nameKey = interaction.isCommand() ? 'commandName' : interaction.isButton() ? 'customId' : 'customId';
 			if (client.commands.has(interaction[nameKey])) {
-				await this.executeInteraction(interaction, client, nameKey);
+				await this.executeInteraction(interaction, nameKey);
 			}
 		}
 	},
@@ -36,25 +39,45 @@ export default {
 	 * @param {Client} client The client
 	 * @param {string} nameKey The key to get the command name from the interaction
 	*/
-	async executeInteraction(interaction, client, nameKey) {
-		const command = client.commands.get(interaction[nameKey]);
+	async executeInteraction(interaction, nameKey: string) {
 		let response: any = null;
 		try { 
+			const command = interaction.client.commands.get(interaction[nameKey]);
 			response = await command.execute(interaction);
 		} catch (err) {
-			let content = `There was an error while executing this interaction :/` 
+			const errorObject: ErrorObject = await EmitError(err as Error); //?? does "as Error" fuck this? ever??
+
+			let content = `There was an error while executing this interaction`
 			if (generalData.development) {
-				content += `\n\`\`\`js\n${err}\n\`\`\``;
+				content += '\n```ts\n' + errorObject.formattedError + '\n```';
 			}
 
-			errorConsole.log(err)
-			await interaction.reply({
+			const replyContent = {
+				content: content,
 				ephemeral: true,
-				content: `There was an error while executing this interaction :/`
-			}).catch(errorConsole.log);
+			};
+
+			if (!interaction.replied) { //?? does this need "&& !interaction.deferred"?
+				await interaction.reply(replyContent).catch(EmitError);
+			}
+			else if (interaction instanceof CommandInteraction) {
+				await interaction.followUp(replyContent).catch(EmitError);
+				
+			}
+
+			//TODO: Add this feature to the errorHandler instead
+			const logChannel: TextChannel = interaction.client.channels.cache.get(process.env.LOG_CHANNEL_ID as string);
+			if (logChannel) {
+				logChannel.send(replyContent.content);
+			}
+
 			response = err;
 		}
 
+		this.outputLog(interaction, response);
+	},
+
+	outputLog(interaction, response = null) {
 		if (generalData.logging.interaction.enabled) {
 			// console.log(interaction);
 			const commandName = interaction.type == InteractionType.MessageComponent ? 

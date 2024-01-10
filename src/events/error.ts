@@ -8,11 +8,13 @@ export default {
 	name: Events.Error,
 	once: false,
 
-	async execute(error: Error) {
-		eventConsole.log('Error event triggered');
+	async execute(error: Error): Promise<ErrorObject> {
+		// eventConsole.log('Error event triggered');
 
 		const errorObject = new ErrorObject(error);
 
 		errorConsole.log(errorObject.formattedError);
+
+		return errorObject;
 	},
 };
