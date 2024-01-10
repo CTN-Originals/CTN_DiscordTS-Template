@@ -1,5 +1,7 @@
 import { Client, Events } from 'discord.js';
+
 import { ConsoleInstance } from 'better-console-utilities';
+
 // import ErrorHandler from '../handlers/errorHandler';
 
 const thisCons = new ConsoleInstance();

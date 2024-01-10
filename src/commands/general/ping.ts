@@ -1,7 +1,5 @@
 import { EmbedBuilder, SlashCommandBuilder, CommandInteraction } from "discord.js";
 
-import { cons } from "../../index";
-
 export default {
 	command: {
 		data: new SlashCommandBuilder()

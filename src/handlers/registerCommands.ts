@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 
 import { SlashCommandBuilder } from 'discord.js'; 
+
 import { cons } from '..';
 
 // Get command files

@@ -1,7 +1,7 @@
 import { CommandInteraction, StringSelectMenuInteraction, ButtonInteraction } from "discord.js";
 
-import "../data/generalData";
 import { ConsoleInstance } from "better-console-utilities";
+
 import generalData from "../data/generalData";
 
 const thisCons = new ConsoleInstance();

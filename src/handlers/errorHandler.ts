@@ -1,7 +1,9 @@
 import { Client, WebhookClient } from "discord.js";
+
+import { Color, ConsoleInstance, Theme } from "better-console-utilities";
+
 import { logWebhook, cons, errorConsole } from "..";
 import generalData from "../data/generalData";
-import { Color, ConsoleInstance, Theme } from "better-console-utilities";
 
 const thisCons = new ConsoleInstance();
 const rootPath = process.cwd();

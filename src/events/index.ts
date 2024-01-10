@@ -1,6 +1,7 @@
 import { ConsoleInstance } from "better-console-utilities";
-import errorEvent from "../events/error";
+
 import { ErrorObject } from "../handlers/errorHandler";
+import errorEvent from "../events/error";
 
 export const eventConsole = new ConsoleInstance();
 

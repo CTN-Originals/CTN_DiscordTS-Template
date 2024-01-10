@@ -1,7 +1,8 @@
 import { Client, Events } from 'discord.js';
+
 import { eventConsole } from '.';
+import { client, errorConsole } from '..';
 import { ErrorObject } from '../handlers/errorHandler';
-import { errorConsole } from '..';
 
 
 export default {

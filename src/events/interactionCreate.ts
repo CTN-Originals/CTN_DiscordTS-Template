@@ -7,12 +7,11 @@ import {
 	TextChannel,
 } from 'discord.js';
 
-
-// import { cons } from '..';
-import generalData from '../data/generalData';
 import { ConsoleInstance } from 'better-console-utilities';
+
 import { EmitError, eventConsole } from '.';
 import { errorConsole } from '..';
+import generalData from '../data/generalData';
 import { ErrorObject } from '../handlers/errorHandler';
 
 const thisConsole = new ConsoleInstance();
