@@ -1,14 +1,15 @@
 import { Client, WebhookClient } from "discord.js";
-import { logWebhook, cons } from "..";
+import { logWebhook, cons, errorConsole } from "..";
 import generalData from "../data/generalData";
-import { ConsoleInstance } from "better-console-utilities";
+import { Color, ConsoleInstance, Theme } from "better-console-utilities";
 
 const thisCons = new ConsoleInstance();
 const rootPath = process.cwd();
-
+const defaultColor = errorConsole.theme.typeThemes.default ?? errorConsole.theme.default;
 
 interface IErrorObjectOptions {
 	replaceRootPath?: boolean;
+	shortenPaths?: boolean;
 }
 export class ErrorObject {
 	public error: Error;
@@ -20,7 +21,8 @@ export class ErrorObject {
 
 	constructor(error: Error, options?: Partial<IErrorObjectOptions>) {
 		this.options = {
-			replaceRootPath: options?.replaceRootPath ?? true
+			replaceRootPath: options?.replaceRootPath ?? true,
+			shortenPaths: options?.shortenPaths ?? false
 		}
 
 		this.error = error;
@@ -30,29 +32,61 @@ export class ErrorObject {
 		this.formattedError = this.formatError();
 	}
 
-	formatError(): string {
+	formatError(shortenPaths: boolean = false, raw: boolean = false): string {
 		let formattedError = [
 			`Error: ${this.errorType}`,
 			`Message: ${this.errorMessage}`,
-			`Stack:\n${this.formatStack()}`
+			`Stack:\n${this.formatStack(shortenPaths, raw)}`
 		].join('\n');
 
 		return formattedError;
 	}
 
-	formatStack(): string {
+	formatStack(shortenPaths: boolean = false, raw: boolean = false): string {
 		let formattedStack = '';
 		
-		if (this.options.replaceRootPath) {
-			this.errorStack = this.errorStack.replaceAll(rootPath, 'root');
+		if (this.options.replaceRootPath && rootPath) {
+			this.errorStack = this.errorStack.replaceAll(rootPath + '\\', ``);
 		}
-
+		
 		const stackArray = this.errorStack.split('\n');
 		stackArray.shift();
 		stackArray.forEach(stackLine => {
-			formattedStack += `${stackLine}\n`;
-		});
+			//> split: at Object.execute <-> (src\events\ready.ts:14:29)
+			const lineSplit = stackLine.split(' (');
+			let call = lineSplit[0].replace('at ', '');
+			let path = lineSplit[1].replace(')', '');
 
+			if (this.options.shortenPaths || shortenPaths) { //? Shorten the path by cutting out the middle of the path and replacing it with '...'
+				const pathSplit = path.split('\\');
+				const pathLength = pathSplit.length;
+				if (pathLength > 3) {
+					path = `${pathSplit[0]}\\...\\${pathSplit[pathLength - 2]}\\${pathSplit[pathLength - 1]}`;
+				}
+			}
+
+			if (!raw) {
+				const callTheme = new Theme(defaultColor.foreground, defaultColor.background, []);
+				const pathTheme = new Theme('#aaaaaa', null, []);
+	
+				if (path.startsWith('node:')) {
+					callTheme.addStyle('dim');
+					callTheme.removeStyle('bold');
+					pathTheme.addStyle('dim');
+				}
+				else if (path.startsWith('src\\')) {
+					callTheme.foreground = new Color('#00a85a');
+				}
+				else if (path.startsWith('node_modules\\')) {
+					callTheme.foreground = new Color('#cdaa7d');
+				}
+				path = `${pathTheme.getThemedString(`${path}`)}`;
+				call = `${callTheme.getThemedString(`${call}`)}`;
+			}
+
+			formattedStack += `${call} (${path})\n`;
+		});
+		
 		return formattedStack;
 	}
 }

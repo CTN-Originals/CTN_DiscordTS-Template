@@ -49,7 +49,7 @@ export default {
 
 			let content = `There was an error while executing this interaction`
 			if (generalData.development) {
-				content += '\n```ts\n' + errorObject.formattedError + '\n```';
+				content += '\n```ts\n' + errorObject.formatError(true, true) + '\n```';
 			}
 
 			const replyContent = {

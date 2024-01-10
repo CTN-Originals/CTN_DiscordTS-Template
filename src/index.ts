@@ -16,8 +16,8 @@ defaultThemeProfile.overrides.push(...[
 
 export const cons = new ConsoleInstance();
 export const errorConsole = new ConsoleInstance(defaultThemeProfile.clone());
-errorConsole.theme.default = new Theme('#bb0000');
-errorConsole.theme.typeThemes.default = new Theme('#ff0000');
+errorConsole.theme.default = new Theme('#ff0000');
+errorConsole.theme.typeThemes.default = new Theme('#dd0000');
 
 export const client: Client = new Client({
 	intents: [
