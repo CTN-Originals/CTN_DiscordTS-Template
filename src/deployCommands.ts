@@ -141,16 +141,16 @@ export async function doDeployCommands(): Promise<boolean> {
 			if (instruction.deployAll) { //? Deploy all commands
 				await deployCommands(commandData, guildID);
 			}
-			// else if (instruction.deploy.length > 0) { //? Deploy specific commands
-			// 	await deployCommands(commandData.filter((command) => instruction.deploy.includes(command.name)), guildID);
-			// }
+			else if (instruction.deploy.length > 0) { //? Deploy specific commands
+				await deployCommands(commandData.filter((command) => instruction.deploy.includes(command.name)), guildID);
+			}
 			
 			if (instruction.deleteAll) { //? Delete all commands
 				await deleteCommands(true, guildID);
 			}
-			// else if (instruction.deleteCommands.length > 0) { //? Delete specific commands
-			// 	await deleteCommands(instruction.deleteCommands, guildID);
-			// }
+			else if (instruction.deleteCommands.length > 0) { //? Delete specific commands
+				await deleteCommands(instruction.deleteCommands, guildID);
+			}
 		}
 		else {
 			cons.log('Global Instruction');
