@@ -11,7 +11,6 @@ const defaultColor = errorConsole.theme.typeThemes.default ?? errorConsole.theme
 
 interface IErrorObjectOptions {
 	replaceRootPath?: boolean;
-	shortenPaths?: boolean;
 }
 export class ErrorObject {
 	public error: Error;
@@ -24,7 +23,6 @@ export class ErrorObject {
 	constructor(error: Error, options?: Partial<IErrorObjectOptions>) {
 		this.options = {
 			replaceRootPath: options?.replaceRootPath ?? true,
-			shortenPaths: options?.shortenPaths ?? false
 		}
 
 		this.error = error;
@@ -44,7 +42,7 @@ export class ErrorObject {
 		return formattedError;
 	}
 
-	formatStack(shortenPaths: boolean = false, raw: boolean = false): string {
+	formatStack(shortenPaths: boolean = false, raw: boolean = false, inlineSeperator: string = ' ', linePrefix: string = '    '): string {
 		let formattedStack = '';
 		
 		if (this.options.replaceRootPath && rootPath) {
@@ -56,10 +54,10 @@ export class ErrorObject {
 		stackArray.forEach(stackLine => {
 			//> split: at Object.execute <-> (src\events\ready.ts:14:29)
 			const lineSplit = stackLine.split(' (');
-			let call = lineSplit[0].replace('at ', '');
+			let call = lineSplit[0].replace('at ', '').trimStart();
 			let path = lineSplit[1].replace(')', '');
 
-			if (this.options.shortenPaths || shortenPaths) { //? Shorten the path by cutting out the middle of the path and replacing it with '...'
+			if (shortenPaths) { //? Shorten the path by cutting out the middle of the path and replacing it with '...'
 				const pathSplit = path.split('\\');
 				const pathLength = pathSplit.length;
 				if (pathLength > 3) {
@@ -86,7 +84,7 @@ export class ErrorObject {
 				call = `${callTheme.getThemedString(`${call}`)}`;
 			}
 
-			formattedStack += `${call} (${path})\n`;
+			formattedStack += `${linePrefix}${call}${inlineSeperator}(${path})\n`;
 		});
 		
 		return formattedStack;
