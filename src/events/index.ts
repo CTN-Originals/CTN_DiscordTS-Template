@@ -5,6 +5,6 @@ import errorEvent from "../events/error";
 
 export const eventConsole = new ConsoleInstance();
 
-export async function EmitError(error: Error): Promise<ErrorObject> {
-	return errorEvent.execute(error) as Promise<ErrorObject>;
+export async function EmitError(error: Error, ...args: any): Promise<ErrorObject> {
+	return errorEvent.execute(error, ...args) as Promise<ErrorObject>;
 }
