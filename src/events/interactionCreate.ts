@@ -44,7 +44,7 @@ export default {
 
 			let content = `There was an error while executing this interaction`
 			if (generalData.development) {
-				content += '\n```ts\n' + errorObject.formatError(true, true) + '\n```';
+				content += '\n```ts\n' + errorObject.formatError({shortenPaths: true, colorize: false}) + '\n```';
 			}
 
 			const replyContent = {

@@ -16,7 +16,9 @@ export default {
 	async execute(error: Error, interaction?: CommandInteraction): Promise<ErrorObject> {
 		const errorObject = new ErrorObject(error);
 
-		errorConsole.log(errorObject.formattedError);
+		errorConsole.log(errorObject.formatError({
+			colorize: true
+		}));
 
 		if (interaction) this.outputLog(errorObject, interaction);
 
@@ -48,7 +50,14 @@ export default {
 		descriptionLines.push(`**Guild Name**: \`${interaction.guild?.name ?? 'None'}\``)
 		descriptionLines.push(`**Interaction ID**: \`${interaction.id}\``);
 		descriptionLines.push(`**Guild ID**: \`${interaction.guildId ?? 'None'}\``);
-		descriptionLines.push('```ts\n' + errorObject.formatStack(true, true, '\n', '//') + '\n```');
+		descriptionLines.push('```ts\n' + errorObject.formatStack({
+			shortenPaths: true,
+			ignoreInternals: true,
+			excludeDirectories: (errorObject.formattedError.length >= 1000) ? ['node_modules'] : [],
+			colorize: false,
+			inlineSeperator: '\n',
+			linePrefix: '//'
+		}) + '\n```');
 
 		const embed = new EmbedBuilder({
 			title: errorObject.errorType,
