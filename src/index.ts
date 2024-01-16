@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { BaseGuild, Client, Collection, Guild, REST, Routes, ApplicationCommand, WebhookClient } from 'discord.js';
+import { Client, Collection, WebhookClient } from 'discord.js';
 
 import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile } from 'better-console-utilities';
 
@@ -27,11 +27,12 @@ export const client: Client = new Client({
 		'MessageContent'
 	]
 });
-export const logWebhook = new WebhookClient({id: process.env.LOG_WEBHOOK_ID!, token: process.env.LOG_WEBHOOK_TOKEN!})
+export const logWebhook = new WebhookClient({id: process.env.LOG_WEBHOOK_ID!, token: process.env.LOG_WEBHOOK_TOKEN!});
+export const testWebhook = new WebhookClient({id: process.env.TEST_WEBHOOK_ID!, token: process.env.TEST_WEBHOOK_TOKEN!});
 
 async function Awake() {
-	cons.log(process.argv);
 	if (process.argv.includes('--deploy')) {
+		cons.log(process.argv);
 		// const deployScript = require('./deployCommands.ts');
 		await deployScript.doDeployCommands().then(() => {
 			process.exit(0);
