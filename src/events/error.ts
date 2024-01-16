@@ -1,13 +1,12 @@
 import 'dotenv/config';
-import { Client, Events, WebhookClient, CommandInteraction, EmbedBuilder, Colors, ChannelType, ChatInputCommandInteraction, CommandInteractionOption  } from 'discord.js';
+import { Events, CommandInteraction, EmbedBuilder, Colors, ChannelType, ChatInputCommandInteraction, CommandInteractionOption  } from 'discord.js';
 
 import { eventConsole } from '.';
-import { client, errorConsole } from '..';
+import { client, errorConsole, logWebhook } from '..';
 import { getInteractionType, getHoistedOptions } from '../utils/interactionUtils';
 import { ErrorObject } from '../handlers/errorHandler';
 
 
-const logWebhook = new WebhookClient({id: process.env.LOG_WEBHOOK_ID!, token: process.env.LOG_WEBHOOK_TOKEN!})
 
 export default {
 	name: Events.Error,
@@ -88,7 +87,6 @@ export default {
 		});
 
 		//TODO Add user config options to add webhooks for logging these errors
-
 		logWebhook.send({
 			username: `${client.user!.username} Error`,
 			avatarURL: client.user!.displayAvatarURL(),
