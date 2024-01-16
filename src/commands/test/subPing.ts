@@ -1,6 +1,7 @@
-import { EmbedBuilder, SlashCommandBuilder, CommandInteraction } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, CommandInteraction, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
 
 export default {
+	recentReply: null,
 	command: {
 		data: new SlashCommandBuilder()
 			.setName("sub-ping")
@@ -46,16 +47,59 @@ export default {
 				)
 			),
 		async execute(interaction: CommandInteraction) {
-			const nonMember = await interaction.guild?.members.fetch('713586058107414558'); //? cause an error
+			// const nonMember = await interaction.guild?.members.fetch('713586058107414558'); //? cause an error
 
-			await interaction.reply({
+			const select = new StringSelectMenuBuilder({
+				custom_id: 'string-select-test',
+				options: [
+					{
+						label: 'Hello',
+						value: 'hello',
+						description: 'Hello world'
+					},
+					{
+						label: 'World',
+						value: 'world',
+						description: 'Hello world'
+					},
+				]
+			});
+			const row: any = new ActionRowBuilder().addComponents(select);
+
+			module.exports.recentReply = await interaction.reply({
 				content: "Pong!",
 				embeds: [new EmbedBuilder({
 					title: "Pong!",
-				})]
+				})],
+				components: [row],
+				ephemeral: true,
+				fetchReply: true,
 			});
+
+			console.log(module.exports.recentReply);
+
 
 			return true;
 		},
-	}
+	},
+	selectMenus: [
+		{
+			data: new SlashCommandBuilder()
+				.setName("string-select-test"),
+			
+			async execute(interaction: StringSelectMenuInteraction) {
+				
+				await interaction.reply({
+					content: "Pong!",
+					embeds: [new EmbedBuilder({
+						title: "Selected: " + interaction.values[0] ?? "None",
+					})],
+				});
+
+				// const res = await (module.exports.recentReply as Message).
+
+				return true;
+			}
+		}
+	]
 }
