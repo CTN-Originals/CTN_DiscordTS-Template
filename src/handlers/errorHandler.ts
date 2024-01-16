@@ -80,8 +80,9 @@ export class ErrorObject {
 			this.errorStack = this.errorStack.replaceAll(rootPath + '\\', ``);
 		}
 		
+		let messageLineCount = this.errorMessage.split('\n').length;
 		const stackArray = this.errorStack.split('\n');
-		stackArray.shift();
+		stackArray.splice(0, messageLineCount); //? Remove the lines that contain the error message
 		stackArray.forEach(stackLine => {
 			//> split: at Object.execute <-> (src\events\ready.ts:14:29)
 			const lineSplit = stackLine.split(' (');
