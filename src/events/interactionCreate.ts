@@ -6,13 +6,15 @@ import {
 	ComponentType,
 	Events,
 	TextChannel,
+	CommandInteractionOption,
+	ChatInputCommandInteraction,
 } from 'discord.js';
 
 import { ConsoleInstance } from 'better-console-utilities';
 
 import { EmitError, eventConsole } from '.';
 import { errorConsole } from '..';
-import { IInteractionTypeData, getInteractionType } from '../utils/interactionUtils';
+import { IInteractionTypeData, getHoistedOptions, getInteractionType } from '../utils/interactionUtils';
 import generalData from '../data/generalData';
 import { ErrorObject } from '../handlers/errorHandler';
 
@@ -67,38 +69,56 @@ export default {
 
 	outputLog(interaction, response = null) {
 		if (generalData.logging.interaction.enabled) {
-			console.log(interaction);
 			const interactionType: IInteractionTypeData = getInteractionType(interaction)
-			const commandName = (interactionType.commandKey) ? interaction[interactionType.commandKey] : 'undefined'
 
-			var logMessage = [
-				`\n[fg=cyan]${interaction.user.username}[/>] ([fg=aaaaaa]${interaction.user.id}[/>])`,
-				`in [fg=black bg=white]#${interaction.channel.name}[/>]`,
-				`\n[fg=0080ff]${interactionType.display}[/>]: [fg=888888]/[/>][fg=00cc00]${commandName}[/>]`,
-			].join(' ');
-			
+			const logFields = {
+				commandName: '',
+				subCommand: '',
+				subCommandGroup: '',
+				commandOptions: '',
+				commandType: interactionType.display,
+				channelName: interaction.channel.name,
+				channelId: interaction.channelId,
+				userId: interaction.user.id,
+				userName: interaction.user.username,
+				response: (response) ? response : null,
+			};
 
-			const options = interaction.options;
-			if (options) {
-				const input = interaction.options._hoistedOptions;
-				const subcommand = options._subcommand ? ` [fg=blue st=bold,underscore]${options._subcommand}[/>]` : '';
-
-				var commandOptions = '';
-				for (let i = 0; i < input.length; i++) {
-					const option = input[i];
-					if (option.value != null) {
-						commandOptions += `[fg=blue]${option.name}[/>]:[fg=cyan]${option.value}[/>] `
-					}
+			if (interaction[interactionType.commandKey!] !== undefined) {
+				logFields.commandName = interaction[interactionType.commandKey!] as string;
+				
+				if (interaction instanceof ChatInputCommandInteraction) {
+					const subCommandGroup = interaction.options.getSubcommandGroup(false);
+					const subCommand = interaction.options.getSubcommand(false);
+					logFields.subCommandGroup += (subCommandGroup) ? subCommandGroup : '';
+					logFields.subCommand += (subCommand) ? subCommand : '';
 				}
-				logMessage += subcommand + '\n';
-				logMessage = (commandOptions != '') ? logMessage + commandOptions + '\n' : logMessage;
+			}
+			
+			if (interaction.options?.data && interaction.options.data.length > 0) {
+				const hoistedOptions = getHoistedOptions((interaction as CommandInteraction).options.data as CommandInteractionOption[]);
+				logFields.commandOptions = hoistedOptions.map(option => `[fg=dd8000]${option.name}[/>]:${option.value}`).join(' [st=dim,bold]|[/>] ');
 			}
 
-			if (response) {
-				thisConsole.log(logMessage + `Response:`, response)
+			const logMessage: string[] = [];
+			logMessage.push([
+				`[fg=0080ff]${logFields.commandType}[/>]: [fg=00cc00 st=bold]${logFields.commandName}[/>]`,
+				`${(logFields.subCommandGroup) ? `[st=dim]>[/>] [fg=00cc66]${logFields.subCommandGroup}[/>]` : ''}`,
+				`${(logFields.subCommand) ? `[st=dim]>[/>] [fg=00cc66]${logFields.subCommand}[/>]` : ''}`
+			].join(' '));
+			if (logFields.commandOptions) {
+				logMessage.push(`[fg=0080ff]Options[/>]: ${logFields.commandOptions}`);
+			}
+
+			logMessage.push(`[fg=0080ff]user[/>]: [fg=cyan]${logFields.userName}[/>] (${logFields.userId})`);
+			logMessage.push(`[fg=0080ff]channel[/>]: [fg=ad1b70]${logFields.channelName}[/>] (${logFields.channelId})`);
+
+			if (logFields.response) {
+				logMessage.push(`[fg=0080ff]Response[/>]:`);
+				thisConsole.log('\n' + logMessage.join('\n'), response);
 			}
 			else {
-				thisConsole.log(logMessage);
+				thisConsole.log('\n' + logMessage.join('\n') + '\n'); '#ad1b70'
 			}
 		}
 	}
