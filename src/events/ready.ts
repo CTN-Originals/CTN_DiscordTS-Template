@@ -50,7 +50,7 @@ export default {
 			},
 		}
 
-		client.emit(Events.InteractionCreate, fakeInteraction);
+		// client.emit(Events.InteractionCreate, fakeInteraction);
 
 		// const validatedTestEmbed = validateEmbed(testEmbed);
 		// console.log(validatedTestEmbed);

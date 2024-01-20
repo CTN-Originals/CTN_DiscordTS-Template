@@ -23,7 +23,7 @@ class InteractionInstanceList {
 		return this.interactionInstances[interaction.user.id];
 	}
 
-	getInstance(interaction: CommandInteraction | StringSelectMenuInteraction | ButtonInteraction, createIfNull = true): InteractionInstance {
+	getInstance(interaction: CommandInteraction | StringSelectMenuInteraction | ButtonInteraction, createIfNull = false): InteractionInstance {
 		const inst = this.interactionInstances[interaction.user.id];
 		if (!inst && createIfNull) {
 			const inst = this.createInstance(interaction);
@@ -44,7 +44,7 @@ class InteractionInstanceList {
 	deleteInstance(interaction: CommandInteraction | StringSelectMenuInteraction | ButtonInteraction): void {
 		if (!this.interactionInstances[interaction.user.id]) return;
 		if (generalData.logging.interaction.verbose) {
-			thisCons.log(`[fg=red]Deleting[/>] ([fg=cyan]${this.commandName}[/>]) [fg=red]instance[/>]: [fg=green]${interaction.user.id}`, { autoColorize: false });
+			thisCons.log(`[fg=red]Deleting[/>] ([fg=cyan]${this.commandName}[/>]) [fg=orange]instance[/>]: ${interaction.user.id}`);
 		}
 
 		clearTimeout(this.interactionInstances[interaction.user.id].timeout ?? undefined);

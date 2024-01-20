@@ -20,8 +20,8 @@ export default {
 				.setRequired(false)
 			),
 		async execute(interaction: CommandInteraction) {
-			const nonMember = await interaction.guild?.members.fetch('713586058107414558'); //? cause an error
-			console.log(nonMember?.displayName);
+			// const nonMember = await interaction.guild?.members.fetch('713586058107414558'); //? cause an error
+			// console.log(nonMember?.displayName);
 
 			await interaction.reply({
 				content: "Pong!",
@@ -29,7 +29,7 @@ export default {
 					title: "Pong!",
 				})]
 			});
-
+			
 			return true;
 		},
 	}
