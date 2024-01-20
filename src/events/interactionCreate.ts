@@ -29,7 +29,7 @@ export default {
 		const interactionType = getInteractionType(interaction);
 		
 		if (!interactionType.commandKey || interactionType.type == InteractionType.Ping) {
-			thisConsole.log(`No Command Key || PING Interaction Received`);
+			errorConsole.log(`No Command Key || PING Interaction Received`);
 			thisConsole.logDefault(interaction);
 			return;
 		}
@@ -70,7 +70,6 @@ export default {
 	outputLog(interaction, response = null) {
 		if (generalData.logging.interaction.enabled) {
 			const interactionType: IInteractionTypeData = getInteractionType(interaction)
-
 			const logFields = {
 				commandName: '',
 				subCommand: '',
