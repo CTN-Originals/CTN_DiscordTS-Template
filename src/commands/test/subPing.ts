@@ -1,7 +1,10 @@
 import { EmbedBuilder, SlashCommandBuilder, CommandInteraction, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
+import { InteractionInstanceList } from "../../handlers/interactionInstanceHandler";
+import { IInteraction } from "../../handlers/registerCommands";
 
+
+const interactionInstances = new InteractionInstanceList('sub-ping');
 export default {
-	recentReply: null,
 	command: {
 		data: new SlashCommandBuilder()
 			.setName("sub-ping")
@@ -47,8 +50,7 @@ export default {
 				)
 			),
 		async execute(interaction: CommandInteraction) {
-			// const nonMember = await interaction.guild?.members.fetch('713586058107414558'); //? cause an error
-
+			const instance = interactionInstances.createInstance(interaction);
 			const select = new StringSelectMenuBuilder({
 				custom_id: 'string-select-test',
 				options: [
@@ -66,7 +68,7 @@ export default {
 			});
 			const row: any = new ActionRowBuilder().addComponents(select);
 
-			module.exports.recentReply = await interaction.reply({
+			await interaction.reply({
 				content: "Pong!",
 				embeds: [new EmbedBuilder({
 					title: "Pong!",
@@ -75,9 +77,6 @@ export default {
 				ephemeral: true,
 				fetchReply: true,
 			});
-
-			console.log(module.exports.recentReply);
-
 
 			return true;
 		},
@@ -88,7 +87,7 @@ export default {
 				.setName("string-select-test"),
 			
 			async execute(interaction: StringSelectMenuInteraction) {
-				
+				const instance = interactionInstances.getInstance(interaction);
 				await interaction.reply({
 					content: "Pong!",
 					embeds: [new EmbedBuilder({
@@ -96,7 +95,7 @@ export default {
 					})],
 				});
 
-				// const res = await (module.exports.recentReply as Message).
+				console.log(interactionInstances)
 
 				return true;
 			}
