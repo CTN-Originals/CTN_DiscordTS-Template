@@ -3,15 +3,11 @@ import { REST, Routes } from 'discord.js';
 import * as fs from 'node:fs';
 import 'dotenv/config';
 
-import { ConsoleInstance, ThemeOverride, Theme } from 'better-console-utilities';
-const cons = new ConsoleInstance();
-cons.theme.overrides.push(...[
-	new ThemeOverride(/HH Utilities/gi, new Theme(null, null, ['line', 'bold'])),
-	new ThemeOverride(/MT.*Wd7s/gi, new Theme('#000000', '#000000', 'hidden'))
-])
+import { cons } from '.';
+
 
 class DeployInstruction {
-	public guildID: string | undefined;
+	public guildId: string | undefined;
 	public deploy: string[]; //? The commands to deploy
 	public deployAll: boolean; //? Whether to deploy all commands or not
 	public deployAllGlobal: boolean; //? Whether to deploy all commands or not
@@ -23,7 +19,7 @@ class DeployInstruction {
 	public deleteGlobalCommands: string[]; //? The commands to delete globally
 
 	constructor(data: Partial<DeployInstruction>) {
-		this.guildID = data.guildID;
+		this.guildId = data.guildId;
 		this.deploy = data.deploy || [];
 		this.deployAll = data.deployAll || false;
 		this.deployAllGlobal = data.deployAllGlobal || false;
@@ -63,15 +59,10 @@ function getCommandFiles(dir: string) {
 function registerCommand(dir: string, file: string) {
 	const commandFile = require(`./${dir}/${file}`).default;
 	let command;
-	for (const key in commandFile) {
-		if (key == 'command') {
-			command = commandFile[key];
-			break;
-		}
+	if ('command' in commandFile) {
+		command = commandFile['command'];
 	}
-	if (!command) {
-		command = commandFile;
-	}
+	else command = commandFile;
 	// cons.log(command);
 	const rawCommandData = command.data.toJSON();
 	
@@ -91,8 +82,8 @@ export async function doDeployCommands(): Promise<boolean> {
 	getCommandFiles('commands');
 	// console.log(guildId);
 	
-	//> deploy commands: --guildID=1234567890 deploy=ping,help --guild=0987654321 deployAll=true
-	//> deleting all commands: --guild12345 --delete=0987654321,43723374678 --guild=1234567890 deleteAll=true
+	//> deploy commands: --guildId=1234567890 deploy=ping,help --guild=0987654321 deployAll=true
+	//> deleting all commands: --guild=12345 delete=0987654321,43723374678 --guild=1234567890 deleteAll=true
 	//> deleting all Global commands: --deleteAllGlobal=true
 	
 	const deployInstructions: DeployInstruction[] = [];
@@ -106,7 +97,9 @@ export async function doDeployCommands(): Promise<boolean> {
 			const key = partSplit[0];
 			const value = partSplit[1];
 			switch (key) { //TODO make this dynamic (get keys from the class)
-				case 'guildID': deployInstruction.guildID = value; break;
+				case 'guild':
+				case 'guildID':
+				case 'guildId': deployInstruction.guildId = value; break;
 				case 'deploy': deployInstruction.deploy = value.split(','); break;
 				case 'deployAll': deployInstruction.deployAll = (value == 'true'); break;
 				case 'deployAllGlobal': deployInstruction.deployAllGlobal = (value == 'true'); break;
@@ -134,9 +127,9 @@ export async function doDeployCommands(): Promise<boolean> {
 	}
 	
 	for (const instruction of deployInstructions) {
-		if (instruction.guildID) {
-			cons.log('\nInstruction for: ' + instruction.guildID);
-			const guildID = instruction.guildID;
+		if (instruction.guildId) {
+			cons.log('\nInstruction for: ' + instruction.guildId);
+			const guildID = instruction.guildId;
 	
 			if (instruction.deployAll) { //? Deploy all commands
 				await deployCommands(commandData, guildID);
@@ -221,25 +214,3 @@ async function deleteCommands(commands: string[]|boolean, guildID?: string) {
 		}
 	}
 }
-
-
-// if (guildID) {
-// 	rest.put(Routes.applicationGuildCommands(clientID, guildID), {
-// 		body: commands,
-// 	}).then(() =>
-// 		cons.log(`Successfully registered application commands for Guild: ${guildID}.`)
-// 	).catch((error) => console.log(error));
-// }
-// else {
-// 	cons.log('No Guild ID provided, registering commands Globally is not supported, yet.');
-// 	//! This registers the command twice (once globally and once for the guild)
-// 	//TODO figure out how this actually works
-// 	// rest.put(Routes.applicationCommands(clientID), {
-// 	// 	body: commands,
-// 	// }).then(() =>
-// 	// 	cons.log('Successfully registered application commands Globally.')
-// 	// ).catch((error) => console.log(error));
-// }
-
-
-// setInterval(() => {}, 1 << 30); //? Keep the process running

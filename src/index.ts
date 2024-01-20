@@ -9,10 +9,7 @@ import { getCommandFiles } from './handlers/registerCommands';
 import * as deployScript from './deployCommands';
 
 //? Set the default theme profile to my preferences
-defaultThemeProfile.overrides.push(...[
-	new ThemeOverride(/HH Utilities/gi, new Theme(null, null, ['line', 'bold'])),
-	new ThemeOverride(/MT.*Wd7s/gi, new Theme('#000000', '#000000', 'hidden'))
-]);
+defaultThemeProfile.overrides.push(...[]);
 
 export const cons = new ConsoleInstance();
 export const errorConsole = new ConsoleInstance(defaultThemeProfile.clone());

@@ -1,9 +1,19 @@
 {
-	"name": "heatseekerheaven-utilities",
-	"author": "CTN-Originals",
+	"name": "ctn_discordts-template",
+	"author": "CTNOriginals",
 	"version": "0.0.1",
-	"description": "Tools and Utilities for the Heatseeker Heaven Community",
-	"keywords": [],
+	"description": "A Template for a discord bot using discordjs in typescript.",
+	"keywords": [
+		"discord",
+		"discord.js",
+		"discordts",
+		"typescript",
+		"ctn",
+		"ctnoriginals",
+		"discord.js-template",
+		"discordts-template",
+		"typescript-template"
+	],
 	"license": "BSD-3-Clause",
 	"main": "dist/index.js",
 	"scripts": {
