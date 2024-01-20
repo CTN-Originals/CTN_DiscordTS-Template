@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 
 import { SlashCommandBuilder } from 'discord.js'; 
 
-import { cons } from '..';
+import { cons, errorConsole } from '..';
 
 // Get command files
 export function getCommandFiles(client: any, dir: string) {
@@ -20,46 +20,56 @@ export function getCommandFiles(client: any, dir: string) {
 	}
 }
 
-// Register the command files to the client
+export interface IInteraction {
+	command: { data: SlashCommandBuilder, execute: (...args: any) => {} },
+	selectMenus?: { data: SlashCommandBuilder, execute: (...args: any) => {} }[],
+	buttons?: { data: SlashCommandBuilder, execute: (...args: any) => {} }[],
+};
+//? Register the command files to the client
 function registerCommand(client: any, dir: string, file: string) {
 	const commandFile = require(`../${dir}/${file}`).default;
 
-	interface IInteraction {
-		command: { data: SlashCommandBuilder },
-		selectMenus: { data: SlashCommandBuilder }[],
-		buttons: { data: SlashCommandBuilder }[],
-	};
 	const interaction: IInteraction = {
-		command: { data: new SlashCommandBuilder() },
+		command: { data: new SlashCommandBuilder(), execute: (...args: any): any => {}},
 		selectMenus: [],
 		buttons: [],
 	};
-	for (const key in commandFile) {
-		if (key == 'command') {
-			interaction.command = commandFile[key];
-		}
-		else if (key == 'selectMenus') {
-			interaction.selectMenus = commandFile[key];
-		}
-		else if (key == 'buttons') {
-			interaction.buttons = commandFile[key];
+	
+	if ("command" in commandFile) {
+		interaction.command = commandFile.command;
+		for (const interactionType in interaction) {
+			if (interactionType == "command") { continue; }
+			if (interactionType in commandFile) {
+				interaction[interactionType] = commandFile[interactionType];
+			}
 		}
 	}
-	if (!interaction.command) { interaction.command = commandFile; }
+	else {
+		interaction.command = commandFile;
+	}
 
-	// Set a new item in the Collection
-	// With the key as the command name and the value as the exported module
+	if (!interaction.command.data) {
+		errorConsole.log(`No command data found for [fg=orange]${file}[/>]`);
+		return;
+	}
+	if (!interaction.command.execute) {
+		errorConsole.log(`No command execute function found for [fg=orange]${file}[/>]`);
+		return;
+	}
+
+	//? Set a new item in the Collection
+	//? With the key as the command name and the value as the exported module
 	client.commands.set(interaction.command.data.name, interaction.command);
 	cons.log(`Registering [fg=0080ff]Command[/>]: [fg=green]${interaction.command.data.name}[/>] - [fg=cyan]${file}[/>]`);
 
-	// Register the select menus
-	for (const selectMenu of interaction.selectMenus) {
-		client.commands.set(selectMenu.data.name, selectMenu);
-		cons.log(`Registering [fg=0080ff]Select Menu[/>]: [fg=green]${selectMenu.data.name}[/>] - [fg=cyan]${file}[/>]`);
-	}
-	// Register the buttons
-	for (const button of interaction.buttons) {
-		client.commands.set(button.data.name, button);
-		cons.log(`Registering [fg=0080ff]Button[/>]: [fg=green]${button.data.name}[/>] - [fg=cyan]${file}[/>]`);
+	//? Check if there are any components to register
+	for (const interactionType in interaction) {
+		if (interactionType == "command") { continue; }
+		if (interaction[interactionType] && interaction[interactionType].length > 0) {
+			for (const component of interaction[interactionType]) {
+				client.commands.set(component.data.name, component);
+				cons.log(`Registering [fg=0080ff]${interactionType}[/>]: [fg=green]${component.data.name}[/>] - [fg=cyan]${file}[/>]`);
+			}
+		}
 	}
 }
