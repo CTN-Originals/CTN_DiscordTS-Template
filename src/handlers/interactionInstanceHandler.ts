@@ -2,7 +2,7 @@ import { CommandInteraction, StringSelectMenuInteraction, ButtonInteraction } fr
 
 import { ConsoleInstance } from "better-console-utilities";
 
-import generalData from "../data/generalData";
+import generalData from "../data";
 
 const thisCons = new ConsoleInstance();
 

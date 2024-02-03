@@ -3,8 +3,8 @@ import { Client, Collection, WebhookClient } from 'discord.js';
 
 import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile } from 'better-console-utilities';
 
-import { getEventFiles } from './handlers/registerEvents';
-import { getCommandFiles } from './handlers/registerCommands';
+import { getEventFiles } from './startup/registerEvents';
+import { getCommandFiles } from './startup/registerCommands';
 
 import * as deployScript from './deployCommands';
 
@@ -43,8 +43,17 @@ async function Awake() {
 async function Start() {
 	client.commands = new Collection();
 	
+	const getEventTime = [performance.now()];
 	getEventFiles(client, 'events');
+	getEventTime[1] = performance.now();
+
+	const getCommandTime = [performance.now()];
 	getCommandFiles(client, 'commands');
+	getCommandTime[1] = performance.now();
+
+	cons.log(`Registered ${client.eventNames().length} events in ${getEventTime[1] - getEventTime[0]}ms`);
+	cons.log(`Registered ${client.commands.size} commands in ${getCommandTime[1] - getCommandTime[0]}ms`);
+	
 	await client.login(process.env.TOKEN);
 }
 

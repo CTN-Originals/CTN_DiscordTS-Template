@@ -8,7 +8,7 @@ import { cons } from '../index'
 export function getEventFiles(client: Client, dir: string) {
 	const eventfiles = fs.readdirSync(__dirname + '/../' + dir);
 	for (const file of eventfiles) {
-		if (file.startsWith('_') || file == 'index.ts') { continue; } //* Skip files that start with '_' (private (non-event) files
+		if (file.startsWith('_') || ['index.ts', 'index.js'].includes(file)) { continue; } //* Skip files that start with '_' (private (non-event) files
 		if (file.endsWith('.ts') || file.endsWith('.js')) {
 			registerEvent(client, dir, file);
 		}

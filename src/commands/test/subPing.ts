@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder, CommandInteraction, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
 import { InteractionInstanceList } from "../../handlers/interactionInstanceHandler";
-import { IInteraction } from "../../handlers/registerCommands";
+import { IInteraction } from "../../startup/registerCommands";
 
 
 const interactionInstances = new InteractionInstanceList('sub-ping');

@@ -15,7 +15,7 @@ import { ConsoleInstance } from 'better-console-utilities';
 import { EmitError, eventConsole } from '.';
 import { errorConsole } from '..';
 import { IInteractionTypeData, getHoistedOptions, getInteractionType } from '../utils/interactionUtils';
-import generalData from '../data/generalData';
+import generalData from '../data';
 import { ErrorObject } from '../handlers/errorHandler';
 
 const thisConsole = new ConsoleInstance();
