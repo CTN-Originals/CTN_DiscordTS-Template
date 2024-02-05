@@ -39,7 +39,7 @@ export default {
 			descriptionLines.push(`**Command**: ${commandName}`)
 		}
 		
-		if (interaction.options.data.length > 0) {
+		if (interaction.options && interaction.options.data.length > 0) {
 			const hoistedOptions = getHoistedOptions((interaction as CommandInteraction).options.data as CommandInteractionOption[]);
 			descriptionLines.push(`**Options**: ${
 				hoistedOptions.map(option => `${option.name}:\`${option.value}\``).join(', ')
