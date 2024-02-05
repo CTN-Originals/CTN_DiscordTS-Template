@@ -86,8 +86,15 @@ export class ErrorObject {
 		stackArray.forEach(stackLine => {
 			//> split: at Object.execute <-> (src\events\ready.ts:14:29)
 			const lineSplit = stackLine.split(' (');
-			let call = lineSplit[0].replace('at ', '').trimStart();
-			let path = lineSplit[1].replace(')', '');
+			let call = '', path = '';
+			if (lineSplit.length == 2) {
+				call = lineSplit[0].replace('at ', '').trimStart();
+				path = lineSplit[1].replace(')', '');
+			}
+			else { //? stackLine likely didnt include the call
+				call = 'at <unknown>';
+				path = lineSplit[0].replace('at ', '').trimStart();
+			}
 
 			if (options.shortenPaths) { //? Shorten the path by cutting out the middle of the path and replacing it with '...'
 				const pathSplit = path.split('\\');
