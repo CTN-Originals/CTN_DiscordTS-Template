@@ -24,6 +24,7 @@ const defaultUserId = process.env.DEV_TEST_USER_ID as string;
 export interface ISimBaseInteraction {
 	client: Client,
 	user: User,
+	type?: number,
 	guild?: BaseGuild|null,
 	member?: GuildMember|APIInteractionGuildMember|null
 	channel?: BaseChannel|null,
@@ -45,6 +46,7 @@ export async function init() {
 	defaultInteractionArgs = {
 		client: defaultClient as Client,
 		user: defaultUser as User,
+		type: 2,
 		guild: defaultGuild as Guild,
 		member: defaultMember as GuildMember|APIInteractionGuildMember,
 		channel: defaultChannel as BaseChannel,
@@ -53,9 +55,6 @@ export async function init() {
 	// console.log('defaultInteractionArgs');
 	cons.logDefault('Simulator ready', defaultInteractionArgs);
 }
-
-
-
 
 export class SimBaseInteraction extends BaseInteraction {
 	constructor(client: Client, user: User);
@@ -74,11 +73,11 @@ export class SimBaseInteraction extends BaseInteraction {
 
 		const snowflake = SnowflakeUtil.generate()
 		const data: RawInteractionData = {
-			id: snowflake.toString() as RawInteractionData['id'],
-			application_id: client.application?.id as RawInteractionData['application_id'],
-			user: args.user as RawInteractionData['user'],
-			type: 2 as RawInteractionData['type'],
-			token: process.env.TOKEN as RawInteractionData['token'],
+			id: snowflake.toString() as RawInteractionData['id'], //? This is a unique id for the interaction
+			application_id: client.application?.id as RawInteractionData['application_id'], //? This is the bot's application id
+			user: args.user as RawInteractionData['user'], //? This is the user that triggered the interaction
+			type: args.type as RawInteractionData['type'], //? 2 is a command interaction type
+			token: process.env.TOKEN as RawInteractionData['token'], //? This is a token for the interaction
 		} as RawInteractionData;
 
 		if (args.guild) {
@@ -91,7 +90,7 @@ export class SimBaseInteraction extends BaseInteraction {
 				premium_since: null,
 				permissions: '0',
 				pending: args.member.pending,
-				// nick: (args.member instanceof GuildMember) ? args.member.nickname : args.member.nick, //?? this is stupid... why is it either nickname or nick?
+				nick: (args.member instanceof GuildMember) ? args.member.nickname : args.member.nick, //?? this is stupid... why is it either nickname or nick?
 				mute: false,
 				joined_at: new Date(SnowflakeUtil.timestampFrom(args.user?.id!)).toISOString() as APIGuildMember['joined_at'],
 				is_pending: false,
