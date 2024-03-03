@@ -49,6 +49,7 @@ export default {
 		descriptionLines.push(`**Type**: \`${interactionType.display}\``);
 		descriptionLines.push(`**Guild Name**: \`${interaction.guild?.name ?? 'None'}\``)
 		descriptionLines.push(`**Interaction ID**: \`${interaction.id}\``);
+		descriptionLines.push(`**Command ID**: \`${interaction.command?.id}\``);
 		descriptionLines.push(`**Guild ID**: \`${interaction.guildId ?? 'None'}\``);
 		descriptionLines.push('```ts\n' + errorObject.formatStack({
 			shortenPaths: true,

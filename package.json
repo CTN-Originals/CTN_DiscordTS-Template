@@ -26,7 +26,8 @@
 		"better-console-utilities": "^1.1.0",
 		"discord.js": "^14.14.1",
 		"dotenv": "^16.3.1",
-		"snowflake-generator": "^1.0.2"
+		"snowflake-generator": "^1.0.2",
+		"undici": "^6.6.2"
 	},
 	"devDependencies": {
 		"@types/node": "^20.10.6",

@@ -5,6 +5,7 @@ import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile } from 'bett
 
 import { getEventFiles } from './startup/registerEvents';
 import { getCommandFiles } from './startup/registerCommands';
+import generalData from './data';
 
 import * as deployScript from './deployCommands';
 
@@ -12,6 +13,8 @@ import * as deployScript from './deployCommands';
 defaultThemeProfile.overrides.push(...[]);
 
 export const cons = new ConsoleInstance();
+cons.filterKeys = (generalData.logging.streamSafe) ? ['token'] : [];
+
 export const errorConsole = new ConsoleInstance(defaultThemeProfile.clone());
 errorConsole.theme.default = new Theme('#ff0000');
 errorConsole.theme.typeThemes.default = new Theme('#dd0000');

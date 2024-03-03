@@ -1,4 +1,4 @@
-import { EmbedBuilder, SlashCommandBuilder, CommandInteraction } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, CommandInteraction, MessageFlags } from "discord.js";
 
 export default {
 	command: {
@@ -24,11 +24,30 @@ export default {
 			// console.log(nonMember?.displayName);
 
 			await interaction.reply({
-				content: "Pong!",
+				content: "Pong! <@479936093047750659>",
 				embeds: [new EmbedBuilder({
 					title: "Pong!",
-				})]
+					description: "ping pong!",
+				})],
+				ephemeral: true
 			});
+
+			// await interaction.reply('<@568245462293938196> is the real npc here...')
+
+			await interaction.followUp({
+				content: "poing",
+			});
+
+			await interaction.editReply({
+				content: "uped ping down pong",
+				embeds: [],
+				// embeds: [new EmbedBuilder({
+				// 	title: "Pong!",
+				// 	description: "uped ping down pong!",
+				// })],
+			});
+
+			// console.log(interaction.token);
 			
 			return true;
 		},

@@ -38,7 +38,7 @@ export default {
 
 	async executeInteraction(interaction: BaseInteraction, nameKey: string) {
 		let response: any = null;
-		try { 
+		try {
 			const command = interaction.client.commands.get(interaction[nameKey]);
 			response = await command.execute(interaction);
 		} catch (err) {

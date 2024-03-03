@@ -1,29 +1,47 @@
 import 'dotenv/config';
-import { APIUser, Client, CommandInteraction, EmbedBuilder, Events, Guild, Message, TextChannel, User } from 'discord.js';
+import { APIUser, Client, Collection, CommandInteraction, EmbedBuilder, Events, Guild, GuildMember, Message, REST, Routes, TextChannel, User } from 'discord.js';
 
 import { ConsoleInstance } from 'better-console-utilities';
 import { testEmbed, validateEmbed } from '../utils/embedUtils';
 import { cons, testWebhook } from '..';
-import { ISimBaseInteraction, SimBaseInteraction, init as simInit } from '../handlers/interactionSimulator';
-import { customEvents } from '.';
+import { ISimBaseInteraction, SimBaseInteraction, SimCommandInteraction, /*SimCommandInteraction,*/ defaultBaseInteractionArgs, init as simInit } from '../handlers/interactionSimulator';
+import { EmitError, customEvents } from '.';
+import generalData from '../data';
+import { devEnvironment } from '../data';
+
+import { request } from 'undici';
 
 // import ErrorHandler from '../handlers/errorHandler';
 
-const thisCons = new ConsoleInstance();
+const thisConsole = new ConsoleInstance();
 
 export default {
 	name: Events.ClientReady,
 	once: true,
 
 	async execute(client: Client, ...args: any[]) {
-		thisCons.log(`Logged in as ${client.user?.tag}!\n`);
-		thisCons.logDefault(client);
-
+		thisConsole.log(`Logged in as ${client.user?.tag}!\n`);
+		// thisConsole.logDefault(client);
+		// thisConsole.log(client);
 		
-		const t0 = performance.now();
+		// const t0 = performance.now();
 		const devGuildMembers = await client.guilds.cache.get(process.env.DEV_GUILD_ID!)?.members.fetch();
-		const t1 = performance.now();
-		thisCons.log(`Fetched ${devGuildMembers?.size} guild members in ${t1 - t0}ms`);
+		// const t1 = performance.now();
+		// thisConsole.log(`Fetched ${devGuildMembers?.size} guild members in ${t1 - t0}ms`);
+
+		if (generalData.development) {
+			devEnvironment.client = client;
+			devEnvironment.memberList = devGuildMembers as Collection<string, GuildMember>;
+
+			devEnvironment.guild = client.guilds.cache.get(process.env.DEV_GUILD_ID!);
+			devEnvironment.user = await client.users.fetch(process.env.DEV_TEST_USER_ID!);
+			devEnvironment.member = devEnvironment.memberList.get(process.env.DEV_TEST_USER_ID!);
+			devEnvironment.channel = devEnvironment.guild?.channels.cache.get(process.env.DEV_TEST_CHANNEL_ID!);
+
+			devEnvironment.restCommands = await client.rest.get(Routes.applicationGuildCommands(process.env.CLIENT_ID!, process.env.DEV_GUILD_ID!)) as {id: string, name: string, type: number, guild_id: string}[];
+
+			thisConsole.logDefault('Dev Environment:', devEnvironment);
+		}
 
 		// await new Promise(resolve => setTimeout(resolve, 1000));
 		this.runTests(client);
@@ -32,6 +50,31 @@ export default {
 	async runTests(client: Client) {
 		const guild: Guild|undefined = client.guilds.cache.get(process.env.DEV_GUILD_ID!);
 		
+		/* //? discord token generation test
+			try {
+				const genToken = await request('https://discord.com/api/oauth2/token', {
+					method: 'POST',
+					body: new URLSearchParams({
+						client_id: process.env.CLIENT_ID!,
+						client_secret: process.env.TOKEN!,
+						grant_type: 'authorization_code',
+						scope: 'bot',
+						redirect_uri: 'http://localhost:5000',
+						code: process.env.TOKEN!,
+					}).toString(),
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+				});
+
+				const genTokenData = await genToken.body.json();
+				thisConsole.log(genTokenData);
+			} 
+			catch (error) {
+				EmitError(error as Error);
+			}
+		*/
+
 		/* //? A test for token filtering
 		const testObj = {id: '123', token: 'a1b2c3d4e5f6g7h8i9j10k11l12m13n14o15p16q17r18s19t20u21v22w23x24y25z', 
 			client: {
@@ -50,15 +93,26 @@ export default {
 		cons.logDefault(testObj);
 		*/
 
-		await simInit().then(() => {
-			const simInteraction = new SimBaseInteraction();
-			// cons.logDefault(simInteraction);
-			console.log(simInteraction);
-			console.log(simInteraction.member!['_roles']);
+		// const rest = new REST({ version: '9' }).setToken(process.env.TOKEN!);
+		// var t0 = performance.now();
+		
+		// var t1 = performance.now();
+		// thisConsole.log(`execution time: ${t1 - t0} ms`);
+
+		// await simInit().then(() => {});
+
+		const simBaseInteraction = new SimBaseInteraction();
+		const simInteraction = new SimCommandInteraction({
+			commandName: 'sub-ping',
+			...defaultBaseInteractionArgs,
 		});
 
+		// cons.logDefault(simBaseInteraction);
+		// cons.logDefault(simInteraction);
+		cons.logDefault('Command Simulation:', simInteraction.simulate());
+
 		/* //? This is using a fake interaction object to test slash
-			? This is using a fake interaction object to test commands
+			//? This is using a fake interaction object to test commands
 			const fakeInteraction: any = {
 				client: client,
 				guild: guild as Guild,
@@ -86,7 +140,7 @@ export default {
 					return channel.send(replyContent);
 				},
 			}
-			? This is testing the error handler
+			//? This is testing the error handler
 			client.emit(Events.InteractionCreate, fakeInteraction);
 		*/
 
