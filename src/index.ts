@@ -12,10 +12,8 @@ import * as deployScript from './deployCommands';
 //? Set the default theme profile to my preferences
 defaultThemeProfile.overrides.push(...[]);
 defaultFilterKeys.push(...((generalData.logging.streamSafe) ? ['token'] : []));
-console.log(defaultFilterKeys);
 
 export const cons = new ConsoleInstance();
-console.log(cons.filterKeys)
 export const errorConsole = new ConsoleInstance(defaultThemeProfile.clone());
 errorConsole.theme.default = new Theme('#ff0000');
 errorConsole.theme.typeThemes.default = new Theme('#dd0000');
