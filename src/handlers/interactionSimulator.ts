@@ -97,7 +97,6 @@ export class SimBaseInteraction extends BaseInteraction {
 		}
 
 		const client = args.client as Client<true> || devEnvironment.client;
-
 		const snowflake = SnowflakeUtil.generate()
 		const data: RawInteractionData = {
 			id: snowflake.toString() as RawInteractionData['id'], //? This is a unique id for the interaction
@@ -150,13 +149,13 @@ export class SimBaseInteraction extends BaseInteraction {
 //?? maybe try again later to impliment it like this: https://stackoverflow.com/questions/26948400/typescript-how-to-extend-two-classes
 export class SimCommandInteraction extends SimBaseInteraction {
 	public command: TODO;
-	public commandName: TODO;
-	public commandId: TODO;
-	public commandType: TODO;
-	public commandGuildId: TODO;
+	public commandName: string;
+	public commandId?: Snowflake;
+	public commandType?: number;
+	public commandGuildId?: Snowflake;
 	public deferred: boolean;
 	public replied: boolean;
-	public ephemeral: boolean|undefined;
+	public ephemeral?: boolean;
 	public options: TODO;
 	public webhook: TODO;
 
@@ -179,9 +178,16 @@ export class SimCommandInteraction extends SimBaseInteraction {
 		if (super.inGuild()) {
 			this.getGuildCommandData(this.commandName);
 		}
+
+		cons.logDefault(this);
 	}
 
-	async deferReply(ephermal?: boolean) {
+	//#region Emulated methods (as close to the real deal as possible)
+	/** 
+	 * @param {boolean} ephermal Whether the reply is ephemeral
+	 * @returns {Promise<true | ErrorObject>}
+	 */
+	async deferReply(ephermal?: boolean): Promise<true | ErrorObject> {
 		if (this.deferred || this.replied) {
 			return await EmitError(new Error('Interaction has already been deferred or replied'), this);
 		}
@@ -205,6 +211,10 @@ export class SimCommandInteraction extends SimBaseInteraction {
 		return (content.options?.fetchReply) ? this.fetchReply() ?? false : this.replied;
 	}
 
+	/**
+	 * @param {string | ISimInteractionReplyContent} replyContent The content to reply with
+	 * @returns {Promise<Message|boolean|ErrorObject>} True if the message was sent or retruns the message if options.fetchReply is true
+	*/
 	async followUp(replyContent: string|ISimInteractionReplyContent): Promise<Message|boolean|ErrorObject> {
 		const content = await this.validateReply((this.deferred || this.replied), replyContent);
 		if (content instanceof ErrorObject) return content;
@@ -221,6 +231,10 @@ export class SimCommandInteraction extends SimBaseInteraction {
 		return (content.options?.fetchReply) ? this.fetchReply(message.id) ?? false : !!(message);
 	}
 
+	/**
+	 * @param {string | ISimInteractionReplyContent} replyContent The content to reply with
+	 * @returns {Promise<Message|boolean|ErrorObject>} True if the message was sent or retruns the message if options.fetchReply is true
+	*/
 	async editReply(replyContent: string|ISimInteractionReplyContent): Promise<Message|boolean|ErrorObject> {
 		const content = await this.validateReply((this.replied), replyContent);
 		if (content instanceof ErrorObject) return content;
@@ -232,10 +246,19 @@ export class SimCommandInteraction extends SimBaseInteraction {
 		return (content.options?.fetchReply) ? this.fetchReply() ?? false : !!(message);
 	}
 
+	/**
+	 * @param {string | Snowflake} message The message to fetch ('@original' for the original reply message)
+	 * @returns {Message|undefined} The message that was fetched 
+	*/
 	fetchReply(message: string|Snowflake = '@original'): Message|undefined {
 		if (message === '@original' && this._replyMessage !== undefined) return this._replyMessage;
 		return this._followUpMessages.find(m => m.id === message);
 	}
+	//#endregion
+
+	//#region public methods
+	
+	//#endregion
 
 	//#region private methods
 	private async getGuildCommandData(name: string) {
