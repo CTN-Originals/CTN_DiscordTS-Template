@@ -4,7 +4,7 @@ import { ConsoleInstance } from "better-console-utilities";
 
 import generalData from "../data";
 
-const thisCons = new ConsoleInstance();
+const thisConsole = new ConsoleInstance();
 
 class InteractionInstanceList {
 	public commandName: string;
@@ -25,26 +25,27 @@ class InteractionInstanceList {
 
 	getInstance(interaction: CommandInteraction | StringSelectMenuInteraction | ButtonInteraction, createIfNull = false): InteractionInstance {
 		const inst = this.interactionInstances[interaction.user.id];
-		if (!inst && createIfNull) {
-			const inst = this.createInstance(interaction);
-			inst.timeout = setTimeout(() => { this.deleteInstance(interaction); }, this.timeoutTime);
-			return inst;
-		} else {
-			clearTimeout(inst.timeout!)
+		if (inst) {
+			if (inst.timeout) clearTimeout(inst.timeout);
 			inst.timeout = setTimeout(() => { this.deleteInstance(interaction); }, this.timeoutTime);
 
 			if (interaction instanceof CommandInteraction) inst.interactions.command = interaction;
 			else if (interaction instanceof StringSelectMenuInteraction) inst.interactions.select = interaction;
 			else if (interaction instanceof ButtonInteraction) inst.interactions.button = interaction;
 		}
-
+		else if (createIfNull) {
+			const inst = this.createInstance(interaction);
+			inst.timeout = setTimeout(() => { this.deleteInstance(interaction); }, this.timeoutTime);
+			return inst;
+		}
+		
 		return inst;
 	}
 
 	deleteInstance(interaction: CommandInteraction | StringSelectMenuInteraction | ButtonInteraction): void {
 		if (!this.interactionInstances[interaction.user.id]) return;
 		if (generalData.logging.interaction.verbose) {
-			thisCons.log(`[fg=red]Deleting[/>] ([fg=cyan]${this.commandName}[/>]) [fg=orange]instance[/>]: ${interaction.user.id}`);
+			thisConsole.log(`[fg=red]Deleting[/>] ([fg=cyan]${this.commandName}[/>]) [fg=orange]instance[/>]: ${interaction.user.id}`);
 		}
 
 		clearTimeout(this.interactionInstances[interaction.user.id].timeout ?? undefined);
