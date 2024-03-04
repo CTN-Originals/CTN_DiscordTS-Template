@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Client, Collection, WebhookClient } from 'discord.js';
 
-import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile } from 'better-console-utilities';
+import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile, defaultFilterKeys } from 'better-console-utilities';
 
 import { getEventFiles } from './startup/registerEvents';
 import { getCommandFiles } from './startup/registerCommands';
@@ -11,10 +11,11 @@ import * as deployScript from './deployCommands';
 
 //? Set the default theme profile to my preferences
 defaultThemeProfile.overrides.push(...[]);
+defaultFilterKeys.push(...((generalData.logging.streamSafe) ? ['token'] : []));
+console.log(defaultFilterKeys);
 
 export const cons = new ConsoleInstance();
-cons.filterKeys = (generalData.logging.streamSafe) ? ['token'] : [];
-
+console.log(cons.filterKeys)
 export const errorConsole = new ConsoleInstance(defaultThemeProfile.clone());
 errorConsole.theme.default = new Theme('#ff0000');
 errorConsole.theme.typeThemes.default = new Theme('#dd0000');
