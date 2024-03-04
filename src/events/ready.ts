@@ -2,14 +2,14 @@ import 'dotenv/config';
 import { APIUser, Client, Collection, CommandInteraction, EmbedBuilder, Events, Guild, GuildMember, Message, REST, Routes, TextChannel, User } from 'discord.js';
 
 import { ConsoleInstance } from 'better-console-utilities';
-import { testEmbed, validateEmbed } from '../utils/embedUtils';
-import { cons, testWebhook } from '..';
-import { ISimBaseInteraction, SimBaseInteraction, SimCommandInteraction, /*SimCommandInteraction,*/ defaultBaseInteractionArgs, init as simInit } from '../handlers/interactionSimulator';
-import { EmitError, customEvents } from '.';
+
 import generalData from '../data';
 import { devEnvironment } from '../data';
-
-import { request } from 'undici';
+import { EmitError, customEvents } from '.';
+import { cons, testWebhook } from '..';
+import { testEmbed, validateEmbed } from '../utils/embedUtils';
+import { SimBaseInteraction, defaultBaseInteractionArgs } from '../simulators';
+import { SimCommandInteraction } from '../simulators/commandInteraction';
 
 // import ErrorHandler from '../handlers/errorHandler';
 
@@ -98,8 +98,6 @@ export default {
 		
 		// var t1 = performance.now();
 		// thisConsole.log(`execution time: ${t1 - t0} ms`);
-
-		// await simInit().then(() => {});
 
 		const simBaseInteraction = new SimBaseInteraction();
 		const simInteraction = new SimCommandInteraction({
