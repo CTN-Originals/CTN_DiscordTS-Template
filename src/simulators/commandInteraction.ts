@@ -59,6 +59,15 @@ export class SimCommandInteraction extends SimBaseInteraction {
 	}
 
 	//#region Emulated methods (as close to the real deal as possible)
+	/**
+	 * @param {string | Snowflake} message The message to fetch ('@original' for the original reply message)
+	 * @returns {Message|undefined} The message that was fetched 
+	*/
+	fetchReply(message: string|Snowflake = '@original'): Message|undefined {
+		if (message === '@original' && this._replyMessage !== undefined) return this._replyMessage;
+		return this._followUpMessages.find(m => m.id === message);
+	}
+
 	/** 
 	 * @param {boolean} ephermal Whether the reply is ephemeral
 	 * @returns {Promise<true | ErrorObject>}
@@ -122,14 +131,14 @@ export class SimCommandInteraction extends SimBaseInteraction {
 		return (content.options?.fetchReply) ? this.fetchReply() ?? false : !!(message);
 	}
 
-	/**
-	 * @param {string | Snowflake} message The message to fetch ('@original' for the original reply message)
-	 * @returns {Message|undefined} The message that was fetched 
-	*/
-	fetchReply(message: string|Snowflake = '@original'): Message|undefined {
-		if (message === '@original' && this._replyMessage !== undefined) return this._replyMessage;
-		return this._followUpMessages.find(m => m.id === message);
+	async deleteReply(message?: string|Snowflake): Promise<Message|void> {
+		const target = this.fetchReply(message);
+		if (target && target.deletable) {
+			return await target.delete()
+		}
 	}
+
+	
 	//#endregion
 
 	//#region private methods
