@@ -1,4 +1,4 @@
-import { InteractionReplyOptions, Message, MessageEditOptions, MessageFlags, MessageReplyOptions, Snowflake, TextBasedChannel } from "discord.js";
+import { Events, InteractionReplyOptions, Message, MessageEditOptions, MessageFlags, MessageReplyOptions, Snowflake, TextBasedChannel } from "discord.js";
 
 import { TODO } from "../@types";
 import { cons } from "..";
@@ -57,6 +57,90 @@ export class SimCommandInteraction extends SimBaseInteraction {
 			this.getGuildCommandData(this.commandName);
 		}
 	}
+
+	//#region Custom Methods
+		//#region public
+		/** Waits for the reply message to be sent.
+		 * @param timeout The max amount of time to wait for the reply, defaults to 5 seconds.
+		 * @param interval The interval to check for the reply, defaults to 100 milliseconds.
+		 * @returns The reply message, or `null` if timed out.
+		 */
+		public async awaitReply(timeout: number = 5000, interval: number = 100): Promise<Message|null> {
+			const msg = this.fetchReply();
+			if (msg) return msg;
+
+			let currentWait = 0;
+			while (currentWait < timeout) {
+				await new Promise(resolve => setTimeout(resolve, interval));
+				currentWait += interval;
+
+				const msg = this.fetchReply();
+				if (msg) return msg;
+			}
+
+			this.client.emit(Events.Error, new Error(`Timed out waiting for the reply message to be sent.`));
+			return null;
+		}
+		//#endregion
+
+		//#region private
+		private async getGuildCommandData(name: string) {
+			for (const commandData of devEnvironment.restCommands!) {
+				if (commandData.name === name) {
+					this.command = commandData;
+					this.commandId = commandData.id;
+					this.commandType = commandData.type;
+					this.commandGuildId = commandData.guild_id;
+
+					break;
+				}
+			}
+		}
+		
+		private async validateReply(condition: boolean, replyContent: string|ISimInteractionReplyContent): Promise<ISimInteractionReplyContent|ErrorObject> {
+			if (!condition) {
+				return await EmitError(new Error('Interaction reply conditions were not met'), this);
+			}
+			else if (!this.isRepliable()) {
+				return await EmitError(new Error('Interaction can not be replied to'), this);
+			}
+			this.ephemeral = (typeof replyContent === 'string') ? false : replyContent.ephemeral || false;
+
+			return (typeof replyContent === 'string') ? {
+				content: replyContent,
+				ephemeral: this.ephemeral,
+				embeds: [],
+				components: [],
+				flags: [],
+				options: {},
+			} : {
+				content: replyContent.content,
+				ephemeral: this.ephemeral,
+				embeds: replyContent.embeds,
+				components: replyContent.components,
+				flags: replyContent.flags || [],
+				options: replyContent.options || {},
+			} as ISimInteractionReplyContent;
+		}
+
+		private async sendMessage(content: ISimInteractionReplyContent, target?: TextBasedChannel|Message, update: boolean = true): Promise<Message<boolean>> {
+			if (!target) target = this.channel as TextBasedChannel;
+
+			if (this.ephemeral) {
+				//? add a silent flag to the reply to indicate that this is an ephemeral message
+				content.flags = [MessageFlags.SuppressNotifications];
+			}
+
+			//? Mask any user mentions in the content with ticks (`) to prevent them from pinging the user
+			content.content = content.content?.replace(/<@!?(\d+)>/g, '`$1`');
+
+			//?? Does this work if the interaction is not in a guild (dm)?
+			return (target instanceof Message) ? (
+				(update) ? target.edit(content as MessageEditOptions) : target.reply(content)
+			) : target.send(content);
+		}
+		//#endregion
+	//#endregion
 
 	//#region Emulated methods (as close to the real deal as possible)
 	/**
@@ -136,66 +220,6 @@ export class SimCommandInteraction extends SimBaseInteraction {
 		if (target && target.deletable) {
 			return await target.delete()
 		}
-	}
-
-	
-	//#endregion
-
-	//#region private methods
-	private async getGuildCommandData(name: string) {
-		for (const commandData of devEnvironment.restCommands!) {
-			if (commandData.name === name) {
-				this.command = commandData;
-				this.commandId = commandData.id;
-				this.commandType = commandData.type;
-				this.commandGuildId = commandData.guild_id;
-
-				break;
-			}
-		}
-	}
-	
-	private async validateReply(condition: boolean, replyContent: string|ISimInteractionReplyContent): Promise<ISimInteractionReplyContent|ErrorObject> {
-		if (!condition) {
-			return await EmitError(new Error('Interaction reply conditions were not met'), this);
-		}
-		else if (!this.isRepliable()) {
-			return await EmitError(new Error('Interaction can not be replied to'), this);
-		}
-		this.ephemeral = (typeof replyContent === 'string') ? false : replyContent.ephemeral || false;
-
-		return (typeof replyContent === 'string') ? {
-			content: replyContent,
-			ephemeral: this.ephemeral,
-			embeds: [],
-			components: [],
-			flags: [],
-			options: {},
-		} : {
-			content: replyContent.content,
-			ephemeral: this.ephemeral,
-			embeds: replyContent.embeds,
-			components: replyContent.components,
-			flags: replyContent.flags || [],
-			options: replyContent.options || {},
-		} as ISimInteractionReplyContent;
-	}
-
-	private async sendMessage(content: ISimInteractionReplyContent, target?: TextBasedChannel|Message, update: boolean = true): Promise<Message<boolean>> {
-		if (!target) target = this.channel as TextBasedChannel;
-
-		if (this.ephemeral) {
-			//? add a silent flag to the reply to indicate that this is an ephemeral message
-			content.flags = [MessageFlags.SuppressNotifications];
-		}
-
-		//? Mask any user mentions in the content with ticks (`) to prevent them from pinging the user
-		content.content = content.content?.replace(/<@!?(\d+)>/g, '`$1`');
-
-		//?? Does this work if the interaction is not in a guild (dm)?
-		return (target instanceof Message) ? (
-			(update) ? target.edit(content as MessageEditOptions) : target.reply(content)
-		) : target.send(content);
 	}
 	//#endregion
 }
