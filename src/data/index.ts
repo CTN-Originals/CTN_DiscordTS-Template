@@ -21,7 +21,7 @@ export default {
 	development: true,
 	
 	logging: {
-		streamSafe: true, //? If true, the custom console will filter out any dangerouse info
+		streamSafe: false, //? If true, the custom console will filter out any dangerouse info
 		interaction: {
 			enabled: true,
 			verbose: true,

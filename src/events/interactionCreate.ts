@@ -26,6 +26,7 @@ export default {
 
     /** @param {CommandInteraction} interaction The command interaction */
 	async execute(interaction: BaseInteraction) {
+		thisConsole.logDefault(interaction);
 		const interactionType = getInteractionType(interaction);
 		
 		if (!interactionType.commandKey || interactionType.type == InteractionType.Ping) {

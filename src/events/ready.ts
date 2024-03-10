@@ -1,15 +1,17 @@
 import 'dotenv/config';
 import { APIUser, Client, Collection, CommandInteraction, EmbedBuilder, Events, Guild, GuildMember, Message, REST, Routes, TextChannel, User } from 'discord.js';
+import { InteractionResponses } from "discord.js/src/structures/interfaces/InteractionResponses";
 
 import { ConsoleInstance } from 'better-console-utilities';
 
 import generalData from '../data';
 import { devEnvironment } from '../data';
 import { EmitError, customEvents } from '.';
-import { cons, testWebhook } from '..';
+import { cons, errorConsole, testWebhook } from '..';
 import { testEmbed, validateEmbed } from '../utils/embedUtils';
 import { SimBaseInteraction, defaultBaseInteractionArgs } from '../simulators';
 import { SimCommandInteraction } from '../simulators/commandInteraction';
+import { SimBaseComponentInteraction, SimStringSelectMenuInteraction } from '../simulators/componentInteraction';
 
 // import ErrorHandler from '../handlers/errorHandler';
 
@@ -105,9 +107,21 @@ export default {
 			...defaultBaseInteractionArgs,
 		});
 
+		console.log(InteractionResponses.prototype)
 		// cons.logDefault(simBaseInteraction);
 		// cons.logDefault(simInteraction);
-		cons.logDefault('Command Simulation:', simInteraction.simulate());
+		// cons.logDefault('Command Simulation:', simInteraction.simulate());
+		simInteraction.simulate()
+		const simReply = await simInteraction.awaitReply();
+		let simComponentInteraction: SimBaseComponentInteraction|undefined;
+		if (simReply) {
+			try {
+				simComponentInteraction = new SimStringSelectMenuInteraction({customId: 'string-select-test', message: simReply, values: ['hello']});
+				simComponentInteraction.simulate()
+			} catch (err) {
+				errorConsole.log(`Error while trying to create SimBaseComponentInteraction`)
+			}
+		}
 
 		/* //? This is using a fake interaction object to test slash
 			//? This is using a fake interaction object to test commands
