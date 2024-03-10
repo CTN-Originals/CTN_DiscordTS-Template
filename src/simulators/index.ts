@@ -18,8 +18,8 @@ import { devEnvironment } from "../data";
 import { ErrorObject } from "../handlers/errorHandler";
 
 export interface ISimBaseInteraction {
-	client: Client,
-	user: User,
+	client?: Client,
+	user?: User,
 	type?: number,
 	guild?: BaseGuild|null,
 	member?: GuildMember|APIInteractionGuildMember|null
@@ -27,8 +27,8 @@ export interface ISimBaseInteraction {
 }
 
 export const defaultBaseInteractionArgs: ISimBaseInteraction = {
-	client: devEnvironment.client!,
-	user: devEnvironment.user!,
+	client: devEnvironment.client,
+	user: devEnvironment.user,
 	type: 2,
 	guild: devEnvironment.guild,
 	member: devEnvironment.member,
@@ -51,11 +51,15 @@ export class SimBaseInteraction extends BaseInteraction {
 	constructor(args?: Partial<ISimBaseInteraction>|Client, user?: User) {
 		if (!defaultBaseInteractionArgs.client) init();
 
-		if (!args) args = defaultBaseInteractionArgs as ISimBaseInteraction;
-		else if (args instanceof Client) args = {client: args, user: user as User};
+		if (!args) args = defaultBaseInteractionArgs;
+		else if (args instanceof Client) {
+			args = defaultBaseInteractionArgs;
+			args.client = args as Client<boolean>;
+			args.user = user;
+		}
 		else {
 			for (const [key, value] of Object.entries(defaultBaseInteractionArgs)) {
-				if (typeof args[key as keyof ISimBaseInteraction] === undefined) {
+				if (args[key as keyof ISimBaseInteraction] === undefined) {
 					(args as any)[key] = value;
 				}
 			}
