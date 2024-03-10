@@ -1,4 +1,4 @@
-import { Client, ComponentType, DiscordjsError, DiscordjsErrorCodes, Events, Message, MessageComponent, StringSelectMenuComponent } from "discord.js";
+import { Client, ComponentType, DiscordjsError, DiscordjsErrorCodes, Events, Message, MessageComponent, StringSelectMenuComponent, TextBasedChannel } from "discord.js";
 import { InteractionResponses } from "discord.js/src/structures/interfaces/InteractionResponses";
 
 import { Modify } from "../@types";
@@ -6,18 +6,26 @@ import { ISimBaseInteraction, SimBaseInteraction } from ".";
 import { cons } from "..";
 import { ErrorObject } from "../handlers/errorHandler";
 import { EmitError } from "../events";
+import { ISimInteractionReplyContent, ISimInteractionReplyOptions, SimInteractionResponses } from "./interactionResponses";
 
 //#region Base
 export interface ISimBaseComponentInteraction extends ISimBaseInteraction {
 	customId: string;
 	message: Message;
 }
-export class SimBaseComponentInteraction extends SimBaseInteraction implements InteractionResponses {
+export class SimBaseComponentInteraction extends SimBaseInteraction {
 	public customId: string;
 	public message: Message;
 
 	public component: MessageComponent;
 	public componentType: ComponentType;
+
+	public replied: boolean;
+	public deferred: boolean;
+	public ephemeral: boolean;
+
+	private _replyMessage?: Message<boolean>;
+	private _followUpMessages: Message<boolean>[];
 
 	constructor(args: ISimBaseComponentInteraction) {
 		const getComponent = (message: Message, customId: string): MessageComponent => {
@@ -38,8 +46,17 @@ export class SimBaseComponentInteraction extends SimBaseInteraction implements I
 		
 		this.component = component;
 		this.componentType = args.type!;
+
+		this.deferred = false;
+		this.replied = false;
+		this.ephemeral = false;
+
+		this._followUpMessages = []
 	}
+
+	public async awaitReply(timeout: number = 5000, interval: number = 100): Promise<Message|null> {return null}
 }
+SimInteractionResponses.applyToClass(SimBaseComponentInteraction)
 
 //#endregion
 

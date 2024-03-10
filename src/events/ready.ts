@@ -107,7 +107,7 @@ export default {
 			...defaultBaseInteractionArgs,
 		});
 
-		console.log(InteractionResponses.prototype)
+		// console.log(InteractionResponses.prototype)
 		// cons.logDefault(simBaseInteraction);
 		// cons.logDefault(simInteraction);
 		// cons.logDefault('Command Simulation:', simInteraction.simulate());
