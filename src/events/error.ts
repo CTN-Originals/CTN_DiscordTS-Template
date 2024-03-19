@@ -5,6 +5,7 @@ import { eventConsole } from '.';
 import { client, errorConsole, logWebhook } from '..';
 import { getInteractionType, getHoistedOptions } from '../utils/interactionUtils';
 import { ErrorObject } from '../handlers/errorHandler';
+import { validateEmbed } from '../utils/embedUtils';
 
 
 
@@ -41,15 +42,16 @@ export default {
 		
 		if (interaction.options && interaction.options.data.length > 0) {
 			const hoistedOptions = getHoistedOptions((interaction as CommandInteraction).options.data as CommandInteractionOption[]);
-			descriptionLines.push(`**Options**: ${
-				hoistedOptions.map(option => `${option.name}:\`${option.value}\``).join(', ')
-			}`)
+			descriptionLines.push(`**Options**: ${hoistedOptions.map(option => `${option.name}:\`${option.value}\``).join(', ')}`)
+		}
+		if (interaction['values'] && interaction['values'].length > 0) {
+			descriptionLines.push(`**Values**: [ \`${interaction['values'].join('\`, \`')}\` ]`)
 		}
 		
 		descriptionLines.push(`**Type**: \`${interactionType.display}\``);
 		descriptionLines.push(`**Guild Name**: \`${interaction.guild?.name ?? 'None'}\``)
 		descriptionLines.push(`**Interaction ID**: \`${interaction.id}\``);
-		descriptionLines.push(`**Command ID**: \`${interaction.command?.id}\``);
+		if (interaction.command) descriptionLines.push(`**Command ID**: \`${interaction.command?.id}\``);
 		descriptionLines.push(`**Guild ID**: \`${interaction.guildId ?? 'None'}\``);
 		descriptionLines.push('```ts\n' + errorObject.formatStack({
 			shortenPaths: true,
@@ -92,7 +94,7 @@ export default {
 		logWebhook.send({
 			username: `${client.user!.username} Error`,
 			avatarURL: client.user!.displayAvatarURL(),
-			embeds: [embed]
+			embeds: [validateEmbed(embed)]
 		});
 	}
 };

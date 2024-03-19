@@ -78,7 +78,7 @@ const overflowLimits = {
 
 /** Checks if an embed is valid to be sent to Discord 
  * @param {EmbedBuilder} embed The embed to validate
- * @throws {Error} if the embed exceeds any of the limits
+ * @emits ErrorObject if the embed exceeds any of the limits
  * @returns {EmbedBuilder} the embed that was passed as an argument (altered to be within limits if necessary)
  * @example limits:
 - title 	256 characters

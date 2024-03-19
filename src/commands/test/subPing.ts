@@ -1,4 +1,14 @@
-import { EmbedBuilder, SlashCommandBuilder, CommandInteraction, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
+import { 
+	EmbedBuilder,
+	SlashCommandBuilder,
+	CommandInteraction,
+	ActionRowBuilder,
+	StringSelectMenuBuilder,
+	StringSelectMenuInteraction,
+	UserSelectMenuBuilder,
+	ChannelSelectMenuBuilder,
+	ChannelType
+} from "discord.js";
 import { InteractionInstanceList } from "../../handlers/interactionInstanceHandler";
 import { IInteraction } from "../../startup/registerCommands";
 
@@ -66,14 +76,24 @@ export default {
 					},
 				]
 			});
+			const userSelect = new UserSelectMenuBuilder({
+				custom_id: 'user-select-test',
+			});
+			const channelSelect = new ChannelSelectMenuBuilder({
+				custom_id: 'channel-select-test',
+				channel_types: [ChannelType.GuildCategory, ChannelType.GuildText],
+				max_values: 25
+			});
 			const row: any = new ActionRowBuilder().addComponents(select);
+			const row2: any = new ActionRowBuilder().addComponents(userSelect);
+			const row3: any = new ActionRowBuilder().addComponents(channelSelect);
 
 			await interaction.reply({
 				content: "Pong!",
 				embeds: [new EmbedBuilder({
 					title: "Pong!",
 				})],
-				components: [row],
+				components: [row, row2, row3],
 				ephemeral: true,
 				fetchReply: true,
 			});

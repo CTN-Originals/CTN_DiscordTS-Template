@@ -76,6 +76,7 @@ export default {
 				subCommand: '',
 				subCommandGroup: '',
 				commandOptions: '',
+				commandValues: '',
 				commandType: interactionType.display,
 				channelName: interaction.channel.name,
 				channelId: interaction.channelId,
@@ -99,6 +100,10 @@ export default {
 				const hoistedOptions = getHoistedOptions((interaction as CommandInteraction).options.data as CommandInteractionOption[]);
 				logFields.commandOptions = hoistedOptions.map(option => `[fg=dd8000]${option.name}[/>]:${option.value}`).join(' [st=dim,bold]|[/>] ');
 			}
+			if (interaction.values && interaction.values.length > 0) {
+				logFields.commandValues = `[ ${interaction.values.join('[st=dim,bold], [/>]')} ]`
+			}
+
 
 			const logMessage: string[] = [];
 			logMessage.push([
@@ -106,9 +111,9 @@ export default {
 				`${(logFields.subCommandGroup) ? `[st=dim]>[/>] [fg=00cc66]${logFields.subCommandGroup}[/>]` : ''}`,
 				`${(logFields.subCommand) ? `[st=dim]>[/>] [fg=00cc66]${logFields.subCommand}[/>]` : ''}`
 			].join(' '));
-			if (logFields.commandOptions) {
-				logMessage.push(`[fg=0080ff]Options[/>]: ${logFields.commandOptions}`);
-			}
+
+			if (logFields.commandOptions) logMessage.push(`[fg=0080ff]options[/>]: ${logFields.commandOptions}`);
+			if (logFields.commandValues) logMessage.push(`[fg=0080ff]values[/>]: ${logFields.commandValues}`);
 
 			logMessage.push(`[fg=0080ff]user[/>]: [fg=cyan]${logFields.userName}[/>] (${logFields.userId})`);
 			logMessage.push(`[fg=0080ff]channel[/>]: [fg=ad1b70]${logFields.channelName}[/>] (${logFields.channelId})`);
