@@ -1,12 +1,16 @@
 import {
 	APIGuildMember, APIInteractionGuildMember,
 	BaseChannel, BaseGuild, BaseInteraction,
+	ChannelSelectMenuInteraction,
 	Client,
 	Events,
 	Guild, GuildBasedChannel, GuildChannel,
 	GuildMember, GuildMemberFlags,
+	MentionableSelectMenuInteraction,
 	SnowflakeUtil,
-	User, UserFlagsBitField
+	StringSelectMenuInteraction,
+	User, UserFlagsBitField,
+	UserSelectMenuInteraction
 } from "discord.js";
 import { InteractionResponses } from "discord.js/src/structures/interfaces/InteractionResponses";
 import { RawInteractionData } from "discord.js/typings/rawDataTypes";

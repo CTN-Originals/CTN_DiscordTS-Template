@@ -7,10 +7,14 @@ import {
 	StringSelectMenuInteraction,
 	UserSelectMenuBuilder,
 	ChannelSelectMenuBuilder,
-	ChannelType
+	ChannelType,
+	MessageComponentInteraction,
+	MentionableSelectMenuBuilder,
+	RoleSelectMenuBuilder
 } from "discord.js";
 import { InteractionInstanceList } from "../../handlers/interactionInstanceHandler";
 import { IInteraction } from "../../startup/registerCommands";
+import { AnyComponentInteraction } from "../../@types/discord";
 
 
 const interactionInstances = new InteractionInstanceList('sub-ping');
@@ -84,9 +88,15 @@ export default {
 				channel_types: [ChannelType.GuildCategory, ChannelType.GuildText],
 				max_values: 25
 			});
+			const mentionableSelect = new MentionableSelectMenuBuilder({
+				custom_id: 'mentionable-select-test',
+			});
+			const roleSelect = new RoleSelectMenuBuilder({
+				custom_id: 'role-select-test',
+			});
 			const row: any = new ActionRowBuilder().addComponents(select);
-			const row2: any = new ActionRowBuilder().addComponents(userSelect);
-			const row3: any = new ActionRowBuilder().addComponents(channelSelect);
+			const row2: any = new ActionRowBuilder().addComponents(channelSelect);
+			const row3: any = new ActionRowBuilder().addComponents(mentionableSelect);
 
 			await interaction.reply({
 				content: "Pong!",
@@ -103,22 +113,37 @@ export default {
 	},
 	selectMenus: [
 		{
-			data: new SlashCommandBuilder()
-				.setName("string-select-test"),
-			
-			async execute(interaction: StringSelectMenuInteraction) {
-				const instance = interactionInstances.getInstance(interaction);
-				await interaction.reply({
-					content: "Pong!",
-					embeds: [new EmbedBuilder({
-						title: "Selected: " + interaction.values[0] ?? "None",
-					})],
-				});
-
-				console.log(interactionInstances)
-
-				return true;
-			}
+			data: new SlashCommandBuilder().setName("string-select-test"),
+			async execute(interaction: StringSelectMenuInteraction) { return await executeSelectMenu(interaction); }
+		},
+		{
+			data: new SlashCommandBuilder().setName("user-select-test"),
+			async execute(interaction: StringSelectMenuInteraction) { return await executeSelectMenu(interaction); }
+		},
+		{
+			data: new SlashCommandBuilder().setName("channel-select-test"),
+			async execute(interaction: StringSelectMenuInteraction) { return await executeSelectMenu(interaction); }
+		},
+		{
+			data: new SlashCommandBuilder().setName("mentionable-select-test"),
+			async execute(interaction: StringSelectMenuInteraction) { return await executeSelectMenu(interaction); }
+		},
+		{
+			data: new SlashCommandBuilder().setName("role-select-test"),
+			async execute(interaction: StringSelectMenuInteraction) { return await executeSelectMenu(interaction); }
 		}
-	]
+	],
+	
+}
+async function executeSelectMenu(interaction: AnyComponentInteraction) {
+	await interaction.reply({
+		content: "",
+		embeds: [new EmbedBuilder({
+			fields: [
+				{name: "Selected", value: interaction.values.join(' | ') ?? "None"}
+			]
+		})],
+	});
+
+	return true;
 }

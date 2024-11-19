@@ -113,11 +113,12 @@ export default {
 		// cons.logDefault('Command Simulation:', simInteraction.simulate());
 		simInteraction.simulate()
 		const simReply = await simInteraction.awaitReply();
-		let simComponentInteraction: SimBaseComponentInteraction|undefined;
+		let simComponentInteraction: SimBaseComponentInteraction;
 		if (simReply) {
 			try {
 				simComponentInteraction = new SimStringSelectMenuInteraction({customId: 'string-select-test', message: simReply, values: ['hello']});
 				simComponentInteraction.simulate()
+				cons.logDefault(simComponentInteraction.component)
 			} catch (err) {
 				errorConsole.log(`Error while trying to create SimBaseComponentInteraction`)
 			}
