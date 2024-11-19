@@ -25,15 +25,22 @@ export class Database {
         this.connection = null;
     }
 
-    connect() {
-        cons.log('Connecting to [style=bold][fg=blue]Database[/>]...')
+    async connect() {
+        cons.log('Connecting to [fg=blue st=bold]Database[/>]...')
 
-		mongoose.connect(dbURI).then(() => {
-			cons.log('[style=bold][fg=green]Connected[/>] to the [style=bold][fg=blue]Database[/>]!');
-			this.connection == mongoose.connection;
-		}).catch(error => {
-			cons.log('[style=bold][fg=cyan]Database[/>] connection ERROR:\n');
-			EmitError(error);
-		});
+		try {
+			const conn = await mongoose.connect(dbURI);
+			this.connection = conn.connection;
+			
+			if (generalData.development) {
+				const ping = await conn.connection.db?.admin().ping();
+				cons.logDefault(ping);
+			}
+		} catch (error) {
+			cons.log('[st=bold][fg=cyan]Database[/>] connection ERROR:\n');
+			errorConsole.log(error);
+		}
+
+		cons.log(`[fg=green st=bold]Connected[/>] to the [fg=blue st=bold]Database[/>]!`);
 	}
 }

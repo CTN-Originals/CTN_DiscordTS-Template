@@ -85,7 +85,7 @@ export class SimBaseInteraction extends BaseInteraction {
 			if (!args.member) args.member = defaultBaseInteractionArgs.member as APIInteractionGuildMember;
 			
 			data.member = {
-				user: args.user as APIGuildMember['user'],
+				user: args.user as unknown as APIGuildMember['user'],
 				roles: args.member.roles as APIGuildMember['roles'],
 				premium_since: null,
 				permissions: '0',

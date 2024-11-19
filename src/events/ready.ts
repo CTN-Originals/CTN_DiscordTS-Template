@@ -101,28 +101,28 @@ export default {
 		// var t1 = performance.now();
 		// thisConsole.log(`execution time: ${t1 - t0} ms`);
 
-		const simBaseInteraction = new SimBaseInteraction();
-		const simInteraction = new SimCommandInteraction({
-			commandName: 'sub-ping',
-			...defaultBaseInteractionArgs,
-		});
+		// const simBaseInteraction = new SimBaseInteraction();
+		// const simInteraction = new SimCommandInteraction({
+		// 	commandName: 'sub-ping',
+		// 	...defaultBaseInteractionArgs,
+		// });
 
 		// console.log(InteractionResponses.prototype)
 		// cons.logDefault(simBaseInteraction);
 		// cons.logDefault(simInteraction);
 		// cons.logDefault('Command Simulation:', simInteraction.simulate());
-		simInteraction.simulate()
-		const simReply = await simInteraction.awaitReply();
-		let simComponentInteraction: SimBaseComponentInteraction;
-		if (simReply) {
-			try {
-				simComponentInteraction = new SimStringSelectMenuInteraction({customId: 'string-select-test', message: simReply, values: ['hello']});
-				simComponentInteraction.simulate()
-				cons.logDefault(simComponentInteraction.component)
-			} catch (err) {
-				errorConsole.log(`Error while trying to create SimBaseComponentInteraction`)
-			}
-		}
+		// simInteraction.simulate()
+		// const simReply = await simInteraction.awaitReply();
+		// let simComponentInteraction: SimBaseComponentInteraction;
+		// if (simReply) {
+		// 	try {
+		// 		simComponentInteraction = new SimStringSelectMenuInteraction({customId: 'string-select-test', message: simReply, values: ['hello']});
+		// 		simComponentInteraction.simulate()
+		// 		cons.logDefault(simComponentInteraction.component)
+		// 	} catch (err) {
+		// 		errorConsole.log(`Error while trying to create SimBaseComponentInteraction`)
+		// 	}
+		// }
 
 		/* //? This is using a fake interaction object to test slash
 			//? This is using a fake interaction object to test commands
