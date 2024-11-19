@@ -19,6 +19,7 @@ export const devEnvironment = {
 
 export default {
 	development: true,
+	production: false,
 	
 	logging: {
 		streamSafe: false, //? If true, the custom console will filter out any dangerouse info
