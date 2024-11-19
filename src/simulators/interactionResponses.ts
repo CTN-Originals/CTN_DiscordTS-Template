@@ -1,4 +1,4 @@
-import { Snowflake, Message, MessageEditOptions, MessageFlags, TextBasedChannel, InteractionReplyOptions, MessageReplyOptions, Events, Client } from "discord.js";
+import { Snowflake, Message, MessageEditOptions, MessageFlags, TextBasedChannel, InteractionReplyOptions, MessageReplyOptions, Events, Client, BaseGuildTextChannel } from "discord.js";
 import { cons } from "..";
 import { ErrorObject } from "../handlers/errorHandler";
 import { EmitError } from "../events";
@@ -105,8 +105,9 @@ export class SimInteractionResponses {
 			} as ISimInteractionReplyOptions;
 		}
 
-		async sendMessage(content: ISimInteractionReplyContent, target?: TextBasedChannel|Message, update: boolean = true): Promise<Message<boolean>> {
-			if (!target) target = this.channel as TextBasedChannel;
+		async sendMessage(content: ISimInteractionReplyContent, target?: BaseGuildTextChannel|Message, update: boolean = true): Promise<Message<boolean>> {
+			// if (!target) target = this.channel as TextBasedChannel;
+			if (!target) target = this.channel as BaseGuildTextChannel;
 
 			if (this.ephemeral) {
 				//? add a silent flag to the reply to indicate that this is an ephemeral message

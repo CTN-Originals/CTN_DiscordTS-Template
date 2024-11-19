@@ -8,6 +8,7 @@ import { getCommandFiles } from './startup/registerCommands';
 import generalData from './data';
 
 import * as deployScript from './deployCommands';
+import { Database } from './data/orm/connect';
 
 //? Set the default theme profile to my preferences
 defaultThemeProfile.overrides.push(...[]);
@@ -17,6 +18,9 @@ export const cons = new ConsoleInstance();
 export const errorConsole = new ConsoleInstance(defaultThemeProfile.clone());
 errorConsole.theme.default = new Theme('#ff0000');
 errorConsole.theme.typeThemes.default = new Theme('#dd0000');
+
+const db = new Database();
+db.connect();
 
 export const client: Client = new Client({
 	intents: [
