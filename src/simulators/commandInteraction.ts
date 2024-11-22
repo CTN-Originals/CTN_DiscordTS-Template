@@ -2,7 +2,7 @@ import { Events, InteractionReplyOptions, Message, MessageEditOptions, MessageFl
 
 import { TODO } from "../@types";
 import { cons } from "..";
-import { devEnvironment } from "../data";
+import { DevEnvironment } from "../data";
 import { EmitError } from "../events";
 import { ErrorObject } from "../handlers/errorHandler";
 
@@ -60,7 +60,7 @@ export class SimCommandInteraction extends SimBaseInteraction {
 	}
 
 	private async getGuildCommandData(name: string) {
-		for (const commandData of devEnvironment.restCommands!) {
+		for (const commandData of DevEnvironment.restCommands!) {
 			if (commandData.name === name) {
 				this.command = commandData;
 				this.commandId = commandData.id;

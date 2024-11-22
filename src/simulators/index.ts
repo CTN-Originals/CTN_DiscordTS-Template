@@ -18,7 +18,7 @@ import { RawInteractionData } from "discord.js/typings/rawDataTypes";
 import { cons } from "..";
 import { EmitError, customEvents } from "../events";
 import { TODO } from "../@types";
-import { devEnvironment } from "../data";
+import { DevEnvironment } from "../data";
 import { ErrorObject } from "../handlers/errorHandler";
 
 export interface ISimBaseInteraction {
@@ -31,20 +31,20 @@ export interface ISimBaseInteraction {
 }
 
 export const defaultBaseInteractionArgs: ISimBaseInteraction = {
-	client: devEnvironment.client,
-	user: devEnvironment.user,
+	client: DevEnvironment.client,
+	user: DevEnvironment.user,
 	type: 2,
-	guild: devEnvironment.guild,
-	member: devEnvironment.member,
-	channel: devEnvironment.channel,
+	guild: DevEnvironment.guild,
+	member: DevEnvironment.member,
+	channel: DevEnvironment.channel,
 }
 export async function init() {
-	defaultBaseInteractionArgs.client = devEnvironment.client as Client;
-	defaultBaseInteractionArgs.user = devEnvironment.user as User;
+	defaultBaseInteractionArgs.client = DevEnvironment.client as Client;
+	defaultBaseInteractionArgs.user = DevEnvironment.user as User;
 	defaultBaseInteractionArgs.type = 2;
-	defaultBaseInteractionArgs.guild = devEnvironment.guild as Guild;
-	defaultBaseInteractionArgs.member = devEnvironment.member as GuildMember|APIInteractionGuildMember;
-	defaultBaseInteractionArgs.channel = devEnvironment.channel as BaseChannel;
+	defaultBaseInteractionArgs.guild = DevEnvironment.guild as Guild;
+	defaultBaseInteractionArgs.member = DevEnvironment.member as GuildMember|APIInteractionGuildMember;
+	defaultBaseInteractionArgs.channel = DevEnvironment.channel as BaseChannel;
 
 	cons.logDefault('Simulator ready', defaultBaseInteractionArgs);
 }
@@ -69,7 +69,7 @@ export class SimBaseInteraction extends BaseInteraction {
 			}
 		}
 
-		const client = args.client as Client<true> || devEnvironment.client;
+		const client = args.client as Client<true> || DevEnvironment.client;
 		const snowflake = SnowflakeUtil.generate()
 		const data: RawInteractionData = {
 			id: snowflake.toString() as RawInteractionData['id'], //? This is a unique id for the interaction

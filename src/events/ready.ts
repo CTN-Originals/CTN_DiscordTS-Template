@@ -4,8 +4,8 @@ import { InteractionResponses } from "discord.js/src/structures/interfaces/Inter
 
 import { ConsoleInstance } from 'better-console-utilities';
 
-import generalData from '../data';
-import { devEnvironment } from '../data';
+import { GeneralData } from '../data';
+import { DevEnvironment } from '../data';
 import { EmitError, customEvents } from '.';
 import { cons, errorConsole, testWebhook } from '..';
 import { testEmbed, validateEmbed } from '../utils/embedUtils';
@@ -31,18 +31,18 @@ export default {
 		// const t1 = performance.now();
 		// thisConsole.log(`Fetched ${devGuildMembers?.size} guild members in ${t1 - t0}ms`);
 
-		if (generalData.development) {
-			devEnvironment.client = client;
-			devEnvironment.memberList = devGuildMembers as Collection<string, GuildMember>;
+		if (GeneralData.development) {
+			DevEnvironment.client = client;
+			DevEnvironment.memberList = devGuildMembers as Collection<string, GuildMember>;
 
-			devEnvironment.guild = client.guilds.cache.get(process.env.DEV_GUILD_ID!);
-			devEnvironment.user = await client.users.fetch(process.env.DEV_TEST_USER_ID!);
-			devEnvironment.member = devEnvironment.memberList.get(process.env.DEV_TEST_USER_ID!);
-			devEnvironment.channel = devEnvironment.guild?.channels.cache.get(process.env.DEV_TEST_CHANNEL_ID!);
+			DevEnvironment.guild = client.guilds.cache.get(process.env.DEV_GUILD_ID!);
+			DevEnvironment.user = await client.users.fetch(process.env.DEV_TEST_USER_ID!);
+			DevEnvironment.member = DevEnvironment.memberList.get(process.env.DEV_TEST_USER_ID!);
+			DevEnvironment.channel = DevEnvironment.guild?.channels.cache.get(process.env.DEV_TEST_CHANNEL_ID!);
 
-			devEnvironment.restCommands = await client.rest.get(Routes.applicationGuildCommands(process.env.CLIENT_ID!, process.env.DEV_GUILD_ID!)) as {id: string, name: string, type: number, guild_id: string}[];
+			DevEnvironment.restCommands = await client.rest.get(Routes.applicationGuildCommands(process.env.CLIENT_ID!, process.env.DEV_GUILD_ID!)) as {id: string, name: string, type: number, guild_id: string}[];
 
-			thisConsole.logDefault('Dev Environment:', devEnvironment);
+			thisConsole.logDefault('Dev Environment:', DevEnvironment);
 		}
 
 		// await new Promise(resolve => setTimeout(resolve, 1000));
