@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import { cons, errorConsole } from "../..";
+import { cons } from "../..";
 import { GeneralData } from '../index';
-import { EmitError } from "../../events";
 
 //? something like: mongodb+srv://<username>:<password>@<hostname>/<dbname>
 const dbURITemplate: string = process.env.DATABASE_URI_TEMPLATE!
@@ -15,8 +14,8 @@ const dbURI =  GeneralData.production ?
 		.replace('<username>', mongoUser)
 		.replace('<password>', mongoPass)
 		.replace('<hostname>', mongoHost)
-		.replace('<dbname>', process.env.PROJECT_NAME!) :
-	(process.env.DATABASE_URI_LOCAL as string).replace('<dbname>', process.env.PROJECT_NAME!)
+		.replace('<dbname>', process.env.APP_NAME!) :
+	(process.env.DATABASE_URI_LOCAL as string).replace('<dbname>', process.env.APP_NAME!)
 ;
 
 export class Database {
@@ -27,20 +26,7 @@ export class Database {
 
     async connect() {
         cons.log('Connecting to [fg=blue st=bold]Database[/>]...')
-
-		try {
-			const conn = await mongoose.connect(dbURI);
-			this.connection = conn.connection;
-			
-			if (GeneralData.development) {
-				const ping = await conn.connection.db?.admin().ping();
-				cons.logDefault(ping);
-			}
-		} catch (error) {
-			cons.log('[st=bold][fg=cyan]Database[/>] connection ERROR:\n');
-			errorConsole.log(error);
-		}
-
+		this.connection = (await mongoose.connect(dbURI)).connection; //? dont try catch, if this errors, the program should crash
 		cons.log(`[fg=green st=bold]Connected[/>] to the [fg=blue st=bold]Database[/>]!`);
 	}
 }

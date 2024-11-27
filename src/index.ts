@@ -45,7 +45,7 @@ async function Awake() {
 
 async function Start() {
 	const db = new Database();
-	db.connect();
+	await db.connect();
 
 	client.commands = new Collection();
 	
