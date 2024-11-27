@@ -100,7 +100,10 @@ export async function doDeployCommands(): Promise<boolean> {
 			switch (key) { //TODO make this dynamic (get keys from the class)
 				case 'guild':
 				case 'guildID':
-				case 'guildId': deployInstruction.guildId = value; break;
+				case 'guildId': {
+					deployInstruction.guildId = (value === 'dev' || value === 'DEV_GUILD_ID') ? process.env.DEV_GUILD_ID : value;
+				} break;
+				
 				case 'deploy': deployInstruction.deploy = value.split(','); break;
 				case 'deployAll': deployInstruction.deployAll = (value == 'true'); break;
 				case 'deployAllGlobal': deployInstruction.deployAllGlobal = (value == 'true'); break;
