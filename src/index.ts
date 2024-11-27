@@ -49,16 +49,8 @@ async function Start() {
 
 	client.commands = new Collection();
 	
-	const getEventTime = [performance.now()];
 	getEventFiles(client, 'events');
-	getEventTime[1] = performance.now();
-
-	const getCommandTime = [performance.now()];
 	getCommandFiles(client, 'commands');
-	getCommandTime[1] = performance.now();
-
-	cons.log(`Registered ${client.eventNames().length} events in ${getEventTime[1] - getEventTime[0]}ms`);
-	cons.log(`Registered ${client.commands.size} commands in ${getCommandTime[1] - getCommandTime[0]}ms`);
 	
 	await client.login(process.env.TOKEN);
 }

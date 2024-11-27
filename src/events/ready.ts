@@ -27,7 +27,7 @@ export default {
 
 			DevEnvironment.restCommands = await client.rest.get(Routes.applicationGuildCommands(process.env.CLIENT_ID!, process.env.DEV_GUILD_ID!)) as {id: string, name: string, type: number, guild_id: string}[];
 
-			thisConsole.logDefault('Dev Environment:', DevEnvironment);
+			// thisConsole.logDefault('Dev Environment:', DevEnvironment);
 		}
 
 		this.runTests(client);
