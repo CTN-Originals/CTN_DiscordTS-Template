@@ -1,13 +1,12 @@
-import { SlashCommandBuilder, CommandInteraction, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, CommandInteraction, ChatInputCommandInteraction, ApplicationCommandOptionType, InteractionContextType, PermissionsBitField } from "discord.js";
 import { CommandObject } from "../../handlers/commandBuilder/command";
+import { testCmd } from '../../../tests'
 
 export default {
 	command: {
-		data: new CommandObject({
-			name: 'command-build',
-			description: 'A test command that is build in a custom way'
-		}).build,
+		data: testCmd.build,
 		async execute(interaction: ChatInputCommandInteraction) {
+			console.log(testCmd)
 			await interaction.reply({
 				content: 'Success!'
 			});

@@ -1,5 +1,5 @@
 import { LocalizationMap, SlashCommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandBuilder, ApplicationCommandOption, ApplicationCommandOptionType, SlashCommandAttachmentOption, SlashCommandBooleanOption, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandUserOption } from "discord.js";
-import { RequiredFields } from "../../@types";
+import { nameAllowedCharacters } from ".";
 import { 
 	CommandObjectAttachmentOption,
 	CommandObjectBooleanOption,
@@ -12,6 +12,7 @@ import {
 	CommandObjectUserOption,
 	AnySlashCommandOption
 } from ".";
+import { EmitError } from "../../events";
 
 export type AnySlashCommandBuilder = 
 	SlashCommandBuilder | 
@@ -30,8 +31,6 @@ export type CommandObjectInput<
     RequiredBaseFields | Required
 >;
 
-
-
 export type ICommandObjectBase = CommandObjectInput<CommandObjectBase>
 export class CommandObjectBase {
 	/** The name of this command.
@@ -39,7 +38,9 @@ export class CommandObjectBase {
 	 * @containing no capital letters, spaces, or symbols other than `-` and `_`
 	*/
     public name: string;
-    /** The description of this command. */
+    /** The description of this command.
+	 * @minmax 1-100
+	*/
     public description: string;
 	/** The name localizations of this command. */
 	public name_localizations?: LocalizationMap;
@@ -50,8 +51,18 @@ export class CommandObjectBase {
 		this.name = input.name;
 		this.description = input.description;
 
-		//TODO Validate name for if it has symbols for spaces
-		//TODO Validate description for string length
+		if (this.name.length < 1 || this.name.length > 32) {
+			throw this.onError(`Command name does not fit in length range 1 - 32\nInput: ${this.name}`)
+		}
+		if (this.description.length < 1 || this.description.length > 100) {
+			throw this.onError(`Command description does not fit in length range 1 - 100\nInput: ${this.description}`)
+		}
+		
+		for (const char of this.name) {
+			if (!nameAllowedCharacters.includes(char)) {
+				throw this.onError(`Command name "${this.name}" contains illigal character "${char}"`)
+			}
+		}
 	}
 
 	protected assignFields(input: CommandObjectInput<CommandObjectBase, any>) {
@@ -86,5 +97,11 @@ export class CommandObjectBase {
 		}
 
 		return builder
+	}
+
+	protected onError(message: string): string {
+		const err = new Error(message)
+		EmitError(err);
+		return err.message;
 	}
 }

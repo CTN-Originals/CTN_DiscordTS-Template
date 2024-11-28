@@ -3,6 +3,7 @@ import { InteractionContextType, ApplicationIntegrationType, SlashCommandBuilder
 import { CommandObjectBase, CommandObjectInput } from ".";
 import { SubcommandGroupObject, ISubcommandGroupObject } from "./subcommandGroup";
 import { SubcommandObject, ISubcommandObject } from "./subcommand";
+import { EmitError } from "../../events";
 
 type SlashCommandBuilderFields = 'contexts' | 'default_member_permissions' | 'integration_types' | 'nsfw';
 export type ICommandObject = CommandObjectInput<CommandObject, SlashCommandBuilderFields | 'subcommandGroups' | 'subcommands' | 'options'>
@@ -27,11 +28,18 @@ export class CommandObject extends CommandObjectBase {
 	constructor(input: ICommandObject) {
 		super(input);
 		this.assignFields(input);
-		/* //TODO Checks
-			- each field can be validated with its own rules, string length, no symbols in names, etc
-			- either/or subcommand(group) lists have items at the same time that options does too, and if so, warn user that the options will be ignored
-			- if any subcommandGroups have no subcommands
-		*/
+
+		if (this.subcommandGroups.length > 0) {
+			for (const group of this.subcommandGroups) {
+				if (!group.subcommands || group.subcommands?.length == 0) {
+					throw this.onError(`SubommandGroup "${group.name}" does not contain any subcommands`);
+				}
+			}
+		}
+		
+		if (this.options && this.options.length > 0 && (this.subcommandGroups.length > 0 || this.subcommands.length > 0)) {
+			throw this.onError(`Top-Level command "${this.name}" options are populated while subcommand(Group)s are also present.\nSub-command and sub-command group option types are mutually exclusive to all other types`);
+		}
 	}
 
 	public get build() {

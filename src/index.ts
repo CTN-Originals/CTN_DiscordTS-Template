@@ -55,4 +55,6 @@ async function Start() {
 	await client.login(process.env.TOKEN);
 }
 
-Awake();
+if (!process.argv.includes('--test')) {
+	Awake();
+}
