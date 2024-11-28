@@ -42,6 +42,7 @@ export class CommandObjectBase {
 	 * @minmax 1-100
 	*/
     public description: string;
+
 	/** The name localizations of this command. */
 	public name_localizations?: LocalizationMap;
 	/** The description localizations of this command. */
@@ -50,19 +51,26 @@ export class CommandObjectBase {
 	constructor(input: ICommandObjectBase) {
 		this.name = input.name;
 		this.description = input.description;
-
-		if (this.name.length < 1 || this.name.length > 32) {
-			throw this.onError(`Command name does not fit in length range 1 - 32\nInput: ${this.name}`)
-		}
-		if (this.description.length < 1 || this.description.length > 100) {
-			throw this.onError(`Command description does not fit in length range 1 - 100\nInput: ${this.description}`)
-		}
 		
-		for (const char of this.name) {
+		this.validateName();
+		if (this.description.length < 1 || this.description.length > 100) {
+			throw this.onError(`Command description does not fit in length range 1 - 100\nInput: ${this.description}`);
+		}
+	}
+	
+	//? This function exists because option choices also need the same validation but dont have the same fields
+	protected validateName(name: string = this.name): true {
+		if (name.length < 1 || name.length > 32) {
+			throw this.onError(`Command name does not fit in length range 1 - 32\nInput: ${name}`);
+		}
+
+		for (const char of name) {
 			if (!nameAllowedCharacters.includes(char)) {
-				throw this.onError(`Command name "${this.name}" contains illigal character "${char}"`)
+				throw this.onError(`Command name "${name}" contains illigal character "${char}"`);
 			}
 		}
+
+		return true;
 	}
 
 	protected assignFields(input: CommandObjectInput<CommandObjectBase, any>) {

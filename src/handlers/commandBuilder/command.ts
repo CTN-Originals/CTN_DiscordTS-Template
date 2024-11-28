@@ -17,8 +17,8 @@ export class CommandObject extends CommandObjectBase {
     /** Whether this command is NSFW. */
     public nsfw: boolean | undefined;
 
-	public subcommandGroups: (SubcommandGroupObject|ISubcommandGroupObject)[] = []
-	public subcommands: (SubcommandObject|ISubcommandObject)[] = []
+	public subcommandGroups: (SubcommandGroupObject|ISubcommandGroupObject)[] = [];
+	public subcommands: (SubcommandObject|ISubcommandObject)[] = [];
 
 	public options: ApplicationCommandOption[] = [];
 
