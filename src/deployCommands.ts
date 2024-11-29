@@ -1,7 +1,8 @@
 import { REST, Routes } from 'discord.js';
 
-import * as fs from 'node:fs';
 import 'dotenv/config';
+import * as fs from 'node:fs';
+import path = require('node:path');
 
 import { cons } from '.';
 import { GeneralData } from './data'
@@ -86,6 +87,14 @@ export async function doDeployCommands(): Promise<boolean> {
 	//> deploy commands: --guildId=1234567890 deploy=ping,help --guild=0987654321 deployAll=true
 	//> deleting all commands: --guild=12345 delete=0987654321,43723374678 --guild=1234567890 deleteAll=true
 	//> deleting all Global commands: --deleteAllGlobal=true
+
+	const commandDumpPath = path.resolve(__dirname + '/../resources/dump/commands.json');
+	if (fs.existsSync(commandDumpPath)) {
+		fs.writeFile(commandDumpPath, JSON.stringify(commandData), (err) => {
+			if (err) { console.error(err); }
+			console.log(`Successfully dumped commands json to ${commandDumpPath}`)
+		})
+	}
 	
 	const deployInstructions: DeployInstruction[] = [];
 	const args = process.argv.slice(3).join(' ').split('--').slice(1);
