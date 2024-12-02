@@ -15,7 +15,7 @@ SlashCommandNumberOption |
 SlashCommandAttachmentOption;
 
 export type ICommandObjectOptionBase = CommandObjectInput<
-    CommandObjectOptionBase,
+    CommandObjectBaseOption,
     'required' | 'autocomplete',
     'type'
 >;
@@ -25,13 +25,13 @@ interface CommandObjectOptionChoice<Value extends string | number = string | num
 	nameLocalizations?: LocalizationMap;
 	value: Value;
 }
-export class CommandObjectOptionBase extends CommandObjectBase {
+export class CommandObjectBaseOption extends CommandObjectBase {
 	public type!: ApplicationCommandOptionType;
 	public required: boolean = false;
 	
-	public choices?: CommandObjectOptionChoice[]
+	public choices?: CommandObjectOptionChoice[];
 	public autocomplete?: boolean;
-	
+
 	public max_value?: number;
 	public min_value?: number;
 
@@ -69,7 +69,7 @@ export class CommandObjectOptionBase extends CommandObjectBase {
 	}
 }
 
-export class CommandObjectStringOption extends CommandObjectOptionBase {
+export class CommandObjectStringOption extends CommandObjectBaseOption {
 	public maxLength?: number;
 	public minLength?: number;
 
@@ -82,25 +82,25 @@ export class CommandObjectStringOption extends CommandObjectOptionBase {
 		return opt;
 	}
 }
-export class CommandObjectIntegerOption extends CommandObjectOptionBase {
+export class CommandObjectIntegerOption extends CommandObjectBaseOption {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandIntegerOption());
 		return opt;
 	}
 }
-export class CommandObjectBooleanOption extends CommandObjectOptionBase {
+export class CommandObjectBooleanOption extends CommandObjectBaseOption {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandBooleanOption());
 		return opt;
 	}
 }
-export class CommandObjectUserOption extends CommandObjectOptionBase {
+export class CommandObjectUserOption extends CommandObjectBaseOption {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandUserOption());
 		return opt;
 	}
 }
-export class CommandObjectChannelOption extends CommandObjectOptionBase {
+export class CommandObjectChannelOption extends CommandObjectBaseOption {
 	public channel_type?: ApplicationCommandOptionAllowedChannelTypes[];
 
 	public get build() {
@@ -111,25 +111,25 @@ export class CommandObjectChannelOption extends CommandObjectOptionBase {
 		return opt;
 	}
 }
-export class CommandObjectRoleOption extends CommandObjectOptionBase {
+export class CommandObjectRoleOption extends CommandObjectBaseOption {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandRoleOption());
 		return opt;
 	}
 }
-export class CommandObjectMentionableOption extends CommandObjectOptionBase {
+export class CommandObjectMentionableOption extends CommandObjectBaseOption {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandMentionableOption());
 		return opt;
 	}
 }
-export class CommandObjectNumberOption extends CommandObjectOptionBase {
+export class CommandObjectNumberOption extends CommandObjectBaseOption {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandNumberOption());
 		return opt;
 	}
 }
-export class CommandObjectAttachmentOption extends CommandObjectOptionBase {
+export class CommandObjectAttachmentOption extends CommandObjectBaseOption {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandAttachmentOption());
 		return opt;
