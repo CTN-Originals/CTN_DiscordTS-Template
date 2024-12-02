@@ -1,9 +1,6 @@
 import { InteractionContextType, ApplicationIntegrationType, SlashCommandBuilder, Permissions, ApplicationCommandOption } from "discord.js";
 
-import { CommandObjectBase, CommandObjectInput } from ".";
-import { SubcommandGroupObject, ISubcommandGroupObject } from "./subcommandGroup";
-import { SubcommandObject, ISubcommandObject } from "./subcommand";
-import { EmitError } from "../../events";
+import { CommandObjectBase, CommandObjectInput, SubcommandGroupObject, ISubcommandGroupObject, SubcommandObject, ISubcommandObject } from ".";
 
 type SlashCommandBuilderFields = 'contexts' | 'default_member_permissions' | 'integration_types' | 'nsfw';
 export type ICommandObject = CommandObjectInput<CommandObject, SlashCommandBuilderFields | 'subcommandGroups' | 'subcommands' | 'options'>

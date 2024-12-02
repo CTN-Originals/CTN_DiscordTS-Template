@@ -1,4 +1,7 @@
+import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+
 import { CommandObjectBase, CommandObjectInput } from "./base";
+import { CommandObject } from "./command";
 import { 
 	AnySlashCommandOption,
 	CommandObjectAttachmentOption,
@@ -11,11 +14,22 @@ import {
 	CommandObjectStringOption,
 	CommandObjectUserOption,
 } from "./options";
+import { ISubcommandGroupObject, SubcommandGroupObject } from "./subcommandGroup";
+import { SubcommandObject, ISubcommandObject } from "./subcommand";
 
 export { 
 	AnySlashCommandOption,
 	CommandObjectBase,
+
 	CommandObjectInput,
+	CommandObject,
+
+	ISubcommandObject,
+	SubcommandObject,
+
+	ISubcommandGroupObject,
+	SubcommandGroupObject,
+
 	CommandObjectAttachmentOption,
 	CommandObjectBooleanOption,
 	CommandObjectChannelOption,
