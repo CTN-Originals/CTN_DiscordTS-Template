@@ -1,6 +1,6 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
 
-import { CommandObjectBase, CommandObjectInput } from "./base";
+import { CommandObjectBase } from "./base";
 import { CommandObject } from "./command";
 import { 
 	AnySlashCommandOption,
@@ -21,7 +21,6 @@ export {
 	AnySlashCommandOption,
 	CommandObjectBase,
 
-	CommandObjectInput,
 	CommandObject,
 
 	ISubcommandObject,
@@ -40,6 +39,23 @@ export {
 	CommandObjectStringOption,
 	CommandObjectUserOption,
 }
+
+export type AnySlashCommandBuilder = 
+	SlashCommandBuilder | 
+	SlashCommandSubcommandBuilder | 
+	SlashCommandSubcommandGroupBuilder;
+
+export type RequiredBaseFields = 'name' | 'description';
+export type OptionalBaseFields = 'name_localizations' | 'description_localizations';
+
+export type CommandObjectInput<
+    T extends CommandObjectBase,
+    Optional extends keyof T = never,
+    Required extends keyof T = never
+> = RequiredFields<
+    Partial<Pick<T, Optional | OptionalBaseFields>> & Pick<T, RequiredBaseFields | Required>,
+    RequiredBaseFields | Required
+>;
 
 export const nameAllowedCharacters = [
 	'-', '_',

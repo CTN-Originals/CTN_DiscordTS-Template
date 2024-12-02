@@ -1,5 +1,5 @@
-import { LocalizationMap, SlashCommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandBuilder, ApplicationCommandOption, ApplicationCommandOptionType, SlashCommandAttachmentOption, SlashCommandBooleanOption, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandUserOption } from "discord.js";
-import { nameAllowedCharacters } from ".";
+import { LocalizationMap, SlashCommandSubcommandGroupBuilder, ApplicationCommandOption, ApplicationCommandOptionType } from "discord.js";
+import { AnySlashCommandBuilder, CommandObjectInput, nameAllowedCharacters } from ".";
 import { 
 	CommandObjectAttachmentOption,
 	CommandObjectBooleanOption,
@@ -14,22 +14,7 @@ import {
 } from ".";
 import { EmitError } from "../../events";
 
-export type AnySlashCommandBuilder = 
-	SlashCommandBuilder | 
-	SlashCommandSubcommandBuilder | 
-	SlashCommandSubcommandGroupBuilder;
 
-export type RequiredBaseFields = 'name' | 'description';
-export type OptionalBaseFields = 'name_localizations' | 'description_localizations';
-
-export type CommandObjectInput<
-    T extends CommandObjectBase,
-    Optional extends keyof T = never,
-    Required extends keyof T = never
-> = RequiredFields<
-    Partial<Pick<T, Optional | OptionalBaseFields>> & Pick<T, RequiredBaseFields | Required>,
-    RequiredBaseFields | Required
->;
 
 export type ICommandObjectBase = CommandObjectInput<CommandObjectBase>
 export class CommandObjectBase {
