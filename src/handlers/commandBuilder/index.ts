@@ -1,43 +1,54 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
+import { ActionRowComponentOptions, ButtonComponentData, ChatInputCommandInteraction, ComponentType, EmbedBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
 
-import { CommandObjectBase } from "./base";
-import { CommandObject } from "./command";
+import { BaseCommandObject } from "./base";
+import {
+	CommandObject,
+	ISubCommandGroupObject,
+	SubCommandGroupObject,
+	ISubCommandObject,
+	SubCommandObject,
+} from "./command";
+
 import { 
 	AnySlashCommandOption,
-	CommandObjectAttachmentOption,
-	CommandObjectBooleanOption,
-	CommandObjectChannelOption,
-	CommandObjectIntegerOption,
-	CommandObjectMentionableOption,
-	CommandObjectNumberOption,
-	CommandObjectRoleOption,
-	CommandObjectStringOption,
-	CommandObjectUserOption,
+	AttachmentOptionObject,
+	BooleanOptionObject,
+	ChannelOptionObject,
+	IntegerOptionObject,
+	MentionableOptionObject,
+	NumberOptionObject,
+	RoleOptionObject,
+	StringOptionObject,
+	UserOptionObject,
 } from "./options";
-import { ISubcommandGroupObject, SubcommandGroupObject } from "./subcommandGroup";
-import { SubcommandObject, ISubcommandObject } from "./subcommand";
+
+import {
+	BaseSelectComponentObject,
+	ButtonComponentObject,
+	IButtonComponentObject
+} from "./components";
 
 export { 
 	AnySlashCommandOption,
-	CommandObjectBase,
+	BaseCommandObject,
 
 	CommandObject,
 
-	ISubcommandObject,
-	SubcommandObject,
+	ISubCommandObject,
+	SubCommandObject,
 
-	ISubcommandGroupObject,
-	SubcommandGroupObject,
+	ISubCommandGroupObject,
+	SubCommandGroupObject,
 
-	CommandObjectAttachmentOption,
-	CommandObjectBooleanOption,
-	CommandObjectChannelOption,
-	CommandObjectIntegerOption,
-	CommandObjectMentionableOption,
-	CommandObjectNumberOption,
-	CommandObjectRoleOption,
-	CommandObjectStringOption,
-	CommandObjectUserOption,
+	AttachmentOptionObject,
+	BooleanOptionObject,
+	ChannelOptionObject,
+	IntegerOptionObject,
+	MentionableOptionObject,
+	NumberOptionObject,
+	RoleOptionObject,
+	StringOptionObject,
+	UserOptionObject,
 }
 
 export type AnySlashCommandBuilder = 
@@ -49,7 +60,7 @@ export type RequiredBaseFields = 'name' | 'description';
 export type OptionalBaseFields = 'name_localizations' | 'description_localizations';
 
 export type CommandObjectInput<
-    T extends CommandObjectBase,
+    T extends BaseCommandObject,
     Optional extends keyof T = never,
     Required extends keyof T = never
 > = RequiredFields<

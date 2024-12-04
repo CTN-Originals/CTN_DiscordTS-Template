@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionAllowedChannelTypes, ApplicationCommandOptionType, LocalizationMap, SlashCommandAttachmentOption, SlashCommandBooleanOption, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandUserOption } from "discord.js";
-import { CommandObjectBase, CommandObjectInput } from '.';
+import { BaseCommandObject, CommandObjectInput } from '.';
 
 
 // export type ICommandObjectOptionBase = CommandObjectInput<CommandObjectOptionBase, 'required' | 'autocomplete', 'type'>
@@ -14,18 +14,20 @@ SlashCommandMentionableOption |
 SlashCommandNumberOption |
 SlashCommandAttachmentOption;
 
-export type ICommandObjectOptionBase = CommandObjectInput<
-    CommandObjectBaseOption,
-    'required' | 'autocomplete',
-    'type'
->;
+
 
 interface CommandObjectOptionChoice<Value extends string | number = string | number> {
 	name: string;
 	nameLocalizations?: LocalizationMap;
 	value: Value;
 }
-export class CommandObjectBaseOption extends CommandObjectBase {
+
+export type IBaseOptionObject = CommandObjectInput<
+    BaseOptionObject,
+    'required' | 'autocomplete',
+    'type'
+>;
+export class BaseOptionObject extends BaseCommandObject {
 	public type!: ApplicationCommandOptionType;
 	public required: boolean = false;
 	
@@ -35,7 +37,7 @@ export class CommandObjectBaseOption extends CommandObjectBase {
 	public max_value?: number;
 	public min_value?: number;
 
-	constructor(input: ICommandObjectOptionBase) {
+	constructor(input: IBaseOptionObject) {
 		super(input);
 		this.assignFields(input);
 	}
@@ -69,7 +71,7 @@ export class CommandObjectBaseOption extends CommandObjectBase {
 	}
 }
 
-export class CommandObjectStringOption extends CommandObjectBaseOption {
+export class StringOptionObject extends BaseOptionObject {
 	public maxLength?: number;
 	public minLength?: number;
 
@@ -82,25 +84,25 @@ export class CommandObjectStringOption extends CommandObjectBaseOption {
 		return opt;
 	}
 }
-export class CommandObjectIntegerOption extends CommandObjectBaseOption {
+export class IntegerOptionObject extends BaseOptionObject {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandIntegerOption());
 		return opt;
 	}
 }
-export class CommandObjectBooleanOption extends CommandObjectBaseOption {
+export class BooleanOptionObject extends BaseOptionObject {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandBooleanOption());
 		return opt;
 	}
 }
-export class CommandObjectUserOption extends CommandObjectBaseOption {
+export class UserOptionObject extends BaseOptionObject {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandUserOption());
 		return opt;
 	}
 }
-export class CommandObjectChannelOption extends CommandObjectBaseOption {
+export class ChannelOptionObject extends BaseOptionObject {
 	public channel_type?: ApplicationCommandOptionAllowedChannelTypes[];
 
 	public get build() {
@@ -111,25 +113,25 @@ export class CommandObjectChannelOption extends CommandObjectBaseOption {
 		return opt;
 	}
 }
-export class CommandObjectRoleOption extends CommandObjectBaseOption {
+export class RoleOptionObject extends BaseOptionObject {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandRoleOption());
 		return opt;
 	}
 }
-export class CommandObjectMentionableOption extends CommandObjectBaseOption {
+export class MentionableOptionObject extends BaseOptionObject {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandMentionableOption());
 		return opt;
 	}
 }
-export class CommandObjectNumberOption extends CommandObjectBaseOption {
+export class NumberOptionObject extends BaseOptionObject {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandNumberOption());
 		return opt;
 	}
 }
-export class CommandObjectAttachmentOption extends CommandObjectBaseOption {
+export class AttachmentOptionObject extends BaseOptionObject {
 	public get build() {
 		const opt = this.optionBuildBase(new SlashCommandAttachmentOption());
 		return opt;

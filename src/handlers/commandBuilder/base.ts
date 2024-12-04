@@ -1,23 +1,23 @@
 import { LocalizationMap, SlashCommandSubcommandGroupBuilder, ApplicationCommandOption, ApplicationCommandOptionType } from "discord.js";
 import { AnySlashCommandBuilder, CommandObjectInput, nameAllowedCharacters } from ".";
 import { 
-	CommandObjectAttachmentOption,
-	CommandObjectBooleanOption,
-	CommandObjectChannelOption,
-	CommandObjectIntegerOption,
-	CommandObjectMentionableOption,
-	CommandObjectNumberOption,
-	CommandObjectRoleOption,
-	CommandObjectStringOption,
-	CommandObjectUserOption,
+	AttachmentOptionObject,
+	BooleanOptionObject,
+	ChannelOptionObject,
+	IntegerOptionObject,
+	MentionableOptionObject,
+	NumberOptionObject,
+	RoleOptionObject,
+	StringOptionObject,
+	UserOptionObject,
 	AnySlashCommandOption
 } from ".";
 import { EmitError } from "../../events";
 
 
 
-export type ICommandObjectBase = CommandObjectInput<CommandObjectBase>
-export class CommandObjectBase {
+export type IBaseCommandObject = CommandObjectInput<BaseCommandObject>
+export class BaseCommandObject {
 	/** The name of this command.
 	 * @minmax 1-32 
 	 * @containing no capital letters, spaces, or symbols other than `-` and `_`
@@ -33,7 +33,7 @@ export class CommandObjectBase {
 	/** The description localizations of this command. */
 	public description_localizations?: LocalizationMap;
 
-	constructor(input: ICommandObjectBase) {
+	constructor(input: IBaseCommandObject) {
 		this.name = input.name;
 		this.description = input.description;
 		
@@ -58,7 +58,7 @@ export class CommandObjectBase {
 		return true;
 	}
 
-	protected assignFields(input: CommandObjectInput<CommandObjectBase, any>) {
+	protected assignFields(input: CommandObjectInput<BaseCommandObject, any>) {
 		for (const field in input) {
 			this[field] = input[field];
 		}
@@ -76,15 +76,15 @@ export class CommandObjectBase {
 	protected resolveOptions<T extends Exclude<AnySlashCommandBuilder, SlashCommandSubcommandGroupBuilder>>(builder: T, options: ApplicationCommandOption[]): T {
 		for (const opt of options) {
 			switch (opt.type) {
-				case ApplicationCommandOptionType.String: 		builder.addStringOption(new CommandObjectStringOption(opt).build); break;
-				case ApplicationCommandOptionType.Integer: 		builder.addIntegerOption(new CommandObjectIntegerOption(opt).build); break;
-				case ApplicationCommandOptionType.Boolean: 		builder.addBooleanOption(new CommandObjectBooleanOption(opt).build); break;
-				case ApplicationCommandOptionType.User: 		builder.addUserOption(new CommandObjectUserOption(opt).build); break;
-				case ApplicationCommandOptionType.Channel: 		builder.addChannelOption(new CommandObjectChannelOption(opt).build); break;
-				case ApplicationCommandOptionType.Role: 		builder.addRoleOption(new CommandObjectRoleOption(opt).build); break;
-				case ApplicationCommandOptionType.Mentionable: 	builder.addMentionableOption(new CommandObjectMentionableOption(opt).build); break;
-				case ApplicationCommandOptionType.Number: 		builder.addNumberOption(new CommandObjectNumberOption(opt).build); break;
-				case ApplicationCommandOptionType.Attachment: 	builder.addAttachmentOption(new CommandObjectAttachmentOption(opt).build); break;
+				case ApplicationCommandOptionType.String: 		builder.addStringOption(new StringOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.Integer: 		builder.addIntegerOption(new IntegerOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.Boolean: 		builder.addBooleanOption(new BooleanOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.User: 		builder.addUserOption(new UserOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.Channel: 		builder.addChannelOption(new ChannelOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.Role: 		builder.addRoleOption(new RoleOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.Mentionable: 	builder.addMentionableOption(new MentionableOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.Number: 		builder.addNumberOption(new NumberOptionObject(opt).build); break;
+				case ApplicationCommandOptionType.Attachment: 	builder.addAttachmentOption(new AttachmentOptionObject(opt).build); break;
 				default: break;
 			}
 		}

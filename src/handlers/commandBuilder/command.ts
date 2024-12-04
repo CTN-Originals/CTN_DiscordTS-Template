@@ -1,10 +1,10 @@
-import { InteractionContextType, ApplicationIntegrationType, SlashCommandBuilder, Permissions, ApplicationCommandOption } from "discord.js";
+import { InteractionContextType, ApplicationIntegrationType, SlashCommandBuilder, Permissions, ApplicationCommandOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
 
-import { CommandObjectBase, CommandObjectInput, SubcommandGroupObject, ISubcommandGroupObject, SubcommandObject, ISubcommandObject } from ".";
+import { BaseCommandObject, CommandObjectInput } from ".";
 
 type SlashCommandBuilderFields = 'contexts' | 'default_member_permissions' | 'integration_types' | 'nsfw';
 export type ICommandObject = CommandObjectInput<CommandObject, SlashCommandBuilderFields | 'subcommandGroups' | 'subcommands' | 'options'>
-export class CommandObject extends CommandObjectBase {
+export class CommandObject extends BaseCommandObject {
     /** The contexts for this command. */
     public contexts?: InteractionContextType[];
     /** The set of permissions represented as a bit set for the command. */
@@ -14,8 +14,8 @@ export class CommandObject extends CommandObjectBase {
     /** Whether this command is NSFW. */
     public nsfw: boolean | undefined;
 
-	public subcommandGroups: (SubcommandGroupObject|ISubcommandGroupObject)[] = [];
-	public subcommands: (SubcommandObject|ISubcommandObject)[] = [];
+	public subcommandGroups: (SubCommandGroupObject|ISubCommandGroupObject)[] = [];
+	public subcommands: (SubCommandObject|ISubCommandObject)[] = [];
 
 	public options: ApplicationCommandOption[] = [];
 
@@ -48,12 +48,49 @@ export class CommandObject extends CommandObjectBase {
 		if (this.nsfw) 							{ cmd.setNSFW(this.nsfw); }
 		
 		for (const group of this.subcommandGroups) {
-			cmd.addSubcommandGroup(((group instanceof SubcommandGroupObject) ? group : new SubcommandGroupObject(group)).build);
+			cmd.addSubcommandGroup(((group instanceof SubCommandGroupObject) ? group : new SubCommandGroupObject(group)).build);
 		}
 		for (const sub of this.subcommands) {
-			cmd.addSubcommand(((sub instanceof SubcommandObject) ? sub : new SubcommandObject(sub)).build);
+			cmd.addSubcommand(((sub instanceof SubCommandObject) ? sub : new SubCommandObject(sub)).build);
 		}
 
 		return cmd
+	}
+}
+
+
+export type ISubCommandObject = CommandObjectInput<SubCommandObject, 'options'>
+export class SubCommandObject extends BaseCommandObject {
+	public options: ApplicationCommandOption[] = [];
+
+	constructor(input: ISubCommandObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
+	public get build(): SlashCommandSubcommandBuilder {
+		const cmd = this.resolveOptions(this.buildBase(new SlashCommandSubcommandBuilder()), this.options);
+		return cmd;
+	}
+}
+
+export type ISubCommandGroupObject = CommandObjectInput<SubCommandGroupObject, 'subcommands'>
+export class SubCommandGroupObject extends BaseCommandObject {
+	public subcommands: (SubCommandObject|ISubCommandObject)[] = []
+
+	constructor(input: ISubCommandGroupObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
+	public get build(): SlashCommandSubcommandGroupBuilder {
+		const cmd = this.buildBase(new SlashCommandSubcommandGroupBuilder());
+
+		for (const sub of this.subcommands) {
+			const subObj: SubCommandObject = (sub instanceof SubCommandObject) ? sub : new SubCommandObject(sub);
+			cmd.addSubcommand(subObj.build);
+		}
+
+		return cmd;
 	}
 }
