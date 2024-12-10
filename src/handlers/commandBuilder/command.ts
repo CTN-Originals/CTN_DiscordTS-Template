@@ -39,7 +39,8 @@ export class CommandObject extends BaseCommandObject {
 		}
 	}
 
-	public get build() {
+	//TODO Make this a function
+	public build() {
 		const cmd = this.resolveOptions(this.buildBase(new SlashCommandBuilder()), this.options);
 
 		if (this.contexts) 						{ cmd.setContexts(this.contexts); }

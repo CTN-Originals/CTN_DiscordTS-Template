@@ -1,7 +1,7 @@
-import { APIMessageComponentEmoji, ButtonBuilder, ButtonStyle, ChannelSelectMenuBuilder, ComponentType, MentionableSelectMenuBuilder, RoleSelectMenuBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
+import { APIMessageComponentEmoji, ButtonBuilder, ButtonStyle, ChannelSelectMenuBuilder, ChannelType, ComponentType, MentionableSelectMenuBuilder, RoleSelectMenuBuilder, SelectMenuComponentOptionData, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
 import { CommandObjectInput } from ".";
 
-export type RequiredBaseFields = 'type' | 'customId';
+export type RequiredBaseFields = 'customId';
 export type OptionalBaseFields = 'disabled';
 
 export type ComponentObjectInput<
@@ -14,23 +14,42 @@ export type ComponentObjectInput<
 >;
 
 export type AnyComponentBuilder = 
-ButtonBuilder |
-StringSelectMenuBuilder |
-UserSelectMenuBuilder |
-RoleSelectMenuBuilder |
-MentionableSelectMenuBuilder |
-ChannelSelectMenuBuilder;
+ | ButtonBuilder
+ | StringSelectMenuBuilder
+ | UserSelectMenuBuilder
+ | RoleSelectMenuBuilder
+ | MentionableSelectMenuBuilder
+ | ChannelSelectMenuBuilder;
 
-export type AnySelectMenyComponentBuilder = Exclude<AnyComponentBuilder, ButtonBuilder>;
+export type AnyComponentObject = 
+ | ButtonComponentObject
+ | StringSelectComponentObject
+ | UserSelectComponentObject
+ | RoleSelectComponentObject
+ | MentionableSelectComponentObject
+ | ChannelSelectComponentObject;
 
+export type IAnyComponentObject = 
+ | IButtonComponentObject
+ | IStringSelectComponentObject
+ | IUserSelectComponentObject
+ | IRoleSelectComponentObject
+ | IMentionableSelectComponentObject
+ | IChannelSelectComponentObject;
+
+export type AnySelectMenuComponentBuilder = Exclude<AnyComponentBuilder, ButtonBuilder>;
+export type AnySelectMenuComponentObject = Exclude<AnyComponentObject, ButtonComponentObject>;
+export type IAnySelectMenuComponentObject = Exclude<IAnyComponentObject, IButtonComponentObject>;
+
+//#region Base Classes
 type IBaseComponentObject = ComponentObjectInput<BaseComponentObject>
 export class BaseComponentObject {
-	public type!: ComponentType;
+	// public type?: ComponentType;
 	public customId!: string;
 	public disabled: boolean = false;
 
 	constructor(input: IBaseComponentObject) {
-		this.type = input.type;
+		// this.type = input.type;
 		this.customId = input.customId;
 
 		if (input.disabled !== undefined) { this.disabled = input.disabled; }
@@ -51,65 +70,140 @@ export class BaseComponentObject {
 	}
 }
 
-type IBaseSelectComponentObject = ComponentObjectInput<BaseSelectComponentObject, 'minValues' | 'maxValues'>
+export type SelectComponentObjectInput<
+	T extends BaseSelectComponentObject,
+	Optional extends keyof T = never,
+	Required extends keyof T = never
+> = RequiredFields<
+	Partial<Pick<T, OptionalBaseFields | Optional | 'minValues' | 'maxValues' | 'placeholder'>> & Pick<T, RequiredBaseFields | Required | 'type'>,
+	RequiredBaseFields | Required | 'type'
+>;
+export interface IBaseSelectComponentObject extends ComponentObjectInput<BaseSelectComponentObject, 'minValues' | 'maxValues' | 'placeholder', 'type'> {
+	type: ComponentType;
+}
 export class BaseSelectComponentObject extends BaseComponentObject {
+	public type!: ComponentType;
 	public minValues: number = 1;
 	public maxValues: number = 1;
+	public placeholder?: string;
 
 	constructor(input: IBaseSelectComponentObject) {
 		super(input);
 		this.assignFields(input);
 	}
 
-	protected buildSelectMenuBase<T extends AnySelectMenyComponentBuilder>(builder: T): T {
+	protected buildSelectMenuBase<T extends AnySelectMenuComponentBuilder>(builder: T): T {
 		const component = this.buildBase(builder) as T;
 
 		if (this.minValues) { component.setMinValues(this.minValues); }
 		if (this.maxValues) { component.setMaxValues(this.maxValues); }
+		if (this.placeholder) { component.setPlaceholder(this.placeholder); }
 
 		return component;
 	}
 }
+//#endregion
 
-export type IButtonComponentObject = ComponentObjectInput<ButtonComponentObject, 'label' | 'style' | 'emoji' | 'type'>;
+
+//#region Button
+export interface IButtonComponentObject extends ComponentObjectInput<ButtonComponentObject, 'label' | 'style' | 'emoji'> {
+	type?: ComponentType.Button;
+}
 export class ButtonComponentObject extends BaseComponentObject {
-	public label?: string
+	public label?: string;
 	public style: ButtonStyle = ButtonStyle.Primary;
 	public emoji?: APIMessageComponentEmoji;
 
-	public get build() {
+	public build() {
 		const component = this.buildBase(new ButtonBuilder());
+
+		if (this.label) { component.setLabel(this.label); }
+		if (this.style) { component.setStyle(this.style); }
+		if (this.emoji) { component.setEmoji(this.emoji); }
+
+		return component;
+	}
+}
+//#endregion
+
+
+//#region Select Menus
+export interface IStringSelectComponentObject extends SelectComponentObjectInput<StringSelectComponentObject, 'options'> {
+	type: ComponentType.StringSelect;
+}
+export class StringSelectComponentObject extends BaseSelectComponentObject {
+	public options?: SelectMenuComponentOptionData[];
+
+	public build() {
+		const component = this.buildSelectMenuBase(new StringSelectMenuBuilder());
+
+		if (this.options) { component.setOptions(this.options); }
+
 		return component;
 	}
 }
 
-export class StringSelectComponentObject extends BaseSelectComponentObject {
-	public get build() {
-		const component = this.buildSelectMenuBase(new StringSelectMenuBuilder());
-		return component;
-	}
+export interface IUserSelectComponentObject extends SelectComponentObjectInput<UserSelectComponentObject, 'defaultValues'> {
+	type: ComponentType.UserSelect;
 }
 export class UserSelectComponentObject extends BaseSelectComponentObject {
-	public get build() {
+	public defaultValues?: string[]
+
+	public build() {
 		const component = this.buildSelectMenuBase(new UserSelectMenuBuilder());
+		
+		if (this.defaultValues) { component.setDefaultUsers(this.defaultValues); }
+
 		return component;
 	}
+}
+
+export interface IRoleSelectComponentObject extends SelectComponentObjectInput<RoleSelectComponentObject, 'defaultValues'> {
+	type: ComponentType.RoleSelect;
 }
 export class RoleSelectComponentObject extends BaseSelectComponentObject {
-	public get build() {
+	public defaultValues?: string[]
+
+	public build() {
 		const component = this.buildSelectMenuBase(new RoleSelectMenuBuilder());
+		
+		if (this.defaultValues) { component.setDefaultRoles(this.defaultValues); }
+
 		return component;
 	}
+}
+
+export interface IMentionableSelectComponentObject extends SelectComponentObjectInput<MentionableSelectComponentObject, 'defaultRoles' | 'defaultUsers'> {
+	type: ComponentType.MentionableSelect;
 }
 export class MentionableSelectComponentObject extends BaseSelectComponentObject {
-	public get build() {
+	public defaultRoles?: string[]
+	public defaultUsers?: string[]
+
+	public build() {
 		const component = this.buildSelectMenuBase(new MentionableSelectMenuBuilder());
+		
+		if (this.defaultRoles) { component.addDefaultRoles(this.defaultRoles); }
+		if (this.defaultUsers) { component.addDefaultUsers(this.defaultUsers); }
+
 		return component;
 	}
+}
+
+export interface IChannelSelectComponentObject extends SelectComponentObjectInput<ChannelSelectComponentObject, 'defaultValues' | 'channelTypes'> {
+	type: ComponentType.ChannelSelect;
 }
 export class ChannelSelectComponentObject extends BaseSelectComponentObject {
-	public get build() {
+	public defaultValues?: string[]
+	public channelTypes?: ChannelType[];
+
+	public build() {
 		const component = this.buildSelectMenuBase(new ChannelSelectMenuBuilder());
+		
+		if (this.defaultValues) { component.setDefaultChannels(this.defaultValues); }
+		if (this.channelTypes) { component.setChannelTypes(this.channelTypes); }
+
 		return component;
 	}
 }
+//#endregion
