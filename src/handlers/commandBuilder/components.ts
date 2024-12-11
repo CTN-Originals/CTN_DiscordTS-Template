@@ -1,10 +1,10 @@
 import { APIMessageComponentEmoji, ButtonBuilder, ButtonStyle, ChannelSelectMenuBuilder, ChannelType, ComponentType, MentionableSelectMenuBuilder, RoleSelectMenuBuilder, SelectMenuComponentOptionData, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
-import { CommandObjectInput } from ".";
+import { AnyComponentBuilder, AnySelectMenuComponentBuilder } from ".";
 
-export type RequiredBaseFields = 'customId';
-export type OptionalBaseFields = 'disabled';
+type RequiredBaseFields = 'customId';
+type OptionalBaseFields = 'disabled';
 
-export type ComponentObjectInput<
+type ComponentObjectInput<
     T extends BaseComponentObject,
     Optional extends keyof T = never,
     Required extends keyof T = never
@@ -12,34 +12,6 @@ export type ComponentObjectInput<
     Partial<Pick<T, Optional | OptionalBaseFields>> & Pick<T, RequiredBaseFields | Required>,
     RequiredBaseFields | Required
 >;
-
-export type AnyComponentBuilder = 
- | ButtonBuilder
- | StringSelectMenuBuilder
- | UserSelectMenuBuilder
- | RoleSelectMenuBuilder
- | MentionableSelectMenuBuilder
- | ChannelSelectMenuBuilder;
-
-export type AnyComponentObject = 
- | ButtonComponentObject
- | StringSelectComponentObject
- | UserSelectComponentObject
- | RoleSelectComponentObject
- | MentionableSelectComponentObject
- | ChannelSelectComponentObject;
-
-export type IAnyComponentObject = 
- | IButtonComponentObject
- | IStringSelectComponentObject
- | IUserSelectComponentObject
- | IRoleSelectComponentObject
- | IMentionableSelectComponentObject
- | IChannelSelectComponentObject;
-
-export type AnySelectMenuComponentBuilder = Exclude<AnyComponentBuilder, ButtonBuilder>;
-export type AnySelectMenuComponentObject = Exclude<AnyComponentObject, ButtonComponentObject>;
-export type IAnySelectMenuComponentObject = Exclude<IAnyComponentObject, IButtonComponentObject>;
 
 //#region Base Classes
 type IBaseComponentObject = ComponentObjectInput<BaseComponentObject>
@@ -70,7 +42,7 @@ export class BaseComponentObject {
 	}
 }
 
-export type SelectComponentObjectInput<
+type SelectComponentObjectInput<
 	T extends BaseSelectComponentObject,
 	Optional extends keyof T = never,
 	Required extends keyof T = never
@@ -78,10 +50,10 @@ export type SelectComponentObjectInput<
 	Partial<Pick<T, OptionalBaseFields | Optional | 'minValues' | 'maxValues' | 'placeholder'>> & Pick<T, RequiredBaseFields | Required | 'type'>,
 	RequiredBaseFields | Required | 'type'
 >;
-export interface IBaseSelectComponentObject extends ComponentObjectInput<BaseSelectComponentObject, 'minValues' | 'maxValues' | 'placeholder', 'type'> {
+interface IBaseSelectComponentObject extends ComponentObjectInput<BaseSelectComponentObject, 'minValues' | 'maxValues' | 'placeholder', 'type'> {
 	type: ComponentType;
 }
-export class BaseSelectComponentObject extends BaseComponentObject {
+class BaseSelectComponentObject extends BaseComponentObject {
 	public type!: ComponentType;
 	public minValues: number = 1;
 	public maxValues: number = 1;
