@@ -6,7 +6,7 @@ import { cons } from '..';
 import { BaseButtonCollection, BaseSelectMenuCollection, CommandInteractionData, IButtonCollectionField } from '../handlers/commandBuilder';
 import { EmitError } from '../events';
 import { ColorTheme } from '../data';
-import { IAnyInteractionField, ICommandField, IContextMenuField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
+import { IAnyInteractionField, IBaseInteractionType, ICommandField, IContextMenuField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
 
 type InteractionType =
 | 'command'
@@ -50,7 +50,7 @@ function registerToClientCollection(client: Client, type: InteractionType, conte
 		return;
 	}
 
-	cons.log(registeredLogString('command', name, dir, file));
+	cons.log(registeredLogString(type, name, dir, file));
 
 	client[collection].set(name, content);
 }
@@ -63,7 +63,7 @@ function registerCommand(client: Client, dir: string, file: string) {
 		return;
 	}
 
-	registerToClientCollection(client, 'command', commandData.command, dir, file);
+	registerToClientCollection(client, (commandData.interactionType !== IBaseInteractionType.ContextMenu) ? 'command' : 'contextMenu', commandData.command, dir, file);
 
 	for (const button of (commandData.buttonCollection as BaseButtonCollection).asArray()) {
 		registerToClientCollection(client, 'button', button, dir, file);
