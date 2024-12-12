@@ -1,5 +1,6 @@
 import { APIMessageComponentEmoji, ButtonBuilder, ButtonStyle, ChannelSelectMenuBuilder, ChannelType, ComponentType, MentionableSelectMenuBuilder, RoleSelectMenuBuilder, SelectMenuComponentOptionData, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
 import { AnyComponentBuilder, AnySelectMenuComponentBuilder } from ".";
+import { EmitError } from "../../events";
 
 type RequiredBaseFields = 'customId';
 type OptionalBaseFields = 'disabled';
@@ -40,6 +41,12 @@ export class BaseComponentObject {
 
 		return component;
 	}
+
+	protected onError(message: string): string {
+		const err = new Error(message)
+		EmitError(err);
+		return err.message;
+	}
 }
 
 type SelectComponentObjectInput<
@@ -78,9 +85,10 @@ class BaseSelectComponentObject extends BaseComponentObject {
 
 
 //#region Button
-export interface IButtonComponentObject extends ComponentObjectInput<ButtonComponentObject, 'label' | 'style' | 'emoji'> {
+interface IButtonComponentObjectInput extends ComponentObjectInput<ButtonComponentObject, 'label' | 'style' | 'emoji'> {
 	type?: ComponentType.Button;
 }
+export type IButtonComponentObject = IButtonComponentObjectInput & Either<{label: string}, {emoji: APIMessageComponentEmoji}> //? Require either label, or emoji to be present
 export class ButtonComponentObject extends BaseComponentObject {
 	public label?: string;
 	public style: ButtonStyle = ButtonStyle.Primary;
