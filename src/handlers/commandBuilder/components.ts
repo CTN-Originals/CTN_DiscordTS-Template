@@ -94,6 +94,11 @@ export class ButtonComponentObject extends BaseComponentObject {
 	public style: ButtonStyle = ButtonStyle.Primary;
 	public emoji?: APIMessageComponentEmoji;
 
+	constructor(input: IButtonComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
 	public build() {
 		const component = this.buildBase(new ButtonBuilder());
 
@@ -114,6 +119,11 @@ export interface IStringSelectComponentObject extends SelectComponentObjectInput
 export class StringSelectComponentObject extends BaseSelectComponentObject {
 	public options?: SelectMenuComponentOptionData[];
 
+	constructor(input: IStringSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
 	public build() {
 		const component = this.buildSelectMenuBase(new StringSelectMenuBuilder());
 
@@ -129,6 +139,11 @@ export interface IUserSelectComponentObject extends SelectComponentObjectInput<U
 export class UserSelectComponentObject extends BaseSelectComponentObject {
 	public defaultValues?: string[]
 
+	constructor(input: IUserSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
 	public build() {
 		const component = this.buildSelectMenuBase(new UserSelectMenuBuilder());
 		
@@ -143,6 +158,11 @@ export interface IRoleSelectComponentObject extends SelectComponentObjectInput<R
 }
 export class RoleSelectComponentObject extends BaseSelectComponentObject {
 	public defaultValues?: string[]
+
+	constructor(input: IRoleSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
 
 	public build() {
 		const component = this.buildSelectMenuBase(new RoleSelectMenuBuilder());
@@ -160,6 +180,11 @@ export class MentionableSelectComponentObject extends BaseSelectComponentObject 
 	public defaultRoles?: string[]
 	public defaultUsers?: string[]
 
+	constructor(input: IMentionableSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
 	public build() {
 		const component = this.buildSelectMenuBase(new MentionableSelectMenuBuilder());
 		
@@ -176,6 +201,11 @@ export interface IChannelSelectComponentObject extends SelectComponentObjectInpu
 export class ChannelSelectComponentObject extends BaseSelectComponentObject {
 	public defaultValues?: string[]
 	public channelTypes?: ChannelType[];
+
+	constructor(input: IChannelSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
 
 	public build() {
 		const component = this.buildSelectMenuBase(new ChannelSelectMenuBuilder());
