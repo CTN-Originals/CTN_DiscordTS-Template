@@ -102,6 +102,8 @@ type ICommandInteractionData<
 >;
 
 type ICommandInteractionDataBuild = { command: SlashCommandBuilder, buttons: ButtonBuilder[], selectMenus: AnySelectMenuComponentBuilder[] };
+type IOptionalCollection<Field, Extend> = Field extends Extend ? Field : undefined
+type IOptionalCollectionObject<Field, Extend> = Field extends Extend ? Omit<Field, 'asArray' | 'build'> : undefined
 export class CommandInteractionData<
 	TButtons extends BaseButtonCollection = never,
 	TSelectMenus extends BaseSelectMenuCollection = never,
@@ -111,14 +113,14 @@ export class CommandInteractionData<
 	// public components: ICommandInteractionComponents = {};
 	private _buttons?: TButtons;
 	private _selectMenus?: TSelectMenus;
-	public embeds?: TEmbeds
+	public _embeds?: TEmbeds;
 
 	constructor(input: ICommandInteractionData<TButtons, TSelectMenus, TEmbeds>) {
 		this.command = input.command;
 
-		if (input.buttons) { this._buttons = input.buttons as TButtons; }
-		if (input.selectMenus) { this._selectMenus = input.selectMenus as TSelectMenus; }
-		if (input.embeds) { this.embeds = input.embeds; }
+		if (input.buttons) { this._buttons = input.buttons as IOptionalCollection<TButtons, BaseButtonCollection>; }
+		if (input.selectMenus) { this._selectMenus = input.selectMenus as IOptionalCollection<TSelectMenus, BaseSelectMenuCollection>; }
+		if (input.embeds) { this._embeds = input.embeds as IOptionalCollection<TEmbeds, BaseEmbedCollection> }
 	}
 
 	public set buttons(value: TButtons) {
@@ -127,12 +129,18 @@ export class CommandInteractionData<
 	public set selectMenus(value: TSelectMenus) {
 		this._selectMenus = value;
 	}
-
-	public get buttons(): Omit<TButtons, 'asArray' | 'build'> | undefined {
-		return this._buttons;
+	public set embeds(value: TEmbeds) {
+		this._embeds = value;
 	}
-	public get selectMenus(): Omit<TSelectMenus, 'asArray' | 'build'> | undefined {
-		return this._selectMenus;
+
+	public get buttons(): IOptionalCollectionObject<TButtons, BaseButtonCollection> {
+		return this._buttons as IOptionalCollectionObject<TButtons, BaseButtonCollection>;
+	}
+	public get selectMenus(): IOptionalCollectionObject<TSelectMenus, BaseSelectMenuCollection> {
+		return this._selectMenus as IOptionalCollectionObject<TSelectMenus, BaseSelectMenuCollection>;
+	}
+	public get embeds(): IOptionalCollectionObject<TEmbeds, BaseEmbedCollection> {
+		return this._embeds as IOptionalCollectionObject<TEmbeds, BaseEmbedCollection>;
 	}
 
 	public buildCommand(): ICommandInteractionDataBuild['command'] {
