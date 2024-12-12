@@ -8,7 +8,11 @@ class ButtonCollection extends BaseButtonCollection implements IButtonCollection
 			customId: 'xButt',
 			label: 'xButt'
 		},
-		execute: async function (interaction: ButtonInteraction) {},
+		execute: async function (interaction: ButtonInteraction) {
+			await interaction.reply({
+				content: 'you clicked a butt'
+			});
+		},
 	}
 }
 class SelectMenuCollection extends BaseSelectMenuCollection implements ISelectMenuCollection<SelectMenuCollection> {
@@ -65,9 +69,12 @@ const command = new CommandInteractionData<ButtonCollection, SelectMenuCollectio
 				content: "poing",
 			});
 
+			const row: any = new ActionRowBuilder({components: [command.buildButtons()[0]]})
+
 			await interaction.editReply({
 				content: "uped ping down pong",
 				embeds: [command.embeds.pong],
+				components: [row]
 				// embeds: [new EmbedBuilder({
 				// 	title: "Pong!",
 				// 	description: "uped ping down pong!",
