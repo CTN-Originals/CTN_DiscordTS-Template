@@ -28,10 +28,18 @@ export const logWebhook = new WebhookClient({id: process.env.LOG_WEBHOOK_ID!, to
 export const testWebhook = new WebhookClient({id: process.env.TEST_WEBHOOK_ID!, token: process.env.TEST_WEBHOOK_TOKEN!});
 
 async function Awake() {
+	client.commands = new Collection();
+	client.contextMenus = new Collection();
+	client.buttons = new Collection();
+	client.selectMenus = new Collection();
+	
+	getEventFiles(client, 'events');
+	getCommandFiles(client, 'commands');
+
 	if (process.argv.includes('--deploy')) {
 		cons.log(process.argv);
 		// const deployScript = require('./deployCommands.ts');
-		await deployScript.doDeployCommands().then(() => {
+		await deployScript.doDeployCommands(client).then(() => {
 			process.exit(0);
 		});
 	}
@@ -43,13 +51,6 @@ async function Awake() {
 async function Start() {
 	const db = new Database();
 	await db.connect();
-
-	client.commands = new Collection();
-	client.buttons = new Collection();
-	client.selectMenus = new Collection();
-	
-	getEventFiles(client, 'events');
-	getCommandFiles(client, 'commands');
 	
 	await client.login(process.env.TOKEN);
 }

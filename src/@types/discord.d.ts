@@ -10,7 +10,8 @@ import { IButtonCollectionField, ISelectMenuCollectionField, ICommandField, ICon
 
 declare module "discord.js" {
 	interface Client {
-		commands: Collection<string, ICommandField | IContextMenuField>;
+		commands: Collection<string, ICommandField>;
+		contextMenus: Collection<string, IContextMenuField>;
 		buttons: Collection<string, IButtonCollectionField>;
 		selectMenus: Collection<string, ISelectMenuCollectionField>;
 	}

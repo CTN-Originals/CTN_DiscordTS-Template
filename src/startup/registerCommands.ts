@@ -6,10 +6,11 @@ import { cons } from '..';
 import { BaseButtonCollection, BaseSelectMenuCollection, CommandInteractionData, IButtonCollectionField } from '../handlers/commandBuilder';
 import { EmitError } from '../events';
 import { ColorTheme } from '../data';
-import { IAnyInteractionField, ICommandField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
+import { IAnyInteractionField, ICommandField, IContextMenuField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
 
 type InteractionType =
 | 'command'
+| 'contextMenu'
 | 'button'
 | 'selectMenu';
 
@@ -28,6 +29,10 @@ function registerToClientCollection(client: Client, type: InteractionType, conte
 	switch (type) {
 		case 'command': {
 			content = content as ICommandField
+			name = content.data.name;
+		} break;
+		case 'contextMenu': {
+			content = content as IContextMenuField
 			name = content.data.name;
 		} break;
 		case 'button': {
