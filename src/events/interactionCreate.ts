@@ -14,7 +14,7 @@ import { ConsoleInstance } from 'better-console-utilities';
 
 import { EmitError, eventConsole } from '.';
 import { IInteractionTypeData, getHoistedOptions, getInteractionType } from '../utils/interactionUtils';
-import { GeneralData } from '../data';
+import { ColorTheme, GeneralData } from '../data';
 import { errorConsole, ErrorObject } from '../handlers/errorHandler';
 
 const thisConsole = new ConsoleInstance();
@@ -97,7 +97,7 @@ export default {
 			
 			if (interaction.options?.data && interaction.options.data.length > 0) {
 				const hoistedOptions = getHoistedOptions((interaction as CommandInteraction).options.data as CommandInteractionOption[]);
-				logFields.commandOptions = hoistedOptions.map(option => `[fg=dd8000]${option.name}[/>]:${option.value}`).join(' [st=dim,bold]|[/>] ');
+				logFields.commandOptions = hoistedOptions.map(option => `[fg=${ColorTheme.colors.orange.asHex}]${option.name}[/>]:${option.value}`).join(' [st=dim,bold]|[/>] ');
 			}
 			if (interaction.values && interaction.values.length > 0) {
 				logFields.commandValues = `[ ${interaction.values.join('[st=dim,bold], [/>]')} ]`
@@ -106,23 +106,24 @@ export default {
 
 			const logMessage: string[] = [];
 			logMessage.push([
-				`[fg=0080ff]${logFields.commandType}[/>]: [fg=00cc00 st=bold]${logFields.commandName}[/>]`,
-				`${(logFields.subCommandGroup) ? `[st=dim]>[/>] [fg=00cc66]${logFields.subCommandGroup}[/>]` : ''}`,
-				`${(logFields.subCommand) ? `[st=dim]>[/>] [fg=00cc66]${logFields.subCommand}[/>]` : ''}`
+				`[fg=${ColorTheme.colors.blue.asHex}]${logFields.commandType}[/>]: [fg=${ColorTheme.colors.green.asHex} st=bold]${logFields.commandName}[/>]`,
+				`${(logFields.subCommandGroup) ? `[st=dim]>[/>] [fg=${ColorTheme.colors.green.asHex}]${logFields.subCommandGroup}[/>]` : ''}`,
+				`${(logFields.subCommand) ? `[st=dim]>[/>] [fg=${ColorTheme.colors.green.asHex}]${logFields.subCommand}[/>]` : ''}`
 			].join(' '));
 
-			if (logFields.commandOptions) logMessage.push(`[fg=0080ff]options[/>]: ${logFields.commandOptions}`);
-			if (logFields.commandValues) logMessage.push(`[fg=0080ff]values[/>]: ${logFields.commandValues}`);
+			if (logFields.commandOptions) logMessage.push(`[fg=${ColorTheme.colors.blue.asHex}]options[/>]: ${logFields.commandOptions}`);
+			if (logFields.commandValues) logMessage.push(`[fg=${ColorTheme.colors.blue.asHex}]values[/>]: ${logFields.commandValues}`);
 
-			logMessage.push(`[fg=0080ff]user[/>]: [fg=cyan]${logFields.userName}[/>] (${logFields.userId})`);
-			logMessage.push(`[fg=0080ff]channel[/>]: [fg=ad1b70]${logFields.channelName}[/>] (${logFields.channelId})`);
+			logMessage.push(`[fg=${ColorTheme.colors.blue.asHex}]guild[/>]: [fg=${ColorTheme.colors.yellow.asHex}]${interaction.guild.name}[/>] (${interaction.guild.id})`);
+			logMessage.push(`[fg=${ColorTheme.colors.blue.asHex}]user[/>]: [fg=${ColorTheme.colors.cyan.asHex}]${logFields.userName}[/>] (${logFields.userId})`);
+			logMessage.push(`[fg=${ColorTheme.colors.blue.asHex}]channel[/>]: [fg=${ColorTheme.colors.purple.asHex}]${logFields.channelName}[/>] (${logFields.channelId})`);
 
 			if (logFields.response !== '') {
-				logMessage.push(`[fg=0080ff]Response[/>]:`);
+				logMessage.push(`[fg=${ColorTheme.colors.blue.asHex}]Response[/>]:`);
 				thisConsole.log('\n' + logMessage.join('\n'), response);
 			}
 			else {
-				thisConsole.log('\n' + logMessage.join('\n') + '\n'); '#ad1b70'
+				thisConsole.log('\n' + logMessage.join('\n') + '\n');
 			}
 		}
 	}
