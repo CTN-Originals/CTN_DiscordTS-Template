@@ -15,7 +15,6 @@ import {
 	UserSelectComponentObject,
 	AnyBuilder
 } from ".";
-import { cons } from "../..";
 
 type InteractionExecute<TInteraction extends Interaction = Interaction> = (interaction: TInteraction) => any|Promise<any>;
 
@@ -68,7 +67,7 @@ export class BaseButtonCollection extends BaseComponentCollection<IButtonCompone
 			out.push(new ButtonComponentObject(button.data).build())
 		}
 
-		return out
+		return out;
 	}
 }
 export class BaseSelectMenuCollection extends BaseComponentCollection<IAnySelectMenuComponentObject> {
@@ -88,7 +87,7 @@ export class BaseSelectMenuCollection extends BaseComponentCollection<IAnySelect
 			out.push(componentBuild);
 		}
 
-		return out
+		return out;
 	}
 }
 export class BaseEmbedCollection {}
@@ -136,13 +135,24 @@ export class CommandInteractionData<
 		return this._selectMenus;
 	}
 
+	public buildCommand(): ICommandInteractionDataBuild['command'] {
+		return new CommandObject(this.command.data).build();
+	}
+	public buildButtons(): ICommandInteractionDataBuild['buttons'] {
+		return this._buttons?.build() ?? [];
+	}
+	public buildSelectMenus(): ICommandInteractionDataBuild['selectMenus'] {
+		return this._selectMenus?.build() ?? [];
+	}
+
 	public build(): ICommandInteractionDataBuild {
 		return {
-			command: new CommandObject(this.command.data).build(),
-			buttons: this._buttons?.build() ?? [],
-			selectMenus: this._selectMenus?.build() ?? [],
+			command: this.buildCommand(),
+			buttons: this.buildButtons() ,
+			selectMenus: this.buildSelectMenus(),
 		}
 	}
+
 }
 
 //#region Test
