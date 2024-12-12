@@ -1,25 +1,23 @@
 import { 
-	BaseInteraction,
 	CommandInteraction,
-	Client,
 	InteractionType,
-	ComponentType,
 	Events,
-	TextChannel,
 	CommandInteractionOption,
 	ChatInputCommandInteraction,
 	Interaction,
 	MessageContextMenuCommandInteraction,
 	UserContextMenuCommandInteraction,
+	ButtonInteraction,
+	AnySelectMenuInteraction,
 } from 'discord.js';
 
 import { ConsoleInstance } from 'better-console-utilities';
 
-import { EmitError, eventConsole } from '.';
+import { EmitError } from '.';
 import { IInteractionTypeData, getHoistedOptions, getInteractionType } from '../utils/interactionUtils';
 import { ColorTheme, GeneralData } from '../data';
 import { errorConsole, ErrorObject } from '../handlers/errorHandler';
-import { IBaseInteractionType, ICommandField, IContextMenuField } from '../handlers/commandBuilder/data';
+import { IAnyInteractionField, IButtonCollectionField, ICommandField, IContextMenuField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
 
 const thisConsole = new ConsoleInstance();
 
@@ -40,19 +38,24 @@ export default {
 
 	async executeInteraction(interaction: Interaction, nameKey: string) {
 		let response: any = null;
-		try {
-			const command = interaction.client.commands.get(interaction[nameKey]);
 
-			//?? IDFK why it needs me to explicitly specify these types like this, but interaction is not an interaction cuz if interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction
-			switch (command?.interactionType) {
-				case IBaseInteractionType.ContextMenu: {
-					response = await (command as IContextMenuField).execute(interaction as MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction);
-				} break;
-				case IBaseInteractionType.Command:
-				default: {
-					response = await (command as ICommandField).execute(interaction as ChatInputCommandInteraction);
-				} break;
-			
+		try {
+			let data: IAnyInteractionField | undefined;
+			if (interaction.isChatInputCommand()) {
+				data = interaction.client.commands.get(interaction[nameKey]);
+				response = await (data as ICommandField).execute(interaction as ChatInputCommandInteraction);
+			}
+			else if (interaction.isContextMenuCommand()) {
+				data = interaction.client.contextMenus.get(interaction[nameKey]);
+				response = await (data as IContextMenuField).execute(interaction as MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction);
+			}
+			else if (interaction.isButton()) {
+				data = interaction.client.buttons.get(interaction[nameKey]);
+				response = await (data as IButtonCollectionField).execute(interaction as ButtonInteraction);
+			}
+			else if (interaction.isAnySelectMenu()) {
+				data = interaction.client.buttons.get(interaction[nameKey]);
+				response = await (data as unknown as ISelectMenuCollectionField).execute(interaction as AnySelectMenuInteraction);
 			}
 		} catch (err) {
 			const errorObject: ErrorObject = await EmitError(err as Error, interaction);
