@@ -1,4 +1,4 @@
-import { AnySelectMenuInteraction, ApplicationCommandOptionType, ButtonBuilder, ButtonInteraction, ChannelType, ChatInputCommandInteraction, ComponentType, EmbedBuilder, Interaction, SlashCommandBuilder } from "discord.js";
+import { AnySelectMenuInteraction, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonInteraction, ChannelType, ChatInputCommandInteraction, ComponentType, ContextMenuCommandBuilder, ContextMenuCommandInteraction, EmbedBuilder, Interaction, MessageContextMenuCommandInteraction, SlashCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 import {
 	ICommandObject,
 	IButtonComponentObject,
@@ -13,27 +13,30 @@ import {
 	RoleSelectComponentObject,
 	StringSelectComponentObject,
 	UserSelectComponentObject,
-	AnyBuilder
+	AnyBuilder,
+	IContextMenuCommandObject,
+	ContextMenuCommandObject
 } from ".";
 
-type InteractionExecute<TInteraction extends Interaction = Interaction> = (interaction: TInteraction) => any|Promise<any>;
+type InteractionExecute<TInteraction extends Interaction = Interaction> = (interaction: TInteraction) => any | Promise<any>;
 
-type CommandInteractionContentInput<TData extends (ICommandObject | IAnyComponentObject), TInteraction extends Interaction = Interaction> = Required<CommandInteractionContent<TData, TInteraction>>;
-export abstract class CommandInteractionContent<TData extends (ICommandObject | IAnyComponentObject), TInteraction extends Interaction = Interaction> {
-	public data: TData;
-	public execute: InteractionExecute<TInteraction>;
+export enum IBaseInteractionType {
+	Command = 1,
+	ContextMenu = 2,
+}
+export interface IBaseInteractionField<T extends IBaseInteractionType> {
+	interactionType?: T;
+}
 
-	constructor(input: CommandInteractionContentInput<TData, TInteraction>);
-	constructor(data: TData, execute: InteractionExecute<TInteraction>);
-	constructor(input_data: CommandInteractionContentInput<TData, TInteraction> | TData, execute?: InteractionExecute<TInteraction>) {
-		if (input_data instanceof CommandInteractionContent) {
-			this.data = input_data.data;
-			this.execute = input_data.execute;
-		} else {
-			this.data = input_data as TData;
-			this.execute = execute as InteractionExecute<TInteraction>;
-		}
-	}
+type DataExtendent<T extends IBaseInteractionType = IBaseInteractionType.Command> = T extends IBaseInteractionType.Command ? ICommandObject | IAnyComponentObject : IContextMenuCommandObject;
+type CommandInteractionContentInput<T extends IBaseInteractionType, TData extends DataExtendent<T>, TInteraction extends Interaction = Interaction> = RequiredFields<CommandInteractionContent<T, TData, TInteraction>, 'data' | 'execute'>;
+export interface CommandInteractionContent<
+	T extends IBaseInteractionType,
+	TData extends DataExtendent<T>,
+	TInteraction extends Interaction = Interaction
+> extends IBaseInteractionField<T>  {
+	data: TData;
+	execute: InteractionExecute<TInteraction>;
 }
 
 //#region Base Classes
@@ -43,19 +46,26 @@ type CheckFields<T, TField> = {
 	any : TField
 }
 
-export type ICommandField = CommandInteractionContentInput<ICommandObject, ChatInputCommandInteraction>;
+export type ICommandField = CommandInteractionContentInput<IBaseInteractionType.Command, ICommandObject, ChatInputCommandInteraction>;
+export type IContextMenuField = CommandInteractionContentInput<IBaseInteractionType.ContextMenu, IContextMenuCommandObject, MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction>;
 
-export type IButtonCollectionField = CommandInteractionContentInput<IButtonComponentObject, ButtonInteraction>
+export type IButtonCollectionField = CommandInteractionContentInput<IBaseInteractionType.Command, IButtonComponentObject, ButtonInteraction>
 export type IButtonCollection<T> = CheckFields<T, IButtonCollectionField>
 
-export type ISelectMenuCollectionField = CommandInteractionContentInput<IAnySelectMenuComponentObject, AnySelectMenuInteraction>
+export type ISelectMenuCollectionField = CommandInteractionContentInput<IBaseInteractionType.Command, IAnySelectMenuComponentObject, AnySelectMenuInteraction>
 export type ISelectMenuCollection<T> = CheckFields<T, ISelectMenuCollectionField>
+
+export type IAnyInteractionField =
+| ICommandField
+| IContextMenuField
+| IButtonCollectionField
+| ISelectMenuCollectionField;
 
 export class BaseComponentCollection<TData extends IButtonComponentObject | IAnySelectMenuComponentObject> {
 	public asArray() {
-		const out: CommandInteractionContentInput<TData>[] = []
+		const out: CommandInteractionContentInput<IBaseInteractionType.Command, TData>[] = []
 		for (const field in this) {
-			out.push(this[field] as CommandInteractionContentInput<TData>)
+			out.push(this[field] as CommandInteractionContentInput<IBaseInteractionType.Command, TData>)
 		}
 
 		return out;
@@ -103,7 +113,7 @@ type ICommandInteractionData<
 	Partial<Pick<CommandInteractionData<TButtons, TSelectMenus, TEmbeds>, 'buttons' | 'selectMenus' | 'embeds'>> & Pick<CommandInteractionData<TButtons, TSelectMenus, TEmbeds>, 'command'>, 'command'
 >;
 
-type ICommandInteractionDataBuild = { command: SlashCommandBuilder, buttons: ButtonBuilder[], selectMenus: AnySelectMenuComponentBuilder[] };
+type ICommandInteractionDataBuild = { command: SlashCommandBuilder | ContextMenuCommandBuilder, buttons: ButtonBuilder[], selectMenus: AnySelectMenuComponentBuilder[] };
 type IOptionalCollection<Field, Extend> = Field extends Extend ? Field : undefined
 type IOptionalCollectionObject<Field, Extend> = Field extends Extend ? Omit<Field, 'asArray' | 'build'> : undefined
 export class CommandInteractionData<
@@ -111,13 +121,17 @@ export class CommandInteractionData<
 	TSelectMenus extends BaseSelectMenuCollection = never,
 	TEmbeds extends BaseEmbedCollection = never
 > {
-	public command: ICommandField;
+	public interactionType: IBaseInteractionType;
+	// public command: typeof this.interactionType extends IBaseInteractionType.Command ? ICommandField : IContextMenuField;
+	public command: ICommandField | IContextMenuField;
 	private _buttons?: TButtons;
 	private _selectMenus?: TSelectMenus;
 	private _embeds?: TEmbeds;
 
+
 	constructor(input: ICommandInteractionData<TButtons, TSelectMenus, TEmbeds>) {
 		this.command = input.command;
+		this.interactionType = input.command.interactionType ?? IBaseInteractionType.Command;
 
 		if (input.buttons) { this._buttons = input.buttons as IOptionalCollection<TButtons, BaseButtonCollection>; }
 		if (input.selectMenus) { this._selectMenus = input.selectMenus as IOptionalCollection<TSelectMenus, BaseSelectMenuCollection>; }
@@ -160,7 +174,12 @@ export class CommandInteractionData<
 
 	//#region Build
 	public buildCommand(): ICommandInteractionDataBuild['command'] {
-		return new CommandObject(this.command.data).build();
+		if (this.interactionType === IBaseInteractionType.Command) {
+			return new CommandObject((this.command as unknown as ICommandField).data).build();
+		}
+		else {
+			return new ContextMenuCommandObject((this.command as unknown as IContextMenuField).data).build();
+		}
 	}
 	public buildButtons(): ICommandInteractionDataBuild['buttons'] {
 		return this._buttons?.build() ?? [];
@@ -240,9 +259,11 @@ class EmbedCollection extends BaseEmbedCollection {
 
 const cmd = new CommandInteractionData<ButtonCollection, SelectMenuCollection, EmbedCollection>({
 	command: {
+		interactionType: IBaseInteractionType.Command,
 		data: {
 			name: 'a',
 			description: 'awd',
+	
 			options: [
 				{
 					type: ApplicationCommandOptionType.String,
@@ -251,14 +272,23 @@ const cmd = new CommandInteractionData<ButtonCollection, SelectMenuCollection, E
 				}
 			]
 		},
-		async execute(interaction: ChatInputCommandInteraction) {
-			// cmd.embeds
+		execute: async function (interaction: ChatInputCommandInteraction) {
 			return true
 		}
 	},
+	// command: {
+	// 	interactionType: IBaseInteractionType.ContextMenu,
+	// 	data: {
+	// 		name: 'a',
+	// 		type: ApplicationCommandType.Message,
+	// 	},
+	// 	execute: async function (interaction: MessageContextMenuCommandInteraction) {
+	// 		return true
+	// 	}
+	// },
 	buttons: new ButtonCollection(),
 	selectMenus: new SelectMenuCollection(),
 	embeds: new EmbedCollection()
-})
+});
 
 //#endregion

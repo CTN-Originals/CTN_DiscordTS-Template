@@ -18,6 +18,7 @@ import {
 import {
 	CommandInteractionData,
 	ICommandField,
+	IContextMenuField,
 	IButtonCollectionField,
 	IButtonCollection,
 	ISelectMenuCollectionField,
@@ -26,11 +27,11 @@ import {
 	BaseButtonCollection,
 	BaseSelectMenuCollection,
 	BaseEmbedCollection,
-} from './data'
+} from "./data";
 
 import {
 	CommandObjectInput
-} from './base'
+} from "./base";
 
 import {
 	CommandObject,
@@ -40,6 +41,11 @@ import {
 	SubCommandObject,
 	ICommandObject,
 } from "./command";
+
+import {
+	IContextMenuCommandObject,
+	ContextMenuCommandObject,
+} from "./contextMenus";
 
 import { 
 	AnySlashCommandOption,
@@ -76,6 +82,7 @@ import {
 export {
 	CommandInteractionData,
 	ICommandField,
+	IContextMenuField,
 	IButtonCollectionField,
 	IButtonCollection,
 	ISelectMenuCollectionField,
@@ -96,6 +103,9 @@ export {
 	
 	ISubCommandGroupObject,
 	SubCommandGroupObject,
+
+	IContextMenuCommandObject,
+	ContextMenuCommandObject,
 	
 	AnySlashCommandOption,
 	AttachmentOptionObject,
