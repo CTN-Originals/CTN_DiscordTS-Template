@@ -8,6 +8,9 @@ import {
 	TextChannel,
 	CommandInteractionOption,
 	ChatInputCommandInteraction,
+	Interaction,
+	MessageContextMenuCommandInteraction,
+	UserContextMenuCommandInteraction,
 } from 'discord.js';
 
 import { ConsoleInstance } from 'better-console-utilities';
@@ -16,6 +19,7 @@ import { EmitError, eventConsole } from '.';
 import { IInteractionTypeData, getHoistedOptions, getInteractionType } from '../utils/interactionUtils';
 import { ColorTheme, GeneralData } from '../data';
 import { errorConsole, ErrorObject } from '../handlers/errorHandler';
+import { IBaseInteractionType, ICommandField, IContextMenuField } from '../handlers/commandBuilder/data';
 
 const thisConsole = new ConsoleInstance();
 
@@ -23,9 +27,7 @@ export default {
 	name: Events.InteractionCreate,
 	once: false,
 
-    /** @param {CommandInteraction} interaction The command interaction */
-	async execute(interaction: BaseInteraction) {
-		// thisConsole.logDefault(interaction);
+	async execute(interaction: Interaction) {
 		const interactionType = getInteractionType(interaction);
 		
 		if (!interactionType.commandKey || interactionType.type == InteractionType.Ping) {
@@ -36,11 +38,22 @@ export default {
 		await this.executeInteraction(interaction, interactionType.commandKey);
 	},
 
-	async executeInteraction(interaction: BaseInteraction, nameKey: string) {
+	async executeInteraction(interaction: Interaction, nameKey: string) {
 		let response: any = null;
 		try {
 			const command = interaction.client.commands.get(interaction[nameKey]);
-			response = await command.execute(interaction);
+
+			//?? IDFK why it needs me to explicitly specify these types like this, but interaction is not an interaction cuz if interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction interaction is not an interaction
+			switch (command?.interactionType) {
+				case IBaseInteractionType.ContextMenu: {
+					response = await (command as IContextMenuField).execute(interaction as MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction);
+				} break;
+				case IBaseInteractionType.Command:
+				default: {
+					response = await (command as ICommandField).execute(interaction as ChatInputCommandInteraction);
+				} break;
+			
+			}
 		} catch (err) {
 			const errorObject: ErrorObject = await EmitError(err as Error, interaction);
 
