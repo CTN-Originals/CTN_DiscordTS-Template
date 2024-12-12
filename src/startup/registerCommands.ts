@@ -2,7 +2,8 @@ import * as fs from 'node:fs';
 
 import { SlashCommandBuilder } from 'discord.js'; 
 
-import { cons, errorConsole } from '..';
+import { cons } from '..';
+import { errorConsole } from '../handlers/errorHandler';
 
 // Get command files
 export function getCommandFiles(client: any, dir: string) {
