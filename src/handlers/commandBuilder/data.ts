@@ -43,6 +43,8 @@ type CheckFields<T, TField> = {
 	any : TField
 }
 
+export type ICommandField = CommandInteractionContentInput<ICommandObject, ChatInputCommandInteraction>;
+
 export type IButtonCollectionField = CommandInteractionContentInput<IButtonComponentObject, ButtonInteraction>
 export type IButtonCollection<T> = CheckFields<T, IButtonCollectionField>
 
@@ -108,12 +110,11 @@ export class CommandInteractionData<
 	TButtons extends BaseButtonCollection = never,
 	TSelectMenus extends BaseSelectMenuCollection = never,
 	TEmbeds extends BaseEmbedCollection = never
-> { //TODO think of a better name for this class (cant be CommandData as that may conflict with other discordjs classes)
-	public command: CommandInteractionContentInput<ICommandObject, ChatInputCommandInteraction>;
-	// public components: ICommandInteractionComponents = {};
+> {
+	public command: ICommandField;
 	private _buttons?: TButtons;
 	private _selectMenus?: TSelectMenus;
-	public _embeds?: TEmbeds;
+	private _embeds?: TEmbeds;
 
 	constructor(input: ICommandInteractionData<TButtons, TSelectMenus, TEmbeds>) {
 		this.command = input.command;
@@ -123,16 +124,7 @@ export class CommandInteractionData<
 		if (input.embeds) { this._embeds = input.embeds as IOptionalCollection<TEmbeds, BaseEmbedCollection> }
 	}
 
-	public set buttons(value: TButtons) {
-		this._buttons = value;
-	}
-	public set selectMenus(value: TSelectMenus) {
-		this._selectMenus = value;
-	}
-	public set embeds(value: TEmbeds) {
-		this._embeds = value;
-	}
-
+	//#region Getters
 	public get buttons(): IOptionalCollectionObject<TButtons, BaseButtonCollection> {
 		return this._buttons as IOptionalCollectionObject<TButtons, BaseButtonCollection>;
 	}
@@ -143,6 +135,30 @@ export class CommandInteractionData<
 		return this._embeds as IOptionalCollectionObject<TEmbeds, BaseEmbedCollection>;
 	}
 
+	public get buttonCollection(): IOptionalCollection<TButtons, BaseButtonCollection> {
+		return this._buttons as IOptionalCollection<TButtons, BaseButtonCollection>;
+	}
+	public get selectMenuCollection(): IOptionalCollection<TSelectMenus, BaseSelectMenuCollection> {
+		return this._selectMenus as IOptionalCollection<TSelectMenus, BaseSelectMenuCollection>;
+	}
+	public get embedCollection(): IOptionalCollection<TEmbeds, BaseEmbedCollection> {
+		return this._embeds as IOptionalCollection<TEmbeds, BaseEmbedCollection>;
+	}
+	//#endregion
+
+	//#region Setters
+	public set buttons(value: TButtons) {
+		this._buttons = value;
+	}
+	public set selectMenus(value: TSelectMenus) {
+		this._selectMenus = value;
+	}
+	public set embeds(value: TEmbeds) {
+		this._embeds = value;
+	}
+	//#endregion
+
+	//#region Build
 	public buildCommand(): ICommandInteractionDataBuild['command'] {
 		return new CommandObject(this.command.data).build();
 	}
@@ -160,7 +176,7 @@ export class CommandInteractionData<
 			selectMenus: this.buildSelectMenus(),
 		}
 	}
-
+	//#endregion
 }
 
 //#region Test

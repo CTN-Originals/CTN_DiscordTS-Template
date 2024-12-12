@@ -1,9 +1,72 @@
 import * as fs from 'node:fs';
 
-import { SlashCommandBuilder } from 'discord.js'; 
+import { Client, Collection } from 'discord.js'; 
 
 import { cons } from '..';
-import { errorConsole } from '../handlers/errorHandler';
+import { BaseButtonCollection, BaseSelectMenuCollection, CommandInteractionData, IButtonCollectionField } from '../handlers/commandBuilder';
+import { EmitError } from '../events';
+import { ColorTheme } from '../data';
+import { IAnyInteractionField, ICommandField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
+
+type InteractionType =
+| 'command'
+| 'button'
+| 'selectMenu';
+
+function registeredLogString(type: InteractionType, name: string, dir?: string, file?: string): string {
+	return [
+		`Registering [fg=${ColorTheme.colors.blue.asHex}]${type}[/>]: `,
+		`[fg=${ColorTheme.colors.green.asHex}]${name}[/>] - `,
+		(dir !== undefined) ? `.[fg=${ColorTheme.colors.yellow.asHex}]${dir.replaceAll('commands', '')}[/>]` : ``,
+		(file !== undefined) ? `/[fg=${ColorTheme.colors.orange.asHex}]${file}[/>]` : ``,
+	].join('');
+}
+
+function registerToClientCollection(client: Client, type: InteractionType, content: IAnyInteractionField, dir?: string, file?: string) {
+	let name: string;
+	let collection: string = type + 's';
+	switch (type) {
+		case 'command': {
+			content = content as ICommandField
+			name = content.data.name;
+		} break;
+		case 'button': {
+			content = content as IButtonCollectionField
+			name = content.data.customId;
+		} break;
+		case 'selectMenu': {
+			content = content as ISelectMenuCollectionField
+			name = content.data.customId;
+		} break;
+	}
+
+	if ((client[collection] as Collection<string, IAnyInteractionField>).get(name) !== undefined) {
+		EmitError(new Error(`Duplicate Interaction name detected. The name "${name}" already exists in collection "${collection}"`))
+		return;
+	}
+
+	cons.log(registeredLogString('command', name, dir, file));
+
+	client[collection].set(name, content);
+}
+
+//? Register the command files to the client
+function registerCommand(client: Client, dir: string, file: string) {
+	const commandData = require(`../${dir}/${file}`).default as CommandInteractionData;
+	if (!(commandData instanceof CommandInteractionData)) {
+		EmitError(new Error(`Command file "./${dir}/${file}" is not an instance of "CommandInteractionData"`));
+		return;
+	}
+
+	registerToClientCollection(client, 'command', commandData.command, dir, file);
+
+	for (const button of (commandData.buttonCollection as BaseButtonCollection).asArray()) {
+		registerToClientCollection(client, 'button', button, dir, file);
+	}
+	for (const select of (commandData.selectMenuCollection as BaseSelectMenuCollection).asArray()) {
+		registerToClientCollection(client, 'selectMenu', select, dir, file);
+	}
+}
 
 // Get command files
 export function getCommandFiles(client: any, dir: string) {
@@ -17,60 +80,6 @@ export function getCommandFiles(client: any, dir: string) {
 		else if (file.match(/[a-zA-Z0-9 -_]+/i)) {
 			if (file == 'archive') { continue; } //* Skip the archive folder
 			getCommandFiles(client, dir + '/' + file);
-		}
-	}
-}
-
-export interface IInteraction {
-	command: { data: SlashCommandBuilder, execute: (...args: any) => {} },
-	selectMenus?: { data: SlashCommandBuilder, execute: (...args: any) => {} }[],
-	buttons?: { data: SlashCommandBuilder, execute: (...args: any) => {} }[],
-};
-//? Register the command files to the client
-function registerCommand(client: any, dir: string, file: string) {
-	const commandFile = require(`../${dir}/${file}`).default;
-
-	const interaction: IInteraction = {
-		command: { data: new SlashCommandBuilder(), execute: (...args: any): any => {}},
-		selectMenus: [],
-		buttons: [],
-	};
-	
-	if ("command" in commandFile) {
-		interaction.command = commandFile.command;
-		for (const interactionType in interaction) {
-			if (interactionType == "command") { continue; }
-			if (interactionType in commandFile) {
-				interaction[interactionType] = commandFile[interactionType];
-			}
-		}
-	}
-	else {
-		interaction.command = commandFile;
-	}
-
-	if (!interaction.command.data) {
-		errorConsole.log(`No command data found for [fg=orange]${file}[/>]`);
-		return;
-	}
-	if (!interaction.command.execute) {
-		errorConsole.log(`No command execute function found for [fg=orange]${file}[/>]`);
-		return;
-	}
-
-	//? Set a new item in the Collection
-	//? With the key as the command name and the value as the exported module
-	client.commands.set(interaction.command.data.name, interaction.command);
-	cons.log(`Registering [fg=0080ff]Command[/>]: [fg=green]${interaction.command.data.name}[/>] - [fg=cyan]${file}[/>]`);
-
-	//? Check if there are any components to register
-	for (const interactionType in interaction) {
-		if (interactionType == "command") { continue; }
-		if (interaction[interactionType] && interaction[interactionType].length > 0) {
-			for (const component of interaction[interactionType]) {
-				client.commands.set(component.data.name, component);
-				cons.log(`Registering [fg=0080ff]${interactionType}[/>]: [fg=green]${component.data.name}[/>] - [fg=cyan]${file}[/>]`);
-			}
 		}
 	}
 }

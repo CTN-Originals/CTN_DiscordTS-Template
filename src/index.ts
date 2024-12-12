@@ -45,6 +45,8 @@ async function Start() {
 	await db.connect();
 
 	client.commands = new Collection();
+	client.buttons = new Collection();
+	client.selectMenus = new Collection();
 	
 	getEventFiles(client, 'events');
 	getCommandFiles(client, 'commands');
