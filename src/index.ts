@@ -3,8 +3,8 @@ import { Client, Collection, WebhookClient } from 'discord.js';
 
 import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile, defaultFilterKeys } from 'better-console-utilities';
 
-import { getEventFiles } from './startup/registerEvents';
-import { getCommandFiles } from './startup/registerCommands';
+import { getEventFiles } from './register/registerEvents';
+import { getCommandFiles } from './register/registerCommands';
 import { GeneralData } from './data';
 
 import * as deployScript from './deployCommands';
