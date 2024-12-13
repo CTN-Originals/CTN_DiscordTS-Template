@@ -1,10 +1,11 @@
 import { APIMessageComponentEmoji, ButtonBuilder, ButtonStyle, ChannelSelectMenuBuilder, ChannelType, ComponentType, MentionableSelectMenuBuilder, RoleSelectMenuBuilder, SelectMenuComponentOptionData, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
-import { CommandObjectInput } from ".";
+import { AnyComponentBuilder, AnySelectMenuComponentBuilder } from ".";
+import { EmitError } from "../../events";
 
-export type RequiredBaseFields = 'customId';
-export type OptionalBaseFields = 'disabled';
+type RequiredBaseFields = 'customId';
+type OptionalBaseFields = 'disabled';
 
-export type ComponentObjectInput<
+type ComponentObjectInput<
     T extends BaseComponentObject,
     Optional extends keyof T = never,
     Required extends keyof T = never
@@ -12,34 +13,6 @@ export type ComponentObjectInput<
     Partial<Pick<T, Optional | OptionalBaseFields>> & Pick<T, RequiredBaseFields | Required>,
     RequiredBaseFields | Required
 >;
-
-export type AnyComponentBuilder = 
- | ButtonBuilder
- | StringSelectMenuBuilder
- | UserSelectMenuBuilder
- | RoleSelectMenuBuilder
- | MentionableSelectMenuBuilder
- | ChannelSelectMenuBuilder;
-
-export type AnyComponentObject = 
- | ButtonComponentObject
- | StringSelectComponentObject
- | UserSelectComponentObject
- | RoleSelectComponentObject
- | MentionableSelectComponentObject
- | ChannelSelectComponentObject;
-
-export type IAnyComponentObject = 
- | IButtonComponentObject
- | IStringSelectComponentObject
- | IUserSelectComponentObject
- | IRoleSelectComponentObject
- | IMentionableSelectComponentObject
- | IChannelSelectComponentObject;
-
-export type AnySelectMenuComponentBuilder = Exclude<AnyComponentBuilder, ButtonBuilder>;
-export type AnySelectMenuComponentObject = Exclude<AnyComponentObject, ButtonComponentObject>;
-export type IAnySelectMenuComponentObject = Exclude<IAnyComponentObject, IButtonComponentObject>;
 
 //#region Base Classes
 type IBaseComponentObject = ComponentObjectInput<BaseComponentObject>
@@ -68,9 +41,15 @@ export class BaseComponentObject {
 
 		return component;
 	}
+
+	protected onError(message: string): string {
+		const err = new Error(message)
+		EmitError(err);
+		return err.message;
+	}
 }
 
-export type SelectComponentObjectInput<
+type SelectComponentObjectInput<
 	T extends BaseSelectComponentObject,
 	Optional extends keyof T = never,
 	Required extends keyof T = never
@@ -78,10 +57,10 @@ export type SelectComponentObjectInput<
 	Partial<Pick<T, OptionalBaseFields | Optional | 'minValues' | 'maxValues' | 'placeholder'>> & Pick<T, RequiredBaseFields | Required | 'type'>,
 	RequiredBaseFields | Required | 'type'
 >;
-export interface IBaseSelectComponentObject extends ComponentObjectInput<BaseSelectComponentObject, 'minValues' | 'maxValues' | 'placeholder', 'type'> {
+interface IBaseSelectComponentObject extends ComponentObjectInput<BaseSelectComponentObject, 'minValues' | 'maxValues' | 'placeholder', 'type'> {
 	type: ComponentType;
 }
-export class BaseSelectComponentObject extends BaseComponentObject {
+class BaseSelectComponentObject extends BaseComponentObject {
 	public type!: ComponentType;
 	public minValues: number = 1;
 	public maxValues: number = 1;
@@ -106,13 +85,19 @@ export class BaseSelectComponentObject extends BaseComponentObject {
 
 
 //#region Button
-export interface IButtonComponentObject extends ComponentObjectInput<ButtonComponentObject, 'label' | 'style' | 'emoji'> {
+interface IButtonComponentObjectInput extends ComponentObjectInput<ButtonComponentObject, 'label' | 'style' | 'emoji'> {
 	type?: ComponentType.Button;
 }
+export type IButtonComponentObject = IButtonComponentObjectInput & Either<{label: string}, {emoji: APIMessageComponentEmoji}> //? Require either label, or emoji to be present
 export class ButtonComponentObject extends BaseComponentObject {
 	public label?: string;
 	public style: ButtonStyle = ButtonStyle.Primary;
 	public emoji?: APIMessageComponentEmoji;
+
+	constructor(input: IButtonComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
 
 	public build() {
 		const component = this.buildBase(new ButtonBuilder());
@@ -134,6 +119,11 @@ export interface IStringSelectComponentObject extends SelectComponentObjectInput
 export class StringSelectComponentObject extends BaseSelectComponentObject {
 	public options?: SelectMenuComponentOptionData[];
 
+	constructor(input: IStringSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
 	public build() {
 		const component = this.buildSelectMenuBase(new StringSelectMenuBuilder());
 
@@ -149,6 +139,11 @@ export interface IUserSelectComponentObject extends SelectComponentObjectInput<U
 export class UserSelectComponentObject extends BaseSelectComponentObject {
 	public defaultValues?: string[]
 
+	constructor(input: IUserSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
 	public build() {
 		const component = this.buildSelectMenuBase(new UserSelectMenuBuilder());
 		
@@ -163,6 +158,11 @@ export interface IRoleSelectComponentObject extends SelectComponentObjectInput<R
 }
 export class RoleSelectComponentObject extends BaseSelectComponentObject {
 	public defaultValues?: string[]
+
+	constructor(input: IRoleSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
 
 	public build() {
 		const component = this.buildSelectMenuBase(new RoleSelectMenuBuilder());
@@ -180,6 +180,11 @@ export class MentionableSelectComponentObject extends BaseSelectComponentObject 
 	public defaultRoles?: string[]
 	public defaultUsers?: string[]
 
+	constructor(input: IMentionableSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
+
 	public build() {
 		const component = this.buildSelectMenuBase(new MentionableSelectMenuBuilder());
 		
@@ -196,6 +201,11 @@ export interface IChannelSelectComponentObject extends SelectComponentObjectInpu
 export class ChannelSelectComponentObject extends BaseSelectComponentObject {
 	public defaultValues?: string[]
 	public channelTypes?: ChannelType[];
+
+	constructor(input: IChannelSelectComponentObject) {
+		super(input);
+		this.assignFields(input);
+	}
 
 	public build() {
 		const component = this.buildSelectMenuBase(new ChannelSelectMenuBuilder());

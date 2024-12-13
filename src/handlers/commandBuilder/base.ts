@@ -1,5 +1,5 @@
 import { LocalizationMap, SlashCommandSubcommandGroupBuilder, ApplicationCommandOption, ApplicationCommandOptionType } from "discord.js";
-import { AnySlashCommandBuilder, CommandObjectInput, nameAllowedCharacters } from ".";
+import { AnySlashCommandBuilder } from ".";
 import { 
 	AttachmentOptionObject,
 	BooleanOptionObject,
@@ -14,7 +14,23 @@ import {
 } from ".";
 import { EmitError } from "../../events";
 
+const nameAllowedCharacters = [
+	'-', '_',
+	"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+	'0','1','2','4','5','6','7','8','9'
+];
 
+type RequiredBaseFields = 'name' | 'description';
+type OptionalBaseFields = 'name_localizations' | 'description_localizations';
+
+export type CommandObjectInput<
+    T extends BaseCommandObject,
+    Optional extends keyof T = never,
+    Required extends keyof T = never
+> = RequiredFields<
+    Partial<Pick<T, Optional | OptionalBaseFields>> & Pick<T, RequiredBaseFields | Required>,
+    RequiredBaseFields | Required
+>;
 
 export type IBaseCommandObject = CommandObjectInput<BaseCommandObject>
 export class BaseCommandObject {

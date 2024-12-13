@@ -1,10 +1,38 @@
-import { ActionRowComponentOptions, ButtonComponentData, ButtonStyle, ChatInputCommandInteraction, ComponentType, Embed, EmbedBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
-
-import { BaseCommandObject } from "./base";
+//#region Imports
 import {
-	BaseInteractionEmbeds,
-	CommandInteractionData
-} from './data'
+	ButtonBuilder,
+	ChannelSelectMenuBuilder,
+	MentionableSelectMenuBuilder,
+	RoleSelectMenuBuilder,
+	SlashCommandBuilder,
+	SlashCommandSubcommandBuilder,
+	SlashCommandSubcommandGroupBuilder,
+	StringSelectMenuBuilder,
+	UserSelectMenuBuilder
+} from "discord.js";
+
+import {
+	BaseCommandObject
+} from "./base";
+
+import {
+	CommandInteractionData,
+	ICommandField,
+	IContextMenuField,
+	IButtonCollectionField,
+	IButtonCollection,
+	ISelectMenuCollectionField,
+	ISelectMenuCollection,
+	BaseComponentCollection,
+	BaseButtonCollection,
+	BaseSelectMenuCollection,
+	BaseEmbedCollection,
+} from "./data";
+
+import {
+	CommandObjectInput
+} from "./base";
+
 import {
 	CommandObject,
 	ISubCommandGroupObject,
@@ -14,7 +42,11 @@ import {
 	ICommandObject,
 } from "./command";
 
-// import * as options from "./options";
+import {
+	IContextMenuCommandObject,
+	ContextMenuCommandObject,
+} from "./contextMenus";
+
 import { 
 	AnySlashCommandOption,
 	AttachmentOptionObject,
@@ -29,20 +61,39 @@ import {
 } from "./options";
 
 import {
-	BaseSelectComponentObject,
 	ButtonComponentObject,
 	IButtonComponentObject,
-	AnyComponentBuilder,
-	AnyComponentObject,
-	AnySelectMenuComponentObject,
-	AnySelectMenuComponentBuilder
+
+	MentionableSelectComponentObject,
+	RoleSelectComponentObject,
+	StringSelectComponentObject,
+	UserSelectComponentObject,
+	IChannelSelectComponentObject,
+	IMentionableSelectComponentObject,
+	IRoleSelectComponentObject,
+	IStringSelectComponentObject,
+	IUserSelectComponentObject,
+	ChannelSelectComponentObject
 } from "./components";
 
+//#endregion
+
+//#region Exports
 export {
-	BaseInteractionEmbeds,
 	CommandInteractionData,
+	ICommandField,
+	IContextMenuField,
+	IButtonCollectionField,
+	IButtonCollection,
+	ISelectMenuCollectionField,
+	ISelectMenuCollection,
+	BaseComponentCollection,
+	BaseButtonCollection,
+	BaseSelectMenuCollection,
+	BaseEmbedCollection,
 
 	BaseCommandObject,
+	CommandObjectInput,
 	
 	ICommandObject,
 	CommandObject,
@@ -52,6 +103,9 @@ export {
 	
 	ISubCommandGroupObject,
 	SubCommandGroupObject,
+
+	IContextMenuCommandObject,
+	ContextMenuCommandObject,
 	
 	AnySlashCommandOption,
 	AttachmentOptionObject,
@@ -64,33 +118,50 @@ export {
 	StringOptionObject,
 	UserOptionObject,
 
-	AnyComponentBuilder,
-	AnyComponentObject,
 	IButtonComponentObject,
 	ButtonComponentObject,
-	AnySelectMenuComponentObject,
-	AnySelectMenuComponentBuilder
+
+	ChannelSelectComponentObject,
+	MentionableSelectComponentObject,
+	RoleSelectComponentObject,
+	StringSelectComponentObject,
+	UserSelectComponentObject
 }
 
-export type AnySlashCommandBuilder = 
-	SlashCommandBuilder | 
-	SlashCommandSubcommandBuilder | 
-	SlashCommandSubcommandGroupBuilder;
+export type AnySlashCommandBuilder =
+ | SlashCommandBuilder
+ | SlashCommandSubcommandBuilder
+ | SlashCommandSubcommandGroupBuilder;
 
-export type RequiredBaseFields = 'name' | 'description';
-export type OptionalBaseFields = 'name_localizations' | 'description_localizations';
+export type AnyBuilder = 
+ | AnySlashCommandBuilder
+ | AnyComponentBuilder;
 
-export type CommandObjectInput<
-    T extends BaseCommandObject,
-    Optional extends keyof T = never,
-    Required extends keyof T = never
-> = RequiredFields<
-    Partial<Pick<T, Optional | OptionalBaseFields>> & Pick<T, RequiredBaseFields | Required>,
-    RequiredBaseFields | Required
->;
+export type AnyComponentBuilder = 
+ | ButtonBuilder
+ | StringSelectMenuBuilder
+ | UserSelectMenuBuilder
+ | RoleSelectMenuBuilder
+ | MentionableSelectMenuBuilder
+ | ChannelSelectMenuBuilder;
 
-export const nameAllowedCharacters = [
-	'-', '_',
-	"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
-	'0','1','2','4','5','6','7','8','9'
-];
+export type AnyComponentObject = 
+ | ButtonComponentObject
+ | StringSelectComponentObject
+ | UserSelectComponentObject
+ | RoleSelectComponentObject
+ | MentionableSelectComponentObject
+ | ChannelSelectComponentObject;
+
+export type IAnyComponentObject = 
+ | IButtonComponentObject
+ | IStringSelectComponentObject
+ | IUserSelectComponentObject
+ | IRoleSelectComponentObject
+ | IMentionableSelectComponentObject
+ | IChannelSelectComponentObject;
+
+export type AnySelectMenuComponentBuilder = Exclude<AnyComponentBuilder, ButtonBuilder>;
+export type AnySelectMenuComponentObject = Exclude<AnyComponentObject, ButtonComponentObject>;
+export type IAnySelectMenuComponentObject = Exclude<IAnyComponentObject, IButtonComponentObject>;
+//#endregion
