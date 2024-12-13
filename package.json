@@ -1,34 +1,32 @@
 {
 	"name": "ctn_discordts-template",
 	"author": "CTNOriginals",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "A Template for a discord bot using discordjs in typescript.",
-	"keywords": [
-		"discord",
-		"discord.js",
-		"discordts",
-		"typescript",
-		"ctn",
-		"ctnoriginals",
-		"discord.js-template",
-		"discordts-template",
-		"typescript-template"
-	],
 	"license": "BSD-3-Clause",
 	"main": "dist/index.js",
+	"homepage": "https://github.com/CTN-Originals/CTN_DiscordTS-Template",
 	"scripts": {
-		"start:dev": "nodemon src/index.ts",
-		"build": "rimraf ./dist && tsc",
+		"build": "tsc",
+		"fullbuild": "rimraf ./dist && tsc",
+		"build:start": "npm run build && npm run start",
+		
+		"dev:deploy": "npm run build && node .\\dist\\index.js --deploy --guild=DEV_GUILD_ID deployAll=true",
+		"deploy": "npm run build && node .\\dist\\index.js --deploy --deployAllGlobal=true",
+		
+		"dev:deploy:start": "npm run build && node .\\dist\\index.js --deploy --guild=DEV_GUILD_ID deployAll=true && npm start",
+
 		"start": "node dist/index.js",
-		"build:start": "npm run build && npm run start"
+		"start:dev": "nodemon src/index.ts",
+		"start:tsx": "tsx watch src/index.ts",
+
+		"test": "tsx watch tests/index.ts --test"
 	},
 	"dependencies": {
 		"better-console-utilities": "^1.1.0",
 		"discord.js": "^14.14.1",
 		"dotenv": "^16.3.1",
-		"mongoose": "^8.8.2",
-		"snowflake-generator": "^1.0.2",
-		"undici": "^6.6.2"
+		"mongoose": "^8.8.2"
 	},
 	"devDependencies": {
 		"@types/node": "^20.10.6",

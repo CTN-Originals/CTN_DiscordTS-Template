@@ -1,6 +1,12 @@
 .vscode
 package-lock.json
 tmp
+archive
+tests
+resources
+
+src/commands/test/**/*
+!src/commands/test/ping.*
 
 # Logs
 logs

@@ -1,11 +1,12 @@
-import { REST, Routes } from 'discord.js';
+import { Client, REST, Routes } from 'discord.js';
 
-import * as fs from 'node:fs';
 import 'dotenv/config';
+import * as fs from 'node:fs';
+import path = require('node:path');
 
 import { cons } from '.';
 import { GeneralData } from './data'
-
+import { ICommandObject, IContextMenuCommandObject } from './handlers/commandBuilder';
 
 class DeployInstruction {
 	public guildId: string | undefined;
@@ -33,59 +34,31 @@ class DeployInstruction {
 	}
 }
 
-interface CommandData {
-	name: string;
-}
-
-const commandData: CommandData[] = [];
-const token: string = process.env.TOKEN as string;
 const clientID: string = process.env.CLIENT_ID as string;
+const rest = new REST({ version: '9' }).setToken(process.env.TOKEN!);
 
-
-function getCommandFiles(dir: string) {
-	const commandFiles = fs.readdirSync(__dirname + '/' + dir);
-	for (const file of commandFiles) {
-		if (file.endsWith('.ts') || file.endsWith('.js')) {
-			registerCommand(dir, file);
-		}
-		else if (file.match(/[a-zA-Z0-9 -_]+/i)) {
-			if (file == 'archive') { //? Skip the archive folder
-				continue;
-			}
-			getCommandFiles(dir + '/' + file);
-		}
-	}
-}
-
-function registerCommand(dir: string, file: string) {
-	const commandFile = require(`./${dir}/${file}`).default;
-	let command;
-	if ('command' in commandFile) {
-		command = commandFile['command'];
-	}
-	else command = commandFile;
-	// cons.log(command);
-	const rawCommandData = command.data.toJSON();
-	
-	commandData.push(rawCommandData);
-	cons.log([
-		`./${dir}/${file}`,
-		' - [fg=cyan]',
-		rawCommandData.name,
-		'[/>]'
-	].join(''));
-}
-
-const rest = new REST({ version: '9' }).setToken(token);
-
-export async function doDeployCommands(): Promise<boolean> {
+type ICommandData = (ICommandObject | IContextMenuCommandObject);
+export async function doDeployCommands(client: Client): Promise<boolean> {
 	cons.log('Deploying commands...');
-	getCommandFiles('commands');
+	// getCommandFiles('commands');
 	// console.log(guildId);
 	
 	//> deploy commands: --guildId=1234567890 deploy=ping,help --guild=0987654321 deployAll=true
 	//> deleting all commands: --guild=12345 delete=0987654321,43723374678 --guild=1234567890 deleteAll=true
 	//> deleting all Global commands: --deleteAllGlobal=true
+
+	const commandData: ICommandData[] = [
+		...client.commands.map(c => c.data),
+		...client.contextMenus.map(c => c.data),
+	]
+
+	const commandDumpPath = path.resolve(__dirname + '/../resources/dump/commands.json');
+	if (fs.existsSync(commandDumpPath)) {
+		fs.writeFile(commandDumpPath, JSON.stringify(commandData), (err) => {
+			if (err) { console.error(err); }
+			console.log(`Successfully dumped commands json to ${commandDumpPath}`)
+		})
+	}
 	
 	const deployInstructions: DeployInstruction[] = [];
 	const args = process.argv.slice(3).join(' ').split('--').slice(1);
@@ -100,7 +73,10 @@ export async function doDeployCommands(): Promise<boolean> {
 			switch (key) { //TODO make this dynamic (get keys from the class)
 				case 'guild':
 				case 'guildID':
-				case 'guildId': deployInstruction.guildId = value; break;
+				case 'guildId': {
+					deployInstruction.guildId = (value === 'dev' || value === 'DEV_GUILD_ID') ? process.env.DEV_GUILD_ID : value;
+				} break;
+				
 				case 'deploy': deployInstruction.deploy = value.split(','); break;
 				case 'deployAll': deployInstruction.deployAll = (value == 'true'); break;
 				case 'deployAllGlobal': deployInstruction.deployAllGlobal = (value == 'true'); break;
@@ -165,7 +141,7 @@ export async function doDeployCommands(): Promise<boolean> {
 }
 
 
-async function deployCommands(commands: CommandData[], guildID?: string) {
+async function deployCommands(commands: ICommandData[], guildID?: string) {
 	if (guildID) {
 		cons.log(`Deploying ${commands.length} command(s) for Guild: ${guildID}`);
 		await rest.put(Routes.applicationGuildCommands(clientID, guildID), { body: commands }).then(() =>
