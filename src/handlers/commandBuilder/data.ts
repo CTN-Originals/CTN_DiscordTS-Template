@@ -46,12 +46,29 @@ type CheckFields<T, TField> = {
 	any : TField
 }
 
+/** 
+ * @requires data > name, description
+ * @requires execute
+*/
 export type ICommandField = CommandInteractionContentInput<IBaseInteractionType.Command, ICommandObject, ChatInputCommandInteraction>;
+/** 
+ * @requires data > name, type
+ * @requires execute
+ * @requires interactionType
+*/
 export type IContextMenuField = CommandInteractionContentInput<IBaseInteractionType.ContextMenu, IContextMenuCommandObject, MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction>;
 
+/** 
+ * @requires data > customId, label | emoji
+ * @requires execute
+*/
 export type IButtonCollectionField = CommandInteractionContentInput<IBaseInteractionType.Command, IButtonComponentObject, ButtonInteraction>
 export type IButtonCollection<T> = CheckFields<T, IButtonCollectionField>
 
+/** 
+ * @requires data > customId, type
+ * @requires execute
+*/
 export type ISelectMenuCollectionField = CommandInteractionContentInput<IBaseInteractionType.Command, IAnySelectMenuComponentObject, AnySelectMenuInteraction>
 export type ISelectMenuCollection<T> = CheckFields<T, ISelectMenuCollectionField>
 
@@ -122,7 +139,6 @@ export class CommandInteractionData<
 	TEmbeds extends BaseEmbedCollection = never
 > {
 	public interactionType: IBaseInteractionType;
-	// public command: typeof this.interactionType extends IBaseInteractionType.Command ? ICommandField : IContextMenuField;
 	public command: ICommandField | IContextMenuField;
 	private _buttons?: TButtons;
 	private _selectMenus?: TSelectMenus;
@@ -197,98 +213,3 @@ export class CommandInteractionData<
 	}
 	//#endregion
 }
-
-//#region Test
-class ButtonCollection extends BaseButtonCollection implements IButtonCollection<ButtonCollection> {
-	public but: IButtonCollectionField = {
-		data: {
-			customId: 'jgyj',
-			label: 'awd'
-		},
-		execute: async function (interaction: ButtonInteraction) {
-			
-		}
-	}
-}
-class SelectMenuCollection extends BaseSelectMenuCollection implements ISelectMenuCollection<SelectMenuCollection> {
-	public strSel: ISelectMenuCollectionField = {
-		data: {
-			type: ComponentType.StringSelect,
-			customId: 'fes',
-		},
-		async execute(interaction: any) { }
-	}
-	
-	public chanSel: ISelectMenuCollectionField = {
-		data: {
-			type: ComponentType.ChannelSelect,
-			customId: 'gdrg',
-			
-			channelTypes: [
-				ChannelType.GuildText,
-				ChannelType.PublicThread
-			]
-		},
-		async execute(interaction: any) { }
-	}
-	
-	private roleSel: ISelectMenuCollectionField = {
-		data: {
-			type: ComponentType.RoleSelect,
-			customId: 'rol',
-		},
-		async execute(interaction: any) { }
-
-	}
-}
-
-class EmbedCollection extends BaseEmbedCollection {
-	public func() {return new EmbedBuilder()}
-	public get someEmb() {
-		return new EmbedBuilder();
-	}
-	public someEmbed = () => {
-		return new EmbedBuilder();
-	}
-	public async otherEmbed(input: string) {
-		return new EmbedBuilder({
-			title: input
-		});
-	}
-}
-
-const cmd = new CommandInteractionData<ButtonCollection, SelectMenuCollection, EmbedCollection>({
-	command: {
-		interactionType: IBaseInteractionType.Command,
-		data: {
-			name: 'a',
-			description: 'awd',
-	
-			options: [
-				{
-					type: ApplicationCommandOptionType.String,
-					name: 'opt_ons',
-					description: 'awd something desc',
-				}
-			]
-		},
-		execute: async function (interaction: ChatInputCommandInteraction) {
-			return true
-		}
-	},
-	// command: {
-	// 	interactionType: IBaseInteractionType.ContextMenu,
-	// 	data: {
-	// 		name: 'a',
-	// 		type: ApplicationCommandType.Message,
-	// 	},
-	// 	execute: async function (interaction: MessageContextMenuCommandInteraction) {
-	// 		return true
-	// 	}
-	// },
-	buttons: new ButtonCollection(),
-	selectMenus: new SelectMenuCollection(),
-	embeds: new EmbedCollection()
-});
-
-//#endregion
