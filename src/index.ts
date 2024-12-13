@@ -3,8 +3,8 @@ import { Client, Collection, WebhookClient } from 'discord.js';
 
 import { ConsoleInstance, Theme, ThemeOverride, defaultThemeProfile, defaultFilterKeys } from 'better-console-utilities';
 
-import { getEventFiles } from './register/registerEvents';
-import { getCommandFiles } from './register/registerCommands';
+import { registertAllEvents } from './register/registerEvents';
+import { registerAllCommands } from './register/registerCommands';
 import { GeneralData } from './data';
 
 import * as deployScript from './deployCommands';
@@ -33,8 +33,8 @@ async function Awake() {
 	client.buttons = new Collection();
 	client.selectMenus = new Collection();
 	
-	getEventFiles(client, 'events');
-	getCommandFiles(client, 'commands');
+	registertAllEvents(client, 'events');
+	registerAllCommands(client, 'commands');
 
 	if (process.argv.includes('--deploy')) {
 		cons.log(process.argv);

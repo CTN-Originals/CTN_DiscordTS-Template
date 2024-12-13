@@ -18,3 +18,8 @@ declare module "discord.js" {
 }
 
 declare type AnyComponentInteraction = StringSelectMenuInteraction|ChannelSelectMenuInteraction|UserSelectMenuInteraction|MentionableSelectMenuInteraction|RoleSelectMenuInteraction
+declare type InteractionDataType =
+| 'command'
+| 'contextMenu'
+| 'button'
+| 'selectMenu';

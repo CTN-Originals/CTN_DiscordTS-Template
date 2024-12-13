@@ -7,23 +7,13 @@ import { BaseButtonCollection, BaseSelectMenuCollection, CommandInteractionData,
 import { EmitError } from '../events';
 import { ColorTheme } from '../data';
 import { IAnyInteractionField, IBaseInteractionType, ICommandField, IContextMenuField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
+import { getAllFilesInDir, registeredLogString } from '.';
+import { InteractionDataType } from '../@types/discord';
 
-type InteractionType =
-| 'command'
-| 'contextMenu'
-| 'button'
-| 'selectMenu';
 
-function registeredLogString(type: InteractionType, name: string, dir?: string, file?: string): string {
-	return [
-		`Registering [fg=${ColorTheme.colors.blue.asHex}]${type}[/>]: `,
-		`[fg=${ColorTheme.colors.green.asHex}]${name}[/>] - `,
-		(dir !== undefined) ? `.[fg=${ColorTheme.colors.yellow.asHex}]${dir.replaceAll('commands', '')}[/>]` : ``,
-		(file !== undefined) ? `/[fg=${ColorTheme.colors.orange.asHex}]${file}[/>]` : ``,
-	].join('');
-}
 
-function registerToClientCollection(client: Client, type: InteractionType, content: IAnyInteractionField, dir?: string, file?: string) {
+
+function registerToClientCollection(client: Client, type: InteractionDataType, content: IAnyInteractionField, dir?: string, file?: string) {
 	let name: string;
 	let collection: string = type + 's';
 	switch (type) {
@@ -74,17 +64,21 @@ function registerCommand(client: Client, dir: string, file: string) {
 }
 
 // Get command files
-export function getCommandFiles(client: any, dir: string) {
-	const commandFiles = fs.readdirSync(__dirname + '/../' + dir);
-	for (const file of commandFiles) {
-		if (file.endsWith('.ts') || file.endsWith('.js')) {
-			if (file.startsWith('_')) { continue; } //* Skip files that start with '_' (private (non-command) files)
-			registerCommand(client, dir, file);
-		}
-		// Check if the file is a folder
-		else if (file.match(/[a-zA-Z0-9 -_]+/i)) {
-			if (file == 'archive') { continue; } //* Skip the archive folder
-			getCommandFiles(client, dir + '/' + file);
-		}
-	}
+export function registerAllCommands(client: any, dir: string) {
+	getAllFilesInDir(client, registerCommand, dir);
 }
+// // Get command files
+// export function getCommandFiles(client: any, dir: string) {
+// 	const commandFiles = fs.readdirSync(__dirname + '/../' + dir);
+// 	for (const file of commandFiles) {
+// 		if (file.endsWith('.ts') || file.endsWith('.js')) {
+// 			if (file.startsWith('_')) { continue; } //* Skip files that start with '_' (private (non-command) files)
+// 			registerCommand(client, dir, file);
+// 		}
+// 		// Check if the file is a folder
+// 		else if (file.match(/[a-zA-Z0-9 -_]+/i)) {
+// 			if (file == 'archive') { continue; } //* Skip the archive folder
+// 			getCommandFiles(client, dir + '/' + file);
+// 		}
+// 	}
+// }
