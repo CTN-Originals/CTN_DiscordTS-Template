@@ -5,7 +5,6 @@ import 'dotenv/config'
 import { ConsoleInstance } from 'better-console-utilities'
 
 import { DevEnvironment, GeneralData } from '../data'
-import { Mentionable } from '../data/orm/mentionables'
 
 import { EmitError } from '.'
 
@@ -44,7 +43,7 @@ export default {
 
 	async Initialize(client: Client) {
 		client.guilds.cache.forEach(async guild => {
-			Mentionable.initialize(guild)
+			//* Any database initialization here
 		})
 	},
 

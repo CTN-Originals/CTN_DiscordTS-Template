@@ -162,7 +162,7 @@ export default {
 			}
 
 			if (response === null) {
-				response = await interactionData.execute(interaction as never);
+				response = await interactionData.execute(interaction as never) as string | boolean | null;
 			}
 		} catch (err) {
 			commandErrored = true;

@@ -1,11 +1,7 @@
-import type { LocalizationMap, SlashCommandSubcommandGroupBuilder, ApplicationCommandOption, PermissionsString} from 'discord.js';
+import type { ApplicationCommandOption, LocalizationMap, PermissionsString, SlashCommandSubcommandGroupBuilder } from 'discord.js';
 import { ApplicationCommandOptionType, PermissionsBitField } from 'discord.js';
-import type { AnyDiscordCommandOption, AnySlashCommandBuilder} from '.';
-import { LOG_LEVEL, TLogLevel } from '.';
-import type {
-	AnySlashCommandOption
-} from '.';
-import { 
+import type { AnySlashCommandBuilder, AnySlashCommandOption } from '.';
+import {
 	AttachmentOptionObject,
 	BooleanOptionObject,
 	ChannelOptionObject,
@@ -78,7 +74,7 @@ export class BaseCommandObject {
 		return true;
 	}
 
-	protected assignFields(input: CommandObjectInput<BaseCommandObject, any>) {
+	protected assignFields(input: CommandObjectInput<BaseCommandObject, never>): void {
 		for (const field in input) {
 			this[field] = input[field];
 		}
@@ -134,7 +130,7 @@ export class BaseExecutableCommandObject extends BaseCommandObject {
 	/** The permissions that the bot requires to have to execute anything defined in this command */
 	public requiredPermissions?: PermissionsString[] = [];
 
-	public options: AnyDiscordCommandOption[] = [];
+	public options: AnySlashCommandOption[] = [];
 
 	constructor(input: IBaseExecutableCommandObject) {
 		super(input);

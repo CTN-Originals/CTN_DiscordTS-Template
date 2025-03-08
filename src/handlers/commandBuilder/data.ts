@@ -55,7 +55,7 @@ import type { IChannelSelectComponentObject, IMentionableSelectComponentObject, 
 
 
 //#region Interaction Content
-type InteractionExecute<TInteraction extends Interaction = Interaction> = (interaction: TInteraction) => any | Promise<any>;
+type InteractionExecute<TInteraction extends Interaction = Interaction> = (interaction: TInteraction) => unknown | Promise<unknown>;
 
 export enum IBaseInteractionType {
 	Command = 1,
@@ -124,8 +124,9 @@ const obj: CommandInteractionContentInput<ICommandObject, CommandObject, ChatInp
 //#region Base Classes
 /** @link Source: https://stackoverflow.com/a/70510920 */
 type CheckFields<T, TField> = {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 	[K in keyof T]: T[K] extends Function ?
-	any : TField
+	unknown : TField
 }
 
 /** 
@@ -203,7 +204,7 @@ export type IAnyInteractionField =
 | ISelectMenuCollectionField<ComponentType>;
 
 export class BaseComponentCollection<TContent extends IButtonComponentObject | IAnySelectMenuComponentObject, TData extends CommandObject | AnyComponentObject> {
-	public asArray() {
+	public asArray(): CommandInteractionContentInput<TContent, TData, Interaction, IBaseInteractionType.Command>[] {
 		const out: CommandInteractionContentInput<TContent, TData>[] = [];
 		for (const field in this) {
 			out.push(this[field] as CommandInteractionContentInput<TContent, TData>);
@@ -227,7 +228,7 @@ export class BaseButtonCollection extends BaseComponentCollection<IButtonCompone
 		return content.map(btn => this.buildOne(btn as IButtonComponentObject | IButtonCollectionField));
 	}
 	
-	public build() {
+	public build(): ButtonBuilder[] {
 		return this.getBuild(...this.asArray().map(btn => btn.content));
 	}
 }
@@ -252,7 +253,7 @@ export class BaseSelectMenuCollection extends BaseComponentCollection<IAnySelect
 		}
 	}
 
-	public build() {
+	public build(): AnySelectMenuComponentBuilder[] {
 		const out: AnySelectMenuComponentBuilder[] = [];
 		
 		for (const select of this.asArray()) {

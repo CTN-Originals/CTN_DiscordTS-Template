@@ -1,89 +1,42 @@
-import { SlashCommandBuilder, CommandInteraction, ChatInputCommandInteraction, ApplicationCommandOptionType, InteractionContextType, PermissionsBitField, ActionRowBuilder, TextInputBuilder, ComponentType, TextInputStyle, ButtonBuilder, StringSelectMenuBuilder, ButtonInteraction, EmbedBuilder } from 'discord.js';
-import { BaseButtonCollection, BaseEmbedCollection, BaseSelectMenuCollection, CommandInteractionData, CommandObject, IButtonCollection, IButtonCollectionField, ISelectMenuCollection } from '../../handlers/commandBuilder';
+import type { ChatInputCommandInteraction } from 'discord.js';
+import { EmbedBuilder, InteractionContextType, MessageFlags } from 'discord.js';
+
+import { ColorTheme, GeneralData } from '../../data';
+import type { IButtonCollection, ISelectMenuCollection } from '../../handlers/commandBuilder';
+import { BaseButtonCollection, BaseEmbedCollection, BaseSelectMenuCollection, CommandInteractionData } from '../../handlers/commandBuilder';
+import { hexToBit } from '../../utils';
+import { validateEmbed } from '../../utils/embedUtils';
 
 
-class ButtonCollection extends BaseButtonCollection implements IButtonCollection<ButtonCollection> {
-	public x: IButtonCollectionField = {
-		data: {
-			customId: 'xButt',
-			label:    'xButt'
-		},
-		execute: async function (interaction: ButtonInteraction) {
-			await interaction.reply({
-				content: 'you clicked a butt'
-			});
-		},
-	};
-}
-class SelectMenuCollection extends BaseSelectMenuCollection implements ISelectMenuCollection<SelectMenuCollection> {
-
-}
+class ButtonCollection extends BaseButtonCollection implements IButtonCollection<ButtonCollection> {}
+class SelectMenuCollection extends BaseSelectMenuCollection implements ISelectMenuCollection<SelectMenuCollection> {}
 class EmbedCollection extends BaseEmbedCollection {
-	public get pong() {
+	public pingDisplay(commandPing: number, apiPing: number): EmbedBuilder {
 		return new EmbedBuilder({
 			title:       'Pong!',
-			description: 'ping pong!',
+			description: `Command Latency: \`${commandPing}ms\`\nAPI Latency: \`${apiPing}ms\``,
+			color:       hexToBit(ColorTheme.embeds.reply)
 		});
 	}
 }
 
 const command = new CommandInteractionData<ButtonCollection, SelectMenuCollection, EmbedCollection>({
 	command: {
-		data: {
+		content: {
 			name:        'ping',
-			description: 'Replies with Pong! [Test Command]',
-			contexts:    [InteractionContextType.Guild],
-			options:     [
-				{
-					type:        ApplicationCommandOptionType.String,
-					name:        'string',
-					description: 'Some Description',
-					choices:     [
-						{
-							name:  'Hello',
-							value: 'hello'
-						},
-						{
-							name:  'World',
-							value: 'world'
-						},
-					]
-				},
-				{
-					type:        ApplicationCommandOptionType.User,
-					name:        'user',
-					description: 'Some user',
-				}
-			],
+			description: 'Replies with latency stats',
+			contexts:    [InteractionContextType.Guild, InteractionContextType.BotDM],
 		},
 		execute: async function (interaction: ChatInputCommandInteraction) {
+			const commandPing = Date.now() - interaction.createdTimestamp;
+			const apiPing = interaction.client.ws.ping;
+
 			await interaction.reply({
-				content:   'Pong! <@479936093047750659>',
-				embeds:    [],
-				ephemeral: true
+				embeds: [validateEmbed(command.embeds.pingDisplay(commandPing, apiPing))],
+				flags:  [((!GeneralData.development) ? MessageFlags.Ephemeral : MessageFlags.SuppressNotifications)]
 			});
-
-			// await interaction.reply('<@568245462293938196> is the real npc here...')
-
-			await interaction.followUp({
-				content: 'poing',
-			});
-
-			const row: any = new ActionRowBuilder({components: [command.buildButtons()[0]]});
-
-			await interaction.editReply({
-				content:    'uped ping down pong',
-				embeds:     [command.embeds.pong],
-				components: [row]
-				// embeds: [new EmbedBuilder({
-				// 	title: "Pong!",
-				// 	description: "uped ping down pong!",
-				// })],
-			});
-
-			// console.log(interaction.token);
 			
-			return true;
+			return `${commandPing}ms | ${apiPing}ms`;
 		},
 	},
 	buttons:     new ButtonCollection(),
