@@ -3,7 +3,7 @@
 	"author": "CTNOriginals",
 	"version": "1.0.0",
 	"description": "A Template for a discord bot using discordjs in typescript.",
-	"license": "BSD-3-Clause",
+	"license": "BSD-4-Clause",
 	"main": "dist/index.js",
 	"homepage": "https://github.com/CTN-Originals/CTN_DiscordTS-Template",
 	"scripts": {
