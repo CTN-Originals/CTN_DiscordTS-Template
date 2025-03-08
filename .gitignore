@@ -5,6 +5,10 @@ archive
 resources/
 /tests
 
+# Test commands, except for /ping
+!src/commands/test/ping.*
+src/commands/test/**/*
+
 # yarn
 .yarn/*
 !.yarn/cache
