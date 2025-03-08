@@ -9,11 +9,11 @@ import {
 	SlashCommandSubcommandGroupBuilder,
 	StringSelectMenuBuilder,
 	UserSelectMenuBuilder
-} from "discord.js";
+} from 'discord.js';
 
 import {
 	BaseCommandObject
-} from "./base";
+} from './base';
 
 import {
 	CommandInteractionData,
@@ -28,11 +28,11 @@ import {
 	BaseButtonCollection,
 	BaseSelectMenuCollection,
 	BaseEmbedCollection,
-} from "./data";
+} from './data';
 
 import {
 	CommandObjectInput
-} from "./base";
+} from './base';
 
 import {
 	CommandObject,
@@ -41,12 +41,12 @@ import {
 	ISubCommandObject,
 	SubCommandObject,
 	ICommandObject,
-} from "./command";
+} from './command';
 
 import {
 	IContextMenuCommandObject,
 	ContextMenuCommandObject,
-} from "./contextMenus";
+} from './contextMenus';
 
 import { 
 	AnySlashCommandOption,
@@ -59,7 +59,7 @@ import {
 	RoleOptionObject,
 	StringOptionObject,
 	UserOptionObject,
-} from "./options";
+} from './options';
 
 import {
 	ButtonComponentObject,
@@ -75,7 +75,7 @@ import {
 	IStringSelectComponentObject,
 	IUserSelectComponentObject,
 	ChannelSelectComponentObject
-} from "./components";
+} from './components';
 
 //#endregion
 
@@ -128,7 +128,7 @@ export {
 	RoleSelectComponentObject,
 	StringSelectComponentObject,
 	UserSelectComponentObject
-}
+};
 
 export type AnySlashCommandBuilder =
  | SlashCommandBuilder

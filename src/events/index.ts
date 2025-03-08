@@ -1,8 +1,8 @@
-import { ConsoleInstance } from "better-console-utilities";
+import { ConsoleInstance } from 'better-console-utilities';
 
-import { ErrorObject } from "../handlers/errorHandler";
-import errorEvent from "../events/error";
-import { EventEmitter } from "events";
+import { ErrorObject } from '../handlers/errorHandler';
+import errorEvent from '../events/error';
+import { EventEmitter } from 'events';
 
 export const eventConsole = new ConsoleInstance();
 export const customEvents = new EventEmitter();

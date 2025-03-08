@@ -1,6 +1,6 @@
-import { Events, GuildMember, Guild } from "discord.js";
-import { eventConsole } from ".";
-import { client } from "..";
+import { Events, GuildMember, Guild } from 'discord.js';
+import { eventConsole } from '.';
+import { client } from '..';
 
 
 
@@ -15,4 +15,4 @@ export default {
 		// 	client.guilds.cache.get(process.env.DEV_GUILD_ID)?.members
 		// }
 	},
-}
+};
