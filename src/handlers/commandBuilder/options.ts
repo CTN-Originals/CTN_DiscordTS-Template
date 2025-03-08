@@ -1,4 +1,4 @@
-import type { ApplicationCommandOptionAllowedChannelTypes, LocalizationMap} from 'discord.js';
+import type { ApplicationCommandOptionAllowedChannelTypes, LocalizationMap } from 'discord.js';
 import { ApplicationCommandOptionType, SlashCommandAttachmentOption, SlashCommandBooleanOption, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandUserOption } from 'discord.js';
 import type { CommandObjectInput } from '.';
 import { BaseCommandObject } from '.';
@@ -86,7 +86,7 @@ export class StringOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandStringOption {
 		const opt = this.optionBuildBase(new SlashCommandStringOption());
 		
 		if (this.minLength) { opt.setMinLength(this.minLength); }
@@ -103,7 +103,7 @@ export class IntegerOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandIntegerOption {
 		const opt = this.optionBuildBase(new SlashCommandIntegerOption());
 		return opt;
 	}
@@ -116,7 +116,7 @@ export class BooleanOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandBooleanOption {
 		const opt = this.optionBuildBase(new SlashCommandBooleanOption());
 		return opt;
 	}
@@ -129,7 +129,7 @@ export class UserOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandUserOption {
 		const opt = this.optionBuildBase(new SlashCommandUserOption());
 		return opt;
 	}
@@ -144,7 +144,7 @@ export class ChannelOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandChannelOption {
 		const opt = this.optionBuildBase(new SlashCommandChannelOption());
 
 		if (this.channelTypes) { opt.addChannelTypes(...this.channelTypes); }
@@ -160,7 +160,7 @@ export class RoleOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandRoleOption {
 		const opt = this.optionBuildBase(new SlashCommandRoleOption());
 		return opt;
 	}
@@ -173,7 +173,7 @@ export class MentionableOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandMentionableOption {
 		const opt = this.optionBuildBase(new SlashCommandMentionableOption());
 		return opt;
 	}
@@ -186,7 +186,7 @@ export class NumberOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandNumberOption {
 		const opt = this.optionBuildBase(new SlashCommandNumberOption());
 		return opt;
 	}
@@ -199,7 +199,7 @@ export class AttachmentOptionObject extends BaseOptionObject {
 		this.assignFields(input);
 	}
 	
-	public build() {
+	public build(): SlashCommandAttachmentOption {
 		const opt = this.optionBuildBase(new SlashCommandAttachmentOption());
 		return opt;
 	}

@@ -21,54 +21,53 @@ import type {
 	UserSelectMenuBuilder
 } from 'discord.js';
 import {
-	ComponentType,
-	LocalizationMap
+	ComponentType
 } from 'discord.js';
 
 import {
-	CommandObjectInput,
 	BaseCommandObject,
 	BaseExecutableCommandObject,
+	CommandObjectInput,
 	ExecutableCommandObjectInput,
 	IBaseExecutableCommandObject,
 } from './base';
 
 import type {
-	IAnyInteractionField} from './data';
+	IAnyInteractionField
+} from './data';
 import {
-	CommandInteractionData,
-	IBaseInteractionType,
-	ICommandField,
-	IContextMenuField,
-	IButtonCollectionField,
-	IButtonCollection,
-	ISelectMenuCollectionField,
-	ISelectMenuCollection,
-	BaseComponentCollection,
 	BaseButtonCollection,
-	BaseSelectMenuCollection,
+	BaseComponentCollection,
 	BaseEmbedCollection,
 	BaseMethodCollection,
-	CommandInteractionContent,
+	BaseSelectMenuCollection,
+	CommandInteractionData,
+	IBaseInteractionType,
+	IButtonCollection,
+	IButtonCollectionField,
+	ICommandField,
 	ICommandObjectContent,
+	IContextMenuField,
 	IContextMenuObjectContent,
+	ISelectMenuCollection,
+	ISelectMenuCollectionField
 } from './data';
 
 import {
 	CommandObject,
-	ISubCommandGroupObject,
-	SubCommandGroupObject,
-	ISubCommandObject,
-	SubCommandObject,
 	ICommandObject,
+	ISubCommandGroupObject,
+	ISubCommandObject,
+	SubCommandGroupObject,
+	SubCommandObject,
 } from './command';
 
 import {
-	IContextMenuCommandObject,
 	ContextMenuCommandObject,
+	IContextMenuCommandObject,
 } from './contextMenus';
 
-import { 
+import {
 	AnySlashCommandOption,
 	AttachmentOptionObject,
 	BooleanOptionObject,
@@ -78,8 +77,7 @@ import {
 	NumberOptionObject,
 	RoleOptionObject,
 	StringOptionObject,
-	UserOptionObject,
-	BaseOptionObject,
+	UserOptionObject
 } from './options';
 
 import type {
@@ -87,16 +85,17 @@ import type {
 	IMentionableSelectComponentObject,
 	IRoleSelectComponentObject,
 	IStringSelectComponentObject,
-	IUserSelectComponentObject} from './components';
+	IUserSelectComponentObject
+} from './components';
 import {
 	ButtonComponentObject,
+	ChannelSelectComponentObject,
 	IButtonComponentObject,
 
 	MentionableSelectComponentObject,
 	RoleSelectComponentObject,
 	StringSelectComponentObject,
-	UserSelectComponentObject,
-	ChannelSelectComponentObject
+	UserSelectComponentObject
 } from './components';
 
 import { includesAny } from '../../utils';
@@ -105,59 +104,11 @@ import { includesAny } from '../../utils';
 
 //#region Exports
 export {
-	CommandInteractionData,
-	IBaseInteractionType,
-	ICommandField,
-	IContextMenuField,
-	IButtonCollectionField,
-	IButtonCollection,
-	ISelectMenuCollectionField,
-	ISelectMenuCollection,
-	BaseComponentCollection,
-	BaseButtonCollection,
-	BaseSelectMenuCollection,
-	BaseEmbedCollection,
-	BaseMethodCollection,
 
-	CommandObjectInput,
-	BaseCommandObject,
-	BaseExecutableCommandObject,
-	ExecutableCommandObjectInput,
-	IBaseExecutableCommandObject,
-	
-	ICommandObject,
-	CommandObject,
-	
-	ISubCommandObject,
-	SubCommandObject,
-	
-	ISubCommandGroupObject,
-	SubCommandGroupObject,
-
-	IContextMenuCommandObject,
-	ContextMenuCommandObject,
-	
 	AnySlashCommandOption,
-	AttachmentOptionObject,
-	BooleanOptionObject,
-	ChannelOptionObject,
-	IntegerOptionObject,
-	MentionableOptionObject,
-	NumberOptionObject,
-	RoleOptionObject,
-	StringOptionObject,
-	UserOptionObject,
-	ICommandObjectContent,
-	IContextMenuObjectContent,
-
-	IButtonComponentObject,
-	ButtonComponentObject,
-
-	ChannelSelectComponentObject,
-	MentionableSelectComponentObject,
-	RoleSelectComponentObject,
-	StringSelectComponentObject,
-	UserSelectComponentObject
+	AttachmentOptionObject, BaseButtonCollection, BaseCommandObject, BaseComponentCollection, BaseEmbedCollection, BaseExecutableCommandObject, BaseMethodCollection, BaseSelectMenuCollection, BooleanOptionObject, ButtonComponentObject, ChannelOptionObject, ChannelSelectComponentObject, CommandInteractionData, CommandObject, CommandObjectInput, ContextMenuCommandObject, ExecutableCommandObjectInput,
+	IBaseExecutableCommandObject, IBaseInteractionType, IButtonCollection, IButtonCollectionField, IButtonComponentObject, ICommandField, ICommandObject, ICommandObjectContent, IContextMenuCommandObject, IContextMenuField, IContextMenuObjectContent, IntegerOptionObject, ISelectMenuCollection, ISelectMenuCollectionField, ISubCommandGroupObject, ISubCommandObject, MentionableOptionObject, MentionableSelectComponentObject, NumberOptionObject,
+	RoleOptionObject, RoleSelectComponentObject, StringOptionObject, StringSelectComponentObject, SubCommandGroupObject, SubCommandObject, UserOptionObject, UserSelectComponentObject
 };
 
 export type AnySlashCommandBuilder =

@@ -1,5 +1,5 @@
 import type { BaseInteraction, CommandInteractionOption, MessageComponentInteraction } from 'discord.js';
-import { ChatInputCommandInteraction, CommandInteractionOptionResolver, ComponentType, InteractionType } from 'discord.js';
+import { ComponentType, InteractionType } from 'discord.js';
 
 //* API Interaction Types: https://discord.com/developers/docs/interactions/receiving-and-responding
 export interface IInteractionTypeData {

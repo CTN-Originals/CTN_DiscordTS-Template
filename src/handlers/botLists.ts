@@ -2,9 +2,9 @@
 //? lists like top.gg or discordlist.gg
 
 import axios from 'axios';
-import { EmitError } from '../events';
-import { ColorTheme, GeneralData } from '../data';
 import { client, cons } from '..';
+import { ColorTheme, GeneralData } from '../data';
+import { EmitError } from '../events';
 
 type IListDefinition = Pick<ListDefinition, 'domain' | 'suffix' | 'urlFormat' | 'guildCountKey'> & Partial<Pick<ListDefinition, 'userCountKey'>>;
 class ListDefinition {
@@ -29,7 +29,7 @@ class ListDefinition {
 		}
 	}
 
-	public get url() {
+	public get url(): string {
 		return this.urlFormat.replaceAll('<bot_id>', process.env.CLIENT_ID!);
 	}
 
@@ -116,9 +116,9 @@ const listDefinitions: IListDefinition[] = [
 const updateCooldown = 1000 * 60 * 60;
 let awaitingCooldown = false;
 let lastUpdate = -1; //TODO Make this an entry in the database so the value is remembered between startups
-const getCurrentCooldown = () => { return (lastUpdate + updateCooldown) - Date.now(); };
+const getCurrentCooldown = (): number => { return (lastUpdate + updateCooldown) - Date.now(); };
 
-export async function UpdateBotListStats() {
+export async function UpdateBotListStats(): Promise<void> {
 	//? Prevent rate limits
 	if (!awaitingCooldown) {
 		const currentCooldown = getCurrentCooldown();
@@ -134,7 +134,7 @@ export async function UpdateBotListStats() {
 	}
 }
 
-function ExecuteUpdate() {
+function ExecuteUpdate(): void {
 	lastUpdate = Date.now();
 	let guildCount = 0;
 	let userCount = 0;

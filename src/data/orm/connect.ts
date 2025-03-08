@@ -25,7 +25,7 @@ export class Database {
 		this.connection = null;
 	}
 
-	async connect() {
+	async connect(): Promise<void> {
 		if (GeneralData.logging.startup.enabled && GeneralData.logging.startup.database) {
 			cons.log('Connecting to [fg=blue st=bold]Database[/>]...');
 		}

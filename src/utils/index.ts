@@ -1,8 +1,5 @@
 import type { Color } from 'better-console-utilities';
-import { ApplicationCommandOption, Client, Collection, EmbedBuilder } from 'discord.js';
 import { duration } from 'moment';
-import { client } from '..';
-import { AnyDiscordCommandOption, IBaseInteractionType, ICommandField } from '../handlers/commandBuilder';
 
 //? a class that can take a string like 23s 69m 2h and turn it into a time length of 23 seconds, 9 minutes and 3 hours.
 export class PeriodOfTime {
@@ -73,7 +70,7 @@ export function timeUnits(ms: number): {
 	 * @param {int} msUnit - Size of a single unit in milliseconds
 	 * @return {int} Number of units taken from the time pool
 	 */
-	const allocate = (msUnit: number) => {
+	const allocate = (msUnit: number): number => {
 		const units = Math.trunc(ms / msUnit);
 		ms -= units * msUnit;
 		return units;
@@ -107,9 +104,9 @@ export function getTimestamp(date: Date|number): number {
 	return parseFloat(time);
 }
 
-export function getTimeDisplay(time: number, colored: boolean = false) {
+export function getTimeDisplay(time: number, colored: boolean = false): string {
 	const units = timeUnits(time);
-	const formatTime = (t: number) => {return (t < 10) ? `0${t}` : t;};
+	const formatTime = (t: number): string | number => {return (t < 10) ? `0${t}` : t;};
 
 	if (!colored) {
 		return `${units.days}d ${formatTime(units.hours)}:${formatTime(units.minutes)}:${formatTime(units.seconds)}`;
@@ -183,6 +180,6 @@ export function removeDuplicates<T>(input: T[]): T[] {
 	return input.filter((item, index, self) => self.indexOf(item) === index);
 };
 
-export function clamp(num: number, min?: number, max?: number) {
+export function clamp(num: number, min?: number, max?: number): number {
 	return Math.min(Math.max(num, (min ?? num)), (max ?? num));
 };

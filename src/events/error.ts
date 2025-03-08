@@ -1,12 +1,11 @@
+import type { CommandInteraction, CommandInteractionOption } from 'discord.js';
+import { ChannelType, ChatInputCommandInteraction, Colors, EmbedBuilder, Events } from 'discord.js';
 import 'dotenv/config';
-import type { CommandInteraction, CommandInteractionOption  } from 'discord.js';
-import { Events, EmbedBuilder, Colors, ChannelType, ChatInputCommandInteraction  } from 'discord.js';
 
-import { eventConsole } from '.';
 import { client, logWebhook } from '..';
-import { getInteractionType, getHoistedOptions } from '../utils/interactionUtils';
 import { errorConsole, ErrorObject } from '../handlers/errorHandler';
 import { validateEmbed } from '../utils/embedUtils';
+import { getHoistedOptions, getInteractionType } from '../utils/interactionUtils';
 
 
 
@@ -46,7 +45,7 @@ export default {
 			descriptionLines.push(`**Options**: ${hoistedOptions.map(option => `${option.name}:\`${option.value}\``).join(', ')}`);
 		}
 		if (interaction['values'] && interaction['values'].length > 0) {
-			descriptionLines.push(`**Values**: [ \`${interaction['values'].join('\`, \`')}\` ]`);
+			descriptionLines.push(`**Values**: [ \`${interaction['values'].join('`, `')}\` ]`);
 		}
 		
 		descriptionLines.push(`**Type**: \`${interactionType.display}\``);

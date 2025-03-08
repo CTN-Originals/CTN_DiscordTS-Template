@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {
 	AnySelectMenuInteraction,
 	ApplicationCommandType,
@@ -111,14 +112,6 @@ export class CommandInteractionContent<
 		this.data = getInteractionObject(this.content) as TData;
 	}
 }
-
-const obj: CommandInteractionContentInput<ICommandObject, CommandObject, ChatInputCommandInteraction> = {
-	content: {
-		name:        '',
-		description: 'awd'
-	},
-	execute: () => {}
-};
 //#endregion
 
 //#region Base Classes
@@ -377,6 +370,7 @@ export class CommandInteractionData<
 		return this._methods as IOptionalCollectionObject<TMethods, BaseMethodCollection>;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	public get collection() {
 		return {
 			buttons:     this._buttons as IOptionalCollection<TButtons, BaseButtonCollection>,

@@ -203,8 +203,8 @@ class FakeInteraction {
 	public type: InteractionType = InteractionType.ApplicationCommand
 	public componentType: ComponentType = 1
 
-	public user: TODO
-	public channel: TODO
+	public user: {[key: string]: any}
+	public channel: TextChannel
 
 	public options: FakeInteractionOptions
 
@@ -217,7 +217,7 @@ class FakeInteraction {
 			username: 'TEST_USER',
 			_equals:  (user) => {return true},
 		}
-		this.channel = DevEnvironment.channel
+		this.channel = DevEnvironment.channel!
 
 		this.options = new FakeInteractionOptions(options?.options, options?.subCommand)
 	}

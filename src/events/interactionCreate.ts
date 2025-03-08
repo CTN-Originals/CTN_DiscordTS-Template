@@ -166,7 +166,7 @@ export default {
 			}
 		} catch (err) {
 			commandErrored = true;
-			const errorObject: ErrorObject = await EmitError((err instanceof Error) ? err : new Error(err as string), interaction);
+			const errorObject: ErrorObject = await EmitError((err instanceof Error) ? err : new Error(err as string), interaction as CommandInteraction);
 
 			let content = 'There was an error while executing this interaction';
 			if (GeneralData.development) {

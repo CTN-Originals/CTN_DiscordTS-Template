@@ -44,7 +44,7 @@ export class ContextMenuCommandObject {
 		return new PermissionsBitField(this.requiredPermissions);
 	}
 
-	public build() {
+	public build(): ContextMenuCommandBuilder {
 		const builder = new ContextMenuCommandBuilder().setName(this.name);
 
 		if (this.type == 'Message' || this.type == ApplicationCommandType.Message) {

@@ -1,21 +1,15 @@
 import type {
-	Collection,
-	StringSelectMenuInteraction,
 	ChannelSelectMenuInteraction,
-	UserSelectMenuInteraction,
+	Collection,
 	MentionableSelectMenuInteraction,
 	RoleSelectMenuInteraction,
+	StringSelectMenuInteraction,
+	UserSelectMenuInteraction,
 } from 'discord.js';
-import type { CommandInteractionData, BaseButtonCollection, BaseEmbedCollection, BaseMethodCollection, BaseSelectMenuCollection } from '../handlers/commandBuilder';
-import { IButtonCollectionField, ISelectMenuCollectionField, ICommandField, IContextMenuField, CommandObject, ContextMenuCommandObject, ButtonComponentObject, AnySelectMenuComponentObject } from '../handlers/commandBuilder';
+import type { BaseButtonCollection, BaseEmbedCollection, BaseMethodCollection, BaseSelectMenuCollection, CommandInteractionData } from '../handlers/commandBuilder';
 
 declare module 'discord.js' {
 	interface Client {
-		// commands: Collection<string, ICommandField>;
-		// contextMenus: Collection<string, IContextMenuField>;
-		// buttons: Collection<string, IButtonCollectionField>;
-		// selectMenus: Collection<string, ISelectMenuCollectionField>;
-		
 		commands: Collection<string, CommandInteractionData<BaseButtonCollection, BaseSelectMenuCollection, BaseEmbedCollection, BaseMethodCollection>>;
 
 		//? lookup tables
