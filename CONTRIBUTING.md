@@ -5,7 +5,7 @@ First of all, thanks for taking the time and effort to read these guidlines and 
 
 ## Set up
 
-Create an issue explaining your idea and how you are going to go about it and assign the "contribution" label to it.
+Create a new issue (from the [contribution issue template](https://github.com/CTN-Originals/CTN_DiscordTS-Template/blob/stable/.github/ISSUE_TEMPLATE/contribution.md)) explaining your idea and how you are going to go about it.
 You are expected to update this issue throughout your development to keep everyone informed of the state of your contribution,
 think for example of an update where you had to pivot from one strategy to another as you realised it might be a better approach.
 You may also create sub-issues under that initial contribution issue that further explain you process.
