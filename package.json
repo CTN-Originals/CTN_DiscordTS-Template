@@ -1,7 +1,7 @@
 {
 	"name": "ctn_discordts-template",
 	"author": "CTNOriginals",
-	"version": "1.0.1",
+	"version": "2.0.0",
 	"description": "A Template for a discord bot using discordjs in typescript.",
 	"license": "BSD-4-Clause",
 	"main": "dist/index.js",
