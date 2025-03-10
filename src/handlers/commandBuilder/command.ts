@@ -1,23 +1,22 @@
-import { InteractionContextType, ApplicationIntegrationType, SlashCommandBuilder, Permissions, ApplicationCommandOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
+import type { ApplicationIntegrationType, InteractionContextType, Permissions } from 'discord.js';
+import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from 'discord.js';
 
-import { BaseCommandObject, CommandObjectInput } from ".";
+import { BaseCommandObject, BaseExecutableCommandObject, CommandObjectInput, ExecutableCommandObjectInput } from '.';
 
 type SlashCommandBuilderFields = 'contexts' | 'default_member_permissions' | 'integration_types' | 'nsfw';
-export type ICommandObject = CommandObjectInput<CommandObject, SlashCommandBuilderFields | 'subcommandGroups' | 'subcommands' | 'options'>
-export class CommandObject extends BaseCommandObject {
-    /** The contexts for this command. */
-    public contexts?: InteractionContextType[];
-    /** The set of permissions represented as a bit set for the command. */
-    public default_member_permissions: Permissions | null | undefined;
-    /** The integration types for this command. */
-    public integration_types?: ApplicationIntegrationType[];
-    /** Whether this command is NSFW. */
-    public nsfw: boolean | undefined;
+export type ICommandObject = ExecutableCommandObjectInput<CommandObject, SlashCommandBuilderFields | 'subcommandGroups' | 'subcommands'>
+export class CommandObject extends BaseExecutableCommandObject {
+	/** The contexts for this command. */
+	public contexts?: InteractionContextType[];
+	/** The set of permissions represented as a bit set for the command. */
+	public default_member_permissions: Permissions | null | undefined;
+	/** The integration types for this command. */
+	public integration_types?: ApplicationIntegrationType[];
+	/** Whether this command is NSFW. */
+	public nsfw: boolean | undefined;
 
 	public subcommandGroups: (SubCommandGroupObject|ISubCommandGroupObject)[] = [];
 	public subcommands: (SubCommandObject|ISubCommandObject)[] = [];
-
-	public options: ApplicationCommandOption[] = [];
 
 	/** A substitude for SlashCommandBuilder that allows an object to be put in, instead of the bs .addField() functions...
 	 * @param input The object to transform into a command
@@ -39,8 +38,7 @@ export class CommandObject extends BaseCommandObject {
 		}
 	}
 
-	//TODO Make this a function
-	public build() {
+	public build(): SlashCommandBuilder {
 		const cmd = this.resolveOptions(this.buildBase(new SlashCommandBuilder()), this.options);
 
 		if (this.contexts) 						{ cmd.setContexts(this.contexts); }
@@ -49,27 +47,25 @@ export class CommandObject extends BaseCommandObject {
 		if (this.nsfw) 							{ cmd.setNSFW(this.nsfw); }
 		
 		for (const group of this.subcommandGroups) {
-			cmd.addSubcommandGroup(((group instanceof SubCommandGroupObject) ? group : new SubCommandGroupObject(group)).build);
+			cmd.addSubcommandGroup(((group instanceof SubCommandGroupObject) ? group : new SubCommandGroupObject(group)).build());
 		}
 		for (const sub of this.subcommands) {
-			cmd.addSubcommand(((sub instanceof SubCommandObject) ? sub : new SubCommandObject(sub)).build);
+			cmd.addSubcommand(((sub instanceof SubCommandObject) ? sub : new SubCommandObject(sub)).build());
 		}
 
-		return cmd
+		return cmd;
 	}
 }
 
 
-export type ISubCommandObject = CommandObjectInput<SubCommandObject, 'options'>
-export class SubCommandObject extends BaseCommandObject {
-	public options: ApplicationCommandOption[] = [];
-
+export type ISubCommandObject = ExecutableCommandObjectInput<SubCommandObject>
+export class SubCommandObject extends BaseExecutableCommandObject {
 	constructor(input: ISubCommandObject) {
 		super(input);
 		this.assignFields(input);
 	}
 
-	public get build(): SlashCommandSubcommandBuilder {
+	public build(): SlashCommandSubcommandBuilder {
 		const cmd = this.resolveOptions(this.buildBase(new SlashCommandSubcommandBuilder()), this.options);
 		return cmd;
 	}
@@ -77,19 +73,19 @@ export class SubCommandObject extends BaseCommandObject {
 
 export type ISubCommandGroupObject = CommandObjectInput<SubCommandGroupObject, 'subcommands'>
 export class SubCommandGroupObject extends BaseCommandObject {
-	public subcommands: (SubCommandObject|ISubCommandObject)[] = []
+	public subcommands: (SubCommandObject|ISubCommandObject)[] = [];
 
 	constructor(input: ISubCommandGroupObject) {
 		super(input);
 		this.assignFields(input);
 	}
 
-	public get build(): SlashCommandSubcommandGroupBuilder {
+	public build(): SlashCommandSubcommandGroupBuilder {
 		const cmd = this.buildBase(new SlashCommandSubcommandGroupBuilder());
 
 		for (const sub of this.subcommands) {
 			const subObj: SubCommandObject = (sub instanceof SubCommandObject) ? sub : new SubCommandObject(sub);
-			cmd.addSubcommand(subObj.build);
+			cmd.addSubcommand(subObj.build());
 		}
 
 		return cmd;

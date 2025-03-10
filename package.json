@@ -1,38 +1,46 @@
 {
 	"name": "ctn_discordts-template",
 	"author": "CTNOriginals",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "A Template for a discord bot using discordjs in typescript.",
-	"license": "BSD-3-Clause",
+	"license": "BSD-4-Clause",
 	"main": "dist/index.js",
 	"homepage": "https://github.com/CTN-Originals/CTN_DiscordTS-Template",
 	"scripts": {
-		"build": "tsc",
-		"fullbuild": "rimraf ./dist && tsc",
-		"build:start": "npm run build && npm run start",
-		
-		"dev:deploy": "npm run build && node .\\dist\\index.js --deploy --guild=DEV_GUILD_ID deployAll=true",
-		"deploy": "npm run build && node .\\dist\\index.js --deploy --deployAllGlobal=true",
-		
-		"dev:deploy:start": "npm run build && node .\\dist\\index.js --deploy --guild=DEV_GUILD_ID deployAll=true && npm start",
-
+		"dev": "tsx watch src/index.ts",
 		"start": "node dist/index.js",
-		"start:dev": "nodemon src/index.ts",
-		"start:tsx": "tsx watch src/index.ts",
-
-		"test": "tsx watch tests/index.ts --test"
+		"build": "tsc",
+		"fullbuild": "rimraf ./dist && npm run build",
+		"build:start": "npm run build && npm run start",
+		"dev:deploy": "npm run build && node ./dist/index.js --deploy --guild=DEV_GUILD_ID deployAll=true",
+		"dev:dry-deploy": "npm run build && node ./dist/index.js --deploy --dry-run --guild=DEV_GUILD_ID deployAll=true",
+		"deploy": "node ./dist/index.js --deploy --deployAllGlobal=true",
+		"lint": "eslint -c eslint.config.mjs src/",
+		"lint:fix": "eslint -c eslint.config.mjs src/ --fix",
+		"test": "tsx watch tests/index.ts"
 	},
 	"dependencies": {
-		"better-console-utilities": "^1.1.0",
+		"axios": "^1.7.9",
+		"better-console-utilities": "^1.1.1",
 		"discord.js": "^14.14.1",
 		"dotenv": "^16.3.1",
+		"moment": "^2.30.1",
 		"mongoose": "^8.8.2"
 	},
 	"devDependencies": {
+		"@eslint/compat": "^1.2.6",
+		"@eslint/eslintrc": "^3.2.0",
+		"@types/mongoose": "^5.11.97",
 		"@types/node": "^20.10.6",
+		"@typescript-eslint/eslint-plugin": "^8.24.0",
+		"@typescript-eslint/parser": "^8.24.0",
+		"eslint": "^9.20.1",
+		"eslint-plugin-import": "^2.31.0",
 		"nodemon": "^3.0.2",
 		"rimraf": "^5.0.5",
 		"tsx": "^4.7.0",
-		"typescipt": "^1.0.0"
-	}
+		"typescript": "^5.7.2",
+		"typescript-eslint": "^8.24.0"
+	},
+	"packageManager": "yarn@4.6.0"
 }

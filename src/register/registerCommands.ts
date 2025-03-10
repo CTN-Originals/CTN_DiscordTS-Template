@@ -1,84 +1,53 @@
-import * as fs from 'node:fs';
 
-import { Client, Collection } from 'discord.js'; 
+import type { Client } from 'discord.js';
 
-import { cons } from '..';
-import { BaseButtonCollection, BaseSelectMenuCollection, CommandInteractionData, IButtonCollectionField } from '../handlers/commandBuilder';
-import { EmitError } from '../events';
-import { ColorTheme } from '../data';
-import { IAnyInteractionField, IBaseInteractionType, ICommandField, IContextMenuField, ISelectMenuCollectionField } from '../handlers/commandBuilder/data';
 import { getAllFilesInDir, registeredLogString } from '.';
-import { InteractionDataType } from '../@types/discord';
+import { client, cons } from '..';
+import type { InteractionDataType } from '../@types/discord';
+import { GeneralData } from '../data';
+import { EmitError } from '../events';
+import type { BaseButtonCollection, BaseSelectMenuCollection } from '../handlers/commandBuilder';
+import { CommandInteractionData } from '../handlers/commandBuilder';
+import type { BaseEmbedCollection, BaseMethodCollection } from '../handlers/commandBuilder/data';
+import { IBaseInteractionType } from '../handlers/commandBuilder/data';
 
-
-
-
-function registerToClientCollection(client: Client, type: InteractionDataType, content: IAnyInteractionField, dir?: string, file?: string) {
-	let name: string;
-	let collection: string = type + 's';
-	switch (type) {
-		case 'command': {
-			content = content as ICommandField
-			name = content.data.name;
-		} break;
-		case 'contextMenu': {
-			content = content as IContextMenuField
-			name = content.data.name;
-		} break;
-		case 'button': {
-			content = content as IButtonCollectionField
-			name = content.data.customId;
-		} break;
-		case 'selectMenu': {
-			content = content as ISelectMenuCollectionField
-			name = content.data.customId;
-		} break;
+function validateName(name: string, type: InteractionDataType): void {
+	if (client.commands.get(name) !== undefined) {
+		EmitError(new Error(`Duplicate Interaction name detected. The name "${name}" already exists as a "${type}" and will be overwritten`));
 	}
-
-	if ((client[collection] as Collection<string, IAnyInteractionField>).get(name) !== undefined) {
-		EmitError(new Error(`Duplicate Interaction name detected. The name "${name}" already exists in collection "${collection}"`))
-		return;
-	}
-
-	cons.log(registeredLogString(type, name, dir, file));
-
-	client[collection].set(name, content);
 }
 
 //? Register the command files to the client
-function registerCommand(client: Client, dir: string, file: string) {
-	const commandData = require(`../${dir}/${file}`).default as CommandInteractionData;
+async function registerCommand(client: Client, dir: string, file: string): Promise<void> {
+	const commandData = (await import(`../${dir}/${file}`)).default as CommandInteractionData<BaseButtonCollection, BaseSelectMenuCollection, BaseEmbedCollection, BaseMethodCollection>;
 	if (!(commandData instanceof CommandInteractionData)) {
 		EmitError(new Error(`Command file "./${dir}/${file}" is not an instance of "CommandInteractionData"`));
 		return;
 	}
 
-	registerToClientCollection(client, (commandData.interactionType !== IBaseInteractionType.ContextMenu) ? 'command' : 'contextMenu', commandData.command, dir, file);
-
-	for (const button of (commandData.buttonCollection as BaseButtonCollection).asArray()) {
-		registerToClientCollection(client, 'button', button, dir, file);
+	const commandName = commandData.command.content.name;
+	const commandType = (commandData.interactionType !== IBaseInteractionType.ContextMenu) ? 'command' : 'contextMenu';
+	validateName(commandName, commandType);
+	
+	client.commands.set(commandName, commandData);
+	if (GeneralData.logging.startup.enabled && GeneralData.logging.startup.commands) {
+		cons.log(registeredLogString(commandType, commandName, dir, file));
 	}
-	for (const select of (commandData.selectMenuCollection as BaseSelectMenuCollection).asArray()) {
-		registerToClientCollection(client, 'selectMenu', select, dir, file);
+	
+	for (const button of commandData.collection.buttons.asArray()) {
+		validateName(button.content.customId, 'button');
+		client.buttons.set(button.content.customId, commandName);
+		// cons.log(registeredLogString('button', button.content.customId));
 	}
+	for (const select of commandData.collection.selectMenus.asArray()) {
+		validateName(select.content.customId, 'button');
+		client.selectMenus.set(select.content.customId, commandName);
+		// cons.log(registeredLogString('button', select.content.customId));
+	}
+	
 }
 
 // Get command files
-export function registerAllCommands(client: any, dir: string) {
-	getAllFilesInDir(client, registerCommand, dir);
+export async function registerAllCommands(client: Client, dir: string): Promise<void> {
+	await getAllFilesInDir(client, registerCommand, dir);
 }
-// // Get command files
-// export function getCommandFiles(client: any, dir: string) {
-// 	const commandFiles = fs.readdirSync(__dirname + '/../' + dir);
-// 	for (const file of commandFiles) {
-// 		if (file.endsWith('.ts') || file.endsWith('.js')) {
-// 			if (file.startsWith('_')) { continue; } //* Skip files that start with '_' (private (non-command) files)
-// 			registerCommand(client, dir, file);
-// 		}
-// 		// Check if the file is a folder
-// 		else if (file.match(/[a-zA-Z0-9 -_]+/i)) {
-// 			if (file == 'archive') { continue; } //* Skip the archive folder
-// 			getCommandFiles(client, dir + '/' + file);
-// 		}
-// 	}
-// }

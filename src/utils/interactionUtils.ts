@@ -1,4 +1,5 @@
-import { BaseInteraction, ChatInputCommandInteraction, CommandInteractionOption, CommandInteractionOptionResolver, ComponentType, InteractionType, MessageComponentInteraction } from "discord.js";
+import type { BaseInteraction, CommandInteractionOption, MessageComponentInteraction } from 'discord.js';
+import { ComponentType, InteractionType } from 'discord.js';
 
 //* API Interaction Types: https://discord.com/developers/docs/interactions/receiving-and-responding
 export interface IInteractionTypeData {
@@ -17,8 +18,8 @@ export interface IInteractionTypeData {
 }
 export function getInteractionType(interaction: BaseInteraction): IInteractionTypeData {
 	const interactionTypeData: IInteractionTypeData = {
-		type: interaction.type,
-		name: interaction.type[interaction.type],
+		type:    interaction.type,
+		name:    interaction.type[interaction.type],
 		display: '',
 	};
 
@@ -48,9 +49,9 @@ export function getInteractionType(interaction: BaseInteraction): IInteractionTy
 	switch(interaction.type) {
 		case InteractionType.ApplicationCommand:
 		case InteractionType.ApplicationCommandAutocomplete: 
-		{ interactionTypeData.commandKey = 'commandName'; } break;
+			{ interactionTypeData.commandKey = 'commandName'; } break;
 		case InteractionType.MessageComponent:
-		{ interactionTypeData.commandKey = 'customId'; } break;
+			{ interactionTypeData.commandKey = 'customId'; } break;
 		default: break;
 	}
 
@@ -78,7 +79,7 @@ export function getHoistedOptions(optionsData: CommandInteractionOption[]): IInt
 		10: NUMBER
 		11: ATTACHMENT
 	*/
-	let hoistedOptions: IInteractionHoistedOption[] = [];
+	const hoistedOptions: IInteractionHoistedOption[] = [];
 
 	for (const option of optionsData) {
 		if (option.type == 1 || option.type == 2) {
@@ -86,8 +87,8 @@ export function getHoistedOptions(optionsData: CommandInteractionOption[]): IInt
 		}
 		else {
 			hoistedOptions.push({
-				name: option.name,
-				type: option.type,
+				name:  option.name,
+				type:  option.type,
 				value: option.value as string,
 			});
 		}
