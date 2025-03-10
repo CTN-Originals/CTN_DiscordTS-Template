@@ -1,7 +1,7 @@
 import { Client, Collection, WebhookClient } from 'discord.js';
 import 'dotenv/config';
 
-import { ConsoleInstance, defaultThemeProfile } from 'better-console-utilities';
+import { ConsoleInstance } from 'better-console-utilities';
 
 import { GeneralData } from './data';
 import { registerAllCommands } from './register/registerCommands';
@@ -10,9 +10,6 @@ import { registertAllEvents } from './register/registerEvents';
 import { Database } from './data/orm/connect';
 import * as deployScript from './deployCommands';
 import { EmitError } from './events';
-
-//? Set the default theme profile to my preferences
-defaultThemeProfile.overrides.push(...[]);
 
 export const cons = new ConsoleInstance();
 
