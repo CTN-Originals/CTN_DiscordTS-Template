@@ -1,20 +1,24 @@
-import {
-	Collection,
-	StringSelectMenuInteraction,
+import type {
 	ChannelSelectMenuInteraction,
-	UserSelectMenuInteraction,
+	Collection,
 	MentionableSelectMenuInteraction,
 	RoleSelectMenuInteraction,
-} from "discord.js";
-import { IButtonCollectionField, ISelectMenuCollectionField, ICommandField, IContextMenuField } from "../handlers/commandBuilder";
+	StringSelectMenuInteraction,
+	UserSelectMenuInteraction,
+} from 'discord.js';
+import type { BaseButtonCollection, BaseEmbedCollection, BaseMethodCollection, BaseSelectMenuCollection, CommandInteractionData } from '../handlers/commandBuilder';
 
-declare module "discord.js" {
+declare module 'discord.js' {
 	interface Client {
-		commands: Collection<string, ICommandField>;
-		contextMenus: Collection<string, IContextMenuField>;
-		buttons: Collection<string, IButtonCollectionField>;
-		selectMenus: Collection<string, ISelectMenuCollectionField>;
+		commands: Collection<string, CommandInteractionData<BaseButtonCollection, BaseSelectMenuCollection, BaseEmbedCollection, BaseMethodCollection>>;
+
+		//? lookup tables
+		//> <component ID, command name of the command that holds this component>
+		buttons: Collection<string, string>; 
+		selectMenus: Collection<string, string>;
 	}
+
+	declare type ComponentValue = string | string[] | Message | Message[] | Role | Role[] | Channel | Channel[] | User | User[];
 }
 
 declare type AnyComponentInteraction = StringSelectMenuInteraction|ChannelSelectMenuInteraction|UserSelectMenuInteraction|MentionableSelectMenuInteraction|RoleSelectMenuInteraction

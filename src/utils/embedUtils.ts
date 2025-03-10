@@ -1,9 +1,5 @@
-import { EmbedBuilder } from "discord.js";
-
-import { testWebhook } from "..";
-import { EmitError } from "../events";
-
-
+import { EmbedBuilder } from 'discord.js';
+import { EmitError } from '../events';
 
 /*
 All of the following limits are measured inclusively. 
@@ -25,9 +21,9 @@ Violating any of these constraints will result in a Bad Request response.
 */
 
 export const testEmbed = new EmbedBuilder({
-	title: 'embed title: Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum!',
+	title:       'embed title: Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum!',
 	description: '456',
-	fields: [
+	fields:      [
 		{name: '1', value: '1', inline: true},
 		{name: '2', value: '2', inline: true},
 		{name: '3', value: '3', inline: true},
@@ -62,19 +58,19 @@ In hac habitasse platea dictumst. Ut bibendum velit vitae felis fringilla, vel c
 In hac habitasse platea dictumst. Ut bibendum velit vitae felis fringilla, vel consequat neque malesuada. Phasellus gravida justo sed efficitur rhoncus. Nunc sed bibendum erat, nec viverra purus. Quisque vitae aliquet nisi, a ullamcorper velit. Fusce nec risus eu ipsum fermentum elementum. Etiam vehicula tincidunt enim, eu tincidunt nunc. Fusce nec mi ut nisi sodales rutrum.
 Vivamus ac dapibus turpis. Sed non dui vel velit ultrices lacinia id vitae libero. Sed vestibulum justo eu diam tincidunt, ac gravida libero tincidunt. Suspendisse fringilla nulla et nisi feugiat, in tincidunt odio semper. Nullam gravida ipsum vel tortor sollicitudin, at aliquet ex malesuada. Vivamus facilisis lacus in erat hendrerit fermentum. Vivamus congue, justo eu vehicula posuere, purus lectus malesuada lacus, vitae accumsan metus leo id libero.`
 	},
-})
+});
 
 const overflowIndicator: string = '…';
 const overflowLimits = {
-	authorName: 256,
-	title: 256,
+	authorName:  256,
+	title:       256,
 	description: 4096,
-	fields: 25,
-	fieldName: 256,
-	fieldValue: 1024,
-	footerText: 2048,
-	total: 6000,
-}
+	fields:      25,
+	fieldName:   256,
+	fieldValue:  1024,
+	footerText:  2048,
+	total:       6000,
+};
 
 /** Checks if an embed is valid to be sent to Discord 
  * @param {EmbedBuilder} embed The embed to validate
@@ -92,15 +88,15 @@ const overflowLimits = {
 export function validateEmbed(embed: EmbedBuilder): EmbedBuilder {
 	const errorList: string[] = [];
 	const overflowData: {[key: string]: number} = {
-		authorName: 0,
-		title: 0,
+		authorName:  0,
+		title:       0,
 		description: 0,
-		fields: 0,
-		fieldName: 0,
-		fieldValue: 0,
-		footerText: 0,
-		total: 0,
-	}
+		fields:      0,
+		fieldName:   0,
+		fieldValue:  0,
+		footerText:  0,
+		total:       0,
+	};
 	// const overflowSum = () => Object.values(overflowData).reduce((a: number, b: number|number[]) => a + (Array.isArray(b) ? b[0] : b), 0);
 
 	if (!embed.data) {
@@ -129,11 +125,11 @@ export function validateEmbed(embed: EmbedBuilder): EmbedBuilder {
 		}
 
 		for (const field of embed.data.fields ?? []) {
-			if (field.name.length > overflowLimits.fieldName) {
+			if (field.name && field.name.length > overflowLimits.fieldName) {
 				overflowData.fieldName += field.name.length - overflowLimits.fieldName;
 				field.name = field.name.slice(0, (overflowLimits.fieldName - overflowIndicator.length)) + overflowIndicator;
 			}
-			if (field.value.length > overflowLimits.fieldValue) {
+			if (field.value && field.value.length > overflowLimits.fieldValue) {
 				overflowData.fieldValue += field.value.length - overflowLimits.fieldValue;
 				field.value = field.value.slice(0, (overflowLimits.fieldValue - overflowIndicator.length)) + overflowIndicator;
 			}
@@ -142,7 +138,7 @@ export function validateEmbed(embed: EmbedBuilder): EmbedBuilder {
 	
 	const totalOverflow = Object.values(overflowData).reduce((a: number, b: number|number[]) => a + (Array.isArray(b) ? b[0] : b), 0);
 	if (totalOverflow > 0) {
-		let overflownFields: {[key: string]: number} = {};
+		const overflownFields: {[key: string]: number} = {};
 		for (const [key, value] of Object.entries(overflowData)) {
 			if (value > 0) {
 				errorList.push(`[fg=orange]${key}[/>] exceeded limit by ${value} characters (${overflowLimits[key as keyof typeof overflowLimits]})`);
@@ -159,7 +155,7 @@ export function validateEmbed(embed: EmbedBuilder): EmbedBuilder {
 			console.log(
 				`${embed.data.footer!.text.length} >= (${overflowLimits.footerText} + ${footerAlertText.length}) [${(overflowLimits.footerText + footerAlertText.length)}]`, 
 				embed.data.footer!.text.length >= (overflowLimits.footerText + footerAlertText.length)
-			)
+			);
 			if (embed.data.footer.text.length >= (overflowLimits.footerText + footerAlertText.length)) {
 				embed.data.footer.text = embed.data.footer.text + footerAlertText;
 			}
