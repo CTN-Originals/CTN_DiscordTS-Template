@@ -130,7 +130,7 @@ export class BaseExecutableCommandObject extends BaseCommandObject {
 	/** The permissions that the bot requires to have to execute anything defined in this command */
 	public requiredPermissions?: PermissionsString[] = [];
 
-	public options: AnySlashCommandOption[] = [];
+	public options: ApplicationCommandOption[] = [];
 
 	constructor(input: IBaseExecutableCommandObject) {
 		super(input);
